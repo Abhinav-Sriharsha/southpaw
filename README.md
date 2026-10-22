@@ -1,6 +1,6 @@
 # South Paw
 
-Motion-captured boxing in the browser. Fight the CPU, work the heavy bag, or box anyone online, phone against laptop. Version 0.5.
+Motion-captured boxing in the browser. Fight the CPU, work the heavy bag, or box anyone online, phone against laptop. Version 0.51.
 
 - **Host the `game/` folder.** That is everything players download.
 - **`PROJECT_GUIDE.md`** explains every file and where to make common changes.
@@ -22,7 +22,7 @@ python3 -m http.server 8080
 npx serve game
 ```
 
-To test online play on one computer, open the game in two browser windows. Create a room in one and join with the code in the other.
+To test online play on one computer, open the game in two browser windows. Create a room in one, copy the invite link, open it in the other, then press Ready in both.
 
 ## Put it online
 
@@ -49,6 +49,9 @@ Cloudflare's network also protects the site from traffic floods.
 Players join a room with a link like `https://your-site/#ABCD`.
 
 ## Online play
+
+- **Private room:** Play online, then Create room. You land in a lobby with an invite link to copy or share. Your friend opens the link and joins your lobby. When you both press Ready, the fight starts. Keep the game open on the room screen until your friend arrives.
+- **Quick match:** pairs you with whoever else is waiting.
 
 Online matches use the free public PeerJS server to introduce two players. After that, the fight goes directly between their browsers. When you have regular players, run your own matchmaking server from `tools/peer-server/` and point `game/data/config.js` (`peerServer`) at it.
 

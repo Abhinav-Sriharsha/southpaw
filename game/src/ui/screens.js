@@ -10,22 +10,25 @@ let speedI=0,camMode=0;
 const KH_FIGHT='<span><kbd>D</kbd><kbd>A</kbd> in / out</span><span><kbd>W</kbd><kbd>S</kbd> circle</span><span><kbd>J</kbd> left hand</span><span><kbd>K</kbd> right hand</span><span>tap jab/cross, hold hook</span><span><kbd>W</kbd>+punch uppercut</span><span><kbd>S</kbd>+punch body</span><span><kbd>Space</kbd> block</span><span><kbd>Shift</kbd> dodge</span><span><kbd>T</kbd> taunt</span>';
 const KEYHELP={cpu:KH_FIGHT+'<span><kbd>Esc</kbd> menu</span>',online:KH_FIGHT+'<span><kbd>Esc</kbd> menu</span>',
   practice:KH_FIGHT.replace('<span><kbd>T</kbd> taunt</span>','')+'<span><kbd>T</kbd> slow-mo</span><span><kbd>C</kbd> camera</span><span><kbd>R</kbd> replay</span><span><kbd>Esc</kbd> pause</span>'};
-function hideScreens(){$('#title').hidden=true;$('#end').hidden=true;$('#pause').hidden=true;$('#online').hidden=true;}
+function hideScreens(){$('#title').hidden=true;$('#end').hidden=true;$('#pause').hidden=true;$('#online').hidden=true;const l=$('#lobby');if(l)l.hidden=true;}
 let usingTouch=TOUCH;
 function setPlaying(on){document.body.classList.toggle('playing',on);touchEl.hidden=!(on&&usingTouch);tbarEl.hidden=!on;resetStick();TB.block=false;
   document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}
 const UI={state:'',mode:'',round:-1,match:-1,endShown:false};
-function enterSim(s){S=s;document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;cam.init=false;resetLocalInput();
+function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;cam.init=false;resetLocalInput();
   const pr=s.mode==='practice';showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;}
 function startAttract(){timers.length=0;
   if(S&&S.mode==='online')netLeave(true);
   const s=newSim('attract');s.F[0].ai=makeAI('normal');s.F[1].ai=makeAI('normal');s.F[0].ai.aggr=0.4;s.F[1].ai.aggr=0.4;enterSim(s);
   rebuildBoxer(0,lookIdx);rebuildBoxer(1,lookIdx);S.F.forEach(resetPose);setState('fight');
   hudEl.hidden=true;helpEl.hidden=true;lbox.classList.remove('on');hideScreens();$('#title').hidden=false;annBox.innerHTML='';popBox.innerHTML='';setPlaying(false);}
-function goFull(){if(!TOUCH)return;try{const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;
+/* Full screen: browsers only allow it right after a tap, click or key press, so the first one anywhere asks for it.
+   iPhones don't support it for web pages; adding the game to the home screen gives the same result there. */
+let fullAsked=false;
+function goFull(force){if(fullAsked&&!force)return;fullAsked=true;try{const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;
   if(rq&&!document.fullscreenElement){const p=rq.call(d,{navigationUI:'hide'});if(p&&p.then)p.then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}).catch(()=>{});}}catch(e){}}
 function beginMode(){
-  Sfx.init();goFull();timers.length=0;G.paused=false;G.map=MAP;speedI=0;
+  Sfx.init();goFull(true);timers.length=0;G.paused=false;G.map=MAP;speedI=0;
   hideScreens();annBox.innerHTML='';popBox.innerHTML='';lbox.classList.remove('on');
   hudEl.hidden=false;hudEl.dataset.mode=S.mode==='practice'?'practice':'cpu';hudKey='';hudLabels();renderPips();
   tbarEl.dataset.mode=S.mode;$('#ping').hidden=S.mode!=='online';
@@ -72,3 +75,6 @@ function cycleCam(){camMode=(camMode+1)%3;announce(CAM_LABEL[camMode],'small',80
 const isPortrait=()=>window.innerHeight>window.innerWidth*1.05;
 function checkOrient(){if(TOUCH&&isPortrait()&&S&&S.mode!=='attract'&&S.mode!=='online'&&!G.paused&&S.state!=='matchEnd'&&S.state!=='replay')setPaused(true);}
 window.addEventListener('resize',checkOrient);
+
+['pointerdown','keydown'].forEach(t=>window.addEventListener(t,e=>{if(e.type==='keydown'&&(e.key==='Escape'||e.key==='F11'))return;goFull();},{capture:true,once:false,passive:true}));
+document.addEventListener('fullscreenchange',()=>{const b=$('#btnFull');if(b)b.textContent=document.fullscreenElement?'Exit full screen':'Full screen';});

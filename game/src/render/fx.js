@@ -3,7 +3,7 @@
    See PROJECT_GUIDE.md for how this file fits with the rest. */
 'use strict';
 /* ================= FX (presentation) ================= */
-function spriteTex(draw){const c=document.createElement('canvas');c.width=c.height=128;draw(c.getContext('2d'));return new THREE.CanvasTexture(c);}
+function spriteTex(draw){const c=document.createElement('canvas');c.width=c.height=128;draw(c.getContext('2d'));const t=new THREE.CanvasTexture(c);t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t;}
 const TEX_DOT=spriteTex(g=>{const grd=g.createRadialGradient(64,64,0,64,64,64);grd.addColorStop(0,'rgba(255,255,255,1)');grd.addColorStop(.4,'rgba(255,255,255,.6)');grd.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=grd;g.fillRect(0,0,128,128);});
 const TEX_RING2=spriteTex(g=>{g.strokeStyle='rgba(255,255,255,1)';g.lineWidth=2.5;g.beginPath();g.arc(64,64,58,0,Math.PI*2);g.stroke();
   const grd=g.createRadialGradient(64,64,40,64,64,60);grd.addColorStop(0,'rgba(255,255,255,0)');grd.addColorStop(1,'rgba(255,255,255,.18)');g.fillStyle=grd;g.beginPath();g.arc(64,64,58,0,Math.PI*2);g.fill();});

@@ -20,9 +20,12 @@ function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setSiz
   renderer.getDrawingBufferSize(bufSize);OUTLINE.uniforms.uRes.value.copy(bufSize);OUTLINE.uniforms.uW.value=1.7*pr;}
 window.addEventListener('resize',resize);resize();
 let ftAcc=0,ftN=0;
-function adaptRes(dt){ftAcc+=dt;ftN++;if(ftAcc<2000)return;const avg=ftAcc/ftN;ftAcc=0;ftN=0;
-  if(avg>21&&pr>1){pr=Math.max(1,pr-0.25);renderer.setPixelRatio(pr);resize();}
-  else if(avg<12.5&&pr<PR_MAX){pr=Math.min(PR_MAX,pr+0.25);renderer.setPixelRatio(pr);resize();}}
+/* Resolution only drops when the device really can't keep up (under ~33 fps two checks in a row), never during loading,
+   and climbs back as soon as frames are smooth again, so fast screens always stay at full sharpness. */
+let resGrace=5000,resBad=0;const PR_MIN=1;
+function adaptRes(dt){if(resGrace>0){resGrace-=dt;ftAcc=0;ftN=0;return;}ftAcc+=dt;ftN++;if(ftAcc<2000)return;const avg=ftAcc/ftN;ftAcc=0;ftN=0;
+  if(avg>30){if(++resBad>=2&&pr>PR_MIN){pr=Math.max(PR_MIN,pr-0.25);renderer.setPixelRatio(pr);resize();resBad=0;}}
+  else{resBad=0;if(avg<20&&pr<PR_MAX){pr=Math.min(PR_MAX,pr+0.25);renderer.setPixelRatio(pr);resize();}}}
 const GRAD=(()=>{const d=new Uint8Array([62,62,62,255,150,150,150,255,255,255,255,255]);
   const t=new THREE.DataTexture(d,3,1,THREE.RGBAFormat);t.minFilter=t.magFilter=THREE.NearestFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;})();
 const toon=(c,extra)=>new THREE.MeshToonMaterial(Object.assign({color:c,gradientMap:GRAD},extra||{}));

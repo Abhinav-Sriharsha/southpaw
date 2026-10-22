@@ -1,0 +1,8 @@
+# South Paw · tools/turn-worker/wrangler.toml
+name = "southpaw-turn"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+# comma-separated list of sites allowed to ask for relay credentials
+ALLOW_ORIGIN = "https://playsouthpaw.com,https://southpaw.abhinav932002.workers.dev"

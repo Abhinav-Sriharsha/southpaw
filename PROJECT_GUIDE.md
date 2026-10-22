@@ -72,7 +72,8 @@ southpaw/
 └── tools/                    For you, never uploaded
     ├── anim/                 Mixamo FBX files and the converter to clips.js
     ├── sounds/               Original recordings and the script that prepares them
-    └── peer-server/          Your own matchmaking server, for when you outgrow the free one
+    ├── peer-server/          Your own matchmaking server, for when you outgrow the free one
+    └── turn-worker/          Optional Cloudflare Worker that hands out relay (TURN) credentials
 ```
 
 ---
@@ -83,7 +84,8 @@ southpaw/
 The page itself. It holds:
 
 - **Head:** title, phone viewport settings, fonts, `styles/main.css`.
-- **Markup:** the canvas, the HUD (`#hud`, health and stamina bars), the touch controls (`#touch`, the stick and the Left, Right, Block, Dodge and Taunt buttons), the practice toolbar, and the screens: title (`#title`), pause (`#pause`), match end (`#end`), online (`#online`), the get-up meter and the rotate-your-phone notice.
+- **Markup:** the canvas, the HUD (`#hud`, health and stamina bars), the touch controls (`#touch`, the stick and the Left, Right, Block, Dodge and Taunt buttons), the practice toolbar, and the screens: title (`#title`), pause (`#pause`, which includes the Full screen button), match end (`#end`), online (`#online`), the private room lobby (`#lobby`), the get-up meter and the rotate-your-phone notice.
+- **App settings:** `manifest.webmanifest` and the icons in `assets/icons/` let players add South Paw to their home screen, where it opens full screen in landscape.
 - **Scripts:** the libraries, then every game file in load order.
 
 **Edit it when** you add or rename a menu, button or on-screen element (give it an `id`, then wire it up in `src/ui/buttons.js` or `src/ui/screens.js`), change the title-screen text, or add a new script file. Add new scripts in the right place in the list.
@@ -105,6 +107,9 @@ Tells Netlify and Cloudflare Pages how long browsers may cache each folder. Anim
 - `roomPrefix`: every online room and quick-match slot starts with this. Different prefixes never meet, so bumping it keeps versions apart.
 - `quickMatchSlots`: how many quick-match queue slots are scanned.
 - `peerServer`: empty uses the free public PeerJS server. Fill it in to use your own (see `tools/peer-server`).
+- `iceServers`: how two browsers find each other. STUN servers find a direct route; TURN servers relay the fight when a network blocks direct connections (common on mobile data and office Wi-Fi).
+- `openRelay`: a free public relay (Open Relay by metered.ca) added on top. Set it to `null` to turn it off.
+- `turnUrl`: optional. Point it at your own credentials service, for example `tools/turn-worker`, which uses Cloudflare's TURN. This is the most reliable option once you have regular players.
 
 ### `data/rules.js`
 The fight rules, matching `docs/south-paw-mechanics.xlsx`:
@@ -173,6 +178,7 @@ Page-level state shared by menus and the renderer: `STEP` (one sim tick, 1000/12
 **Edit it when** you change which sound plays for what, or the volumes. Volumes are the second argument of each `this.play(...)`.
 
 ### `src/render/scene.js` (3D scene)
+- **Sharpness:** the game renders at the screen's full pixel density, capped at 2× on computers and 1.75× on phones. `adaptRes` only lowers it if the device genuinely can't keep up (under about 33 fps for two checks in a row, never while loading), and raises it again as soon as frames are smooth.
 - The renderer, resolution scaling for slower phones (`adaptRes`), the ink-outline shader (`OUTLINE`) and toon shading (`toon`, `GRAD`).
 - Lights.
 - The ring: canvas (`makeCanvasTex`), apron with the "SOUTH PAW" logo (`makeApronTex`), ropes and posts. `updateRingFade` makes ring sides near the camera see-through.
@@ -269,6 +275,7 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 - `MAP`: the keyboard layout. `KEYHELP`: the on-screen key hints.
 - `startAttract` (the idle fight behind the title screen), `startMatch` (vs CPU), `startPractice`.
 - `showEnd` (the match-end card, stats and brag line), `setPaused`, `cycleSpeed`/`cycleCam` (practice tools), `checkOrient` (the rotate-your-phone notice).
+- `goFull`: full screen. Browsers only allow full screen right after a tap, click or key press, so the first one anywhere on the page asks for it, and starting a fight asks again. iPhones don't support full screen for web pages; adding the game to the home screen (thanks to `manifest.webmanifest`) opens it full screen there.
 
 ### `src/input/local.js` (your input each tick)
 - `STICK`, `TB` (touch block) and `PBT` (punch buttons) hold the state of touch and keys.
@@ -277,7 +284,10 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 - `sampleLocal`: turns all of that into one input word per tick. It also stops circling for a moment while you aim a punch, which is not needed while blocking.
 
 ### `src/net/online.js` (online play)
-- **Rooms:** `hostRoom` (4-letter code), `joinRoom`, and `quickMatch` (scans `CONFIG.quickMatchSlots` queue slots).
+- **Private rooms:** `hostRoom` makes a 4-letter room and opens the lobby. `joinRoom` (also used when someone opens an invite link such as `/#ABCD`) opens the same lobby and keeps retrying for about a minute, in case the host is still connecting or switched apps to send the link.
+- **Lobby** (bottom of the file): `LOBBY` holds the lobby state. `lobbyOpen`, `lobbyRender` (the red and blue corner cards), `lobbySetReady` and `lobbyCheck` (when both players are ready, the host starts the match), `lobbyLost` (a player left), `lobbyCopy` (copies the invite link) and `lobbyLeave`. The host is always the red corner and the guest the blue corner, but each player sees themselves on the left of their own screen.
+- **Quick match:** `quickMatch` scans `CONFIG.quickMatchSlots` queue slots and starts straight away, with no lobby.
+- **Relays:** `prepareIce` builds the STUN and TURN list from `data/config.js` before connecting.
 - **Rollback netcode:**
   - `netFrame` runs every frame, with input delay and prediction.
   - `netRollback` rewinds and re-plays when a late input arrives.
@@ -287,6 +297,10 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 - `NET`: all connection state.
 
 **Edit it with care.** Any change must keep both players' sims identical. Test with two browsers.
+
+**If friends can't connect:**
+- **The host must keep South Paw open on the room screen until the friend joins.** On a phone, switching apps to send the link can pause the page; coming back reconnects it.
+- **Strict networks need a relay.** If players on mobile data or office Wi-Fi still can't connect, deploy `tools/turn-worker` and set `turnUrl`.
 
 ### `src/render/camera.js`
 - `updateCamera` sets up the broadcast camera, which sits side-on and pulls back only as the fighters' gap grows (`zoom`).
@@ -378,6 +392,9 @@ Starts the idle fight behind the title screen, joins a room straight away if the
 
 ### `tools/peer-server/`
 A small matchmaking server (Node, Express, PeerJS server) for when you want your own instead of the free public one. It only introduces two players; the fight itself still goes directly between them. Setup steps are in the comment at the top of `server.js`.
+
+### `tools/turn-worker/`
+A tiny Cloudflare Worker that hands out short-lived relay credentials from Cloudflare's TURN service, so players on strict networks can always connect. Deploy it with `npx wrangler deploy` and add the two secrets, as described at the top of `worker.js`. Then set `turnUrl` in `game/data/config.js`. `ALLOW_ORIGIN` in `wrangler.toml` lists the sites allowed to use it.
 
 ---
 

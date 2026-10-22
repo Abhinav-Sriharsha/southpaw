@@ -247,3 +247,20 @@ body.touch .keys-only{display:none}body.touch .touch-only{display:block}
   .lb,#help{transition:none}
   #rotate .phone{animation:none;transform:rotate(-90deg)}
 }
+
+/* ---------- private room lobby ---------- */
+.lcard{width:min(460px,100%);gap:12px}
+.card.lcard h2 span{color:var(--gold);letter-spacing:.12em}
+.lslots{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:8px}
+.lvs{align-self:center;font-family:var(--display);font-weight:900;font-size:22px;color:var(--muted);text-transform:uppercase}
+.lslot{display:grid;gap:4px;align-content:start;padding:10px 12px;background:rgba(0,0,0,.35);border-top:3px solid var(--red);min-width:0}
+.lslot.blue{border-top-color:var(--blue)}
+.lslot.empty b{color:var(--muted);font-weight:600}
+.lcorner{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.lslot b{font-family:var(--display);font-weight:900;font-size:22px;line-height:1.05;text-transform:uppercase;overflow-wrap:anywhere}
+.lslot em{font-style:normal;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:1.2em}
+.lslot em.ok{color:#8fe39b}
+.linvite{display:grid;gap:8px}
+.linvite .obtns{display:flex;gap:8px}.linvite .obtns .btn{flex:1;font-size:17px}
+#btnReady[disabled]{opacity:.45;cursor:default}
+@media (max-height:520px){.lcard{padding:12px 18px;gap:7px}.card.lcard h2{font-size:30px}.lslot{padding:6px 10px}.lslot b{font-size:18px}}
