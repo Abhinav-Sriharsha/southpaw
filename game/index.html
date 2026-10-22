@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>South Paw</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#07080c">
+<meta name="description" content="South Paw: motion-captured browser boxing. Fight the CPU, work the bag, or box anyone online on phone or laptop.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<canvas id="c" tabindex="-1" aria-label="Boxing ring"></canvas>
+<div class="vignette"></div>
+<div id="flash"></div>
+<div id="pulse"></div>
+<div id="hurt"></div>
+
+<div id="hud" hidden data-mode="cpu">
+  <div class="side p1" data-c="0">
+    <div class="nameRow"><span class="corner" id="c0">Red</span><span class="name" id="n0">You</span><span class="pips cpu-only" id="w0"><i></i><i></i></span></div>
+    <div class="bar hp cpu-only" id="hb0"><div class="ghost" id="g0"></div><div class="fill" id="h0"></div><div class="cap" id="cap0"></div></div>
+    <div class="bar st" id="sb0"><div class="fill" id="s0"></div><div class="smax" id="sm0"></div></div>
+    <div class="last prac-only" id="lastHit">Throw a punch</div>
+  </div>
+  <div class="clock"><div class="rnd cpu-only" id="rnd">Round 1</div><div class="time cpu-only" id="time">60</div>
+    <div class="rnd prac-only">Practice</div><div class="time prac-only" id="speed">1&times;</div></div>
+  <div class="side p2" data-c="1">
+    <div class="nameRow cpu-only"><span class="corner" id="c1">Blue</span><span class="name" id="n1">Brick Mahesh</span><span class="pips" id="w1"><i></i><i></i></span></div>
+    <div class="bar hp cpu-only" id="hb1"><div class="ghost" id="g1"></div><div class="fill" id="h1"></div><div class="cap" id="cap1"></div></div>
+    <div class="bar st cpu-only" id="sb1"><div class="fill" id="s1"></div><div class="smax" id="sm1"></div></div>
+    <dl class="pstats prac-only">
+      <div><dt>Thrown</dt><dd id="stThrown">0</dd></div>
+      <div><dt>Landed</dt><dd id="stLanded">0</dd></div>
+      <div><dt>Accuracy</dt><dd id="stAcc">0%</dd></div>
+      <div><dt>Best combo</dt><dd id="stCombo">0</dd></div>
+    </dl>
+  </div>
+</div>
+<div id="tbar" hidden data-mode="cpu">
+  <button id="tPause" aria-label="Menu">II</button><span id="ping" hidden>-- ms</span>
+  <button class="prac-tool" id="tSlow" aria-label="Slow motion"><span id="tSpeed">1×</span></button>
+  <button class="prac-tool" id="tCam">Cam</button>
+  <button class="prac-tool" id="tReplay">Replay</button>
+</div>
+<div id="help" hidden></div>
+
+<div id="touch" hidden>
+  <div id="stickZone"></div>
+  <div id="stick"><div id="knob"></div></div>
+  <div class="stickHint">Move · up uppercut · down body</div>
+  <div id="pad">
+    <button class="tb" id="tbTaunt" data-t aria-label="Taunt">Taunt</button>
+    <button class="tb" id="tbBlock" data-hold aria-label="Block, hold">Block</button>
+    <button class="tb" id="tbDodge" data-d>Dodge</button>
+    <button class="tb" id="tbL" data-p="L" aria-label="Left hand">Left<small>tap jab · hold hook</small></button>
+    <button class="tb" id="tbR" data-p="R" aria-label="Right hand">Right<small>tap cross · hold hook</small></button>
+  </div>
+</div>
+
+<div id="note" aria-live="polite"></div>
+<div id="getup" hidden><b><span class="touch-only">Tap any button to get up</span><span class="keys-only">Mash J or K to get up</span></b><div class="gtrack"><div class="gfill" id="guFill"></div></div></div>
+<div id="ann"></div>
+<div id="pops"></div>
+<div id="lbox"><div class="lb top"></div><div class="lb bot"></div><div class="rtag">Instant replay</div><div class="rskip">Tap to skip</div></div>
+
+<section id="title" class="screen">
+  <div class="title-inner">
+    <div class="tcol">
+      <div class="kicker">Basement League · Est. 2006 · 0.5</div>
+      <h1 class="logo"><span>South</span><span>Paw</span></h1>
+      <p class="tag">Motion-captured boxing in your browser. Fight anyone online on a phone or a laptop, take on the CPU, or work the heavy bag.</p>
+      <p class="howto touch-only"><b>Left thumb:</b> drag to step in, out and circle.<br><b>Right thumb:</b> Left and Right are your hands. Tap for a straight, hold for a hook. Push the stick up to uppercut, down to go to the body. Hold Block to cover up against anything, Dodge leans away (stick down ducks). Taunt if you dare.</p>
+      <p class="howto keys-only"><b>D A</b> in and out · <b>W S</b> circle · <b>J</b> left hand · <b>K</b> right hand · tap for a straight, hold for a hook · <b>W</b>+punch uppercut · <b>S</b>+punch body · <b>Space</b> block · <b>Shift</b> dodge · <b>T</b> taunt · <b>Enter</b> fight</p>
+    </div>
+    <div class="tcol menu">
+      <button class="btn" id="btnCpu">Fight the CPU</button>
+      <div class="diffs level" role="group" aria-label="CPU difficulty"><button data-d="easy" aria-pressed="false">Easy</button><button data-d="normal" aria-pressed="true">Normal</button><button data-d="hard" aria-pressed="false">Hard</button></div>
+      <button class="btn primary" id="btnOnline">Play online</button>
+      <button class="btn" id="btnPrac">Practice on the bag</button>
+    </div>
+  </div>
+</section>
+
+<section id="pause" class="screen" hidden>
+  <div class="card">
+    <h2>Paused</h2>
+    <button class="btn primary" id="btnResume">Resume</button>
+    <button class="btn" id="btnSound">Sound: on</button>
+    <button class="btn" id="btnQuit">Quit to menu</button>
+    <p class="keys-only"><kbd>Esc</kbd> resume · <kbd>M</kbd> mute</p>
+  </div>
+</section>
+
+<section id="end" class="screen" hidden>
+  <div class="end-card">
+    <div class="kicker" id="endKicker">Winner by knockout</div>
+    <h2 class="end-name" id="endName">You</h2>
+    <div class="stats-wrap"><table class="stats" id="stats"></table></div>
+    <div class="brag"><input id="bragText" aria-label="Brag line to share" readonly><button class="btn" id="btnCopy">Copy</button></div>
+    <div class="end-actions">
+      <button class="btn primary" id="btnRematch">Rematch</button>
+      <button class="btn" id="btnMenu">Main menu</button>
+    </div>
+    <p class="howto" id="rematchNote" aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="online" class="screen" hidden>
+  <div class="card ocard">
+    <h2>Online</h2>
+    <label class="olabel" for="nameIn">Your name</label>
+    <input id="nameIn" class="oin" maxlength="12" autocomplete="nickname" placeholder="Boxer name">
+    <div class="obtns"><button class="btn primary" id="btnQuick">Quick match</button><button class="btn" id="btnCreate">Create room</button></div>
+    <div class="orow"><input id="codeIn" class="oin code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code" aria-label="Room code"><button class="btn" id="btnJoin">Join</button></div>
+    <div id="roomBox" class="roombox" hidden><span>Room code</span><b id="roomCode">----</b><button class="btn" id="btnCopyLink">Copy invite</button></div>
+    <p id="netStatus" class="ostatus" aria-live="polite"></p>
+    <button class="btn" id="btnNetBack">Back</button>
+  </div>
+</section>
+
+<div id="rotate" role="alert"><div class="phone"></div><p>Turn your phone sideways</p><small>The fight is paused until you do.</small></div>
+
+<!-- libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<!-- game: data first, then the code in dependency order (see PROJECT_GUIDE.md). Every file shares one scope, so order matters. -->
+<script src="data/config.js"></script>
+<script src="data/rules.js"></script>
+<script src="data/cpu.js"></script>
+<script src="data/fighters.js"></script>
+<script src="data/sounds.js"></script>
+<script src="assets/anim/clips.js"></script>
+<script src="src/core/util.js"></script>
+<script src="src/anim/clips.js"></script>
+<script src="src/core/state.js"></script>
+<script src="src/audio/sound.js"></script>
+<script src="src/render/scene.js"></script>
+<script src="src/render/boxer.js"></script>
+<script src="src/render/pose.js"></script>
+<script src="src/render/corners.js"></script>
+<script src="src/anim/reactions.js"></script>
+<script src="src/sim/snapshot.js"></script>
+<script src="src/sim/skeleton.js"></script>
+<script src="src/sim/punches.js"></script>
+<script src="src/practice/bag.js"></script>
+<script src="src/sim/footwork.js"></script>
+<script src="src/sim/fighter.js"></script>
+<script src="src/sim/combat.js"></script>
+<script src="src/ai/cpu.js"></script>
+<script src="src/sim/match.js"></script>
+<script src="src/render/fx.js"></script>
+<script src="src/ui/hud.js"></script>
+<script src="src/ui/screens.js"></script>
+<script src="src/input/local.js"></script>
+<script src="src/net/online.js"></script>
+<script src="src/render/camera.js"></script>
+<script src="src/core/loop.js"></script>
+<script src="src/input/keyboard.js"></script>
+<script src="src/input/touch.js"></script>
+<script src="src/ui/buttons.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>

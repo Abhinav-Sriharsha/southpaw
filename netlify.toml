@@ -1,0 +1,4 @@
+# South Paw · Netlify settings: the hostable game is the game/ folder. No build step.
+[build]
+  publish = "game"
+  command = ""
