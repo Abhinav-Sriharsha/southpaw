@@ -12,10 +12,11 @@ $('#btnCpu').addEventListener('click',startMatch);$('#btnPrac').addEventListener
 $('#btnQuick').addEventListener('click',quickMatch);$('#btnCreate').addEventListener('click',hostRoom);
 $('#btnJoin').addEventListener('click',()=>joinRoom($('#codeIn').value));$('#codeIn').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom($('#codeIn').value);});
 $('#btnNetBack').addEventListener('click',cancelOnline);
-$('#btnReady').addEventListener('click',()=>lobbySetReady(!LOBBY.me));$('#btnLobLeave').addEventListener('click',lobbyLeave);
+$('#btnReady').addEventListener('click',()=>{goFull(true);lobbySetReady(!LOBBY.me);});$('#btnLobLeave').addEventListener('click',lobbyLeave);
 $('#btnLobCopy').addEventListener('click',e=>lobbyCopy(e.currentTarget));$('#btnLobRetry').addEventListener('click',()=>{if(LOBBY.retry)LOBBY.retry();});
 $('#btnLobShare').addEventListener('click',()=>{try{navigator.share({title:'South Paw',text:'Fight me on South Paw',url:lobbyLink()}).catch(()=>{});}catch(e){}});
-$('#btnFull').addEventListener('click',()=>{if(document.fullscreenElement||document.webkitFullscreenElement){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document);}catch(e){}}else goFull(true);});
+$('#btnFull').addEventListener('click',fsToggle);$('#fsBtn').addEventListener('click',fsToggle);
+$('#fsHint').addEventListener('click',()=>{$('#fsHint').hidden=true;});
 $('#btnCopyLink').addEventListener('click',()=>{const link=location.origin+location.pathname+'#'+NET.code;const done=()=>{$('#btnCopyLink').textContent='Copied';setTimeout(()=>{$('#btnCopyLink').textContent='Copy invite';},1500);};
   const text='Fight me on South Paw. Room '+NET.code+' '+link;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(()=>{});});
 $('#btnResume').addEventListener('click',()=>{if(TOUCH&&isPortrait()&&S.mode!=='online')return;setPaused(false);});$('#btnSound').addEventListener('click',toggleSound);

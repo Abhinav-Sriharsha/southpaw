@@ -22,11 +22,23 @@ function startAttract(){timers.length=0;
   const s=newSim('attract');s.F[0].ai=makeAI('normal');s.F[1].ai=makeAI('normal');s.F[0].ai.aggr=0.4;s.F[1].ai.aggr=0.4;enterSim(s);
   rebuildBoxer(0,lookIdx);rebuildBoxer(1,lookIdx);S.F.forEach(resetPose);setState('fight');
   hudEl.hidden=true;helpEl.hidden=true;lbox.classList.remove('on');hideScreens();$('#title').hidden=false;annBox.innerHTML='';popBox.innerHTML='';setPlaying(false);}
-/* Full screen: browsers only allow it right after a tap, click or key press, so the first one anywhere asks for it.
-   iPhones don't support it for web pages; adding the game to the home screen gives the same result there. */
-let fullAsked=false;
-function goFull(force){if(fullAsked&&!force)return;fullAsked=true;try{const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;
-  if(rq&&!document.fullscreenElement){const p=rq.call(d,{navigationUI:'hide'});if(p&&p.then)p.then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}).catch(()=>{});}}catch(e){}}
+/* Full screen. Browsers only allow it during a real tap, click or key press (a touch's pointerdown does not count),
+   so we try on each of those until it works. Once the player leaves full screen on purpose, only the button
+   and starting a fight ask again. iPhones have no full screen for web pages: the button explains Add to Home Screen. */
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+const fsApi=()=>{const d=document.documentElement;return d.requestFullscreen||d.webkitRequestFullscreen||null;};
+const fsStandalone=()=>{try{return matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}catch(e){return false;}};
+let fullDeclined=false,fullWas=false;
+function goFull(force){if(fsEl()||(fullDeclined&&!force))return;const rq=fsApi();if(!rq)return;
+  try{const d=document.documentElement,p=rq.call(d,{navigationUI:'hide'});
+    const lock=()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}};
+    if(p&&p.then)p.then(lock).catch(()=>{});else lock();}catch(e){}}
+function fsUpdate(){const on=!!fsEl();if(fullWas&&!on)fullDeclined=true;fullWas=on;
+  const b=$('#btnFull');if(b)b.textContent=on?'Exit full screen':'Full screen';
+  const f=$('#fsBtn');if(f){f.hidden=on||fsStandalone();f.setAttribute('aria-label',on?'Exit full screen':'Full screen');}}
+function fsToggle(){if(fsEl()){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document);}catch(e){}return;}
+  if(fsApi()){goFull(true);return;}
+  const h=$('#fsHint');if(h){h.hidden=false;clearTimeout(fsToggle.t);fsToggle.t=setTimeout(()=>{h.hidden=true;},6000);}}
 function beginMode(){
   Sfx.init();goFull(true);timers.length=0;G.paused=false;G.map=MAP;speedI=0;
   hideScreens();annBox.innerHTML='';popBox.innerHTML='';lbox.classList.remove('on');
@@ -76,5 +88,6 @@ const isPortrait=()=>window.innerHeight>window.innerWidth*1.05;
 function checkOrient(){if(TOUCH&&isPortrait()&&S&&S.mode!=='attract'&&S.mode!=='online'&&!G.paused&&S.state!=='matchEnd'&&S.state!=='replay')setPaused(true);}
 window.addEventListener('resize',checkOrient);
 
-['pointerdown','keydown'].forEach(t=>window.addEventListener(t,e=>{if(e.type==='keydown'&&(e.key==='Escape'||e.key==='F11'))return;goFull();},{capture:true,once:false,passive:true}));
-document.addEventListener('fullscreenchange',()=>{const b=$('#btnFull');if(b)b.textContent=document.fullscreenElement?'Exit full screen':'Full screen';});
+['pointerup','touchend','click','keydown'].forEach(t=>window.addEventListener(t,e=>{if(e.type==='keydown'&&(e.key==='Escape'||e.key==='F11'))return;
+  if(e.target&&e.target.closest&&e.target.closest('#fsBtn,#btnFull'))return;goFull();},{capture:true,passive:true}));
+['fullscreenchange','webkitfullscreenchange'].forEach(t=>document.addEventListener(t,fsUpdate));fsUpdate();

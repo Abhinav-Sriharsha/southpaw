@@ -275,7 +275,7 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 - `MAP`: the keyboard layout. `KEYHELP`: the on-screen key hints.
 - `startAttract` (the idle fight behind the title screen), `startMatch` (vs CPU), `startPractice`.
 - `showEnd` (the match-end card, stats and brag line), `setPaused`, `cycleSpeed`/`cycleCam` (practice tools), `checkOrient` (the rotate-your-phone notice).
-- `goFull`: full screen. Browsers only allow full screen right after a tap, click or key press, so the first one anywhere on the page asks for it, and starting a fight asks again. iPhones don't support full screen for web pages; adding the game to the home screen (thanks to `manifest.webmanifest`) opens it full screen there.
+- `goFull`, `fsToggle`, `fsUpdate`: full screen. Browsers only allow it during a real tap, click or key press. A finger's first touch (`pointerdown`) doesn't count, so the game listens for the tap ending (`pointerup`, `touchend`, `click`) and keys, and keeps trying until it works. If the player leaves full screen on purpose, only the button, Ready and starting a fight ask again. The corner button `#fsBtn` shows on every menu, and the pause menu has `#btnFull`. iPhones don't support full screen for web pages, so on iPhone the button shows `#fsHint` (Share, then Add to Home Screen); opened from the home screen, `manifest.webmanifest` makes it full screen.
 
 ### `src/input/local.js` (your input each tick)
 - `STICK`, `TB` (touch block) and `PBT` (punch buttons) hold the state of touch and keys.
