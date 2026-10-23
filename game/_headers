@@ -14,6 +14,8 @@
   Cache-Control: no-cache
 /assets/anim/*
   Cache-Control: no-cache
+/assets/models/*
+  Cache-Control: no-cache
 /assets/sounds/*
   Cache-Control: public, max-age=86400
 /assets/icons/*

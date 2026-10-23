@@ -74,7 +74,8 @@ let showWasOn=false;const showFog={near:scene.fog?scene.fog.near:12,far:scene.fo
 function showSetup(on){
   if(on===showWasOn)return;showWasOn=on;
   crowd.bodies.visible=!on;crowd.heads.visible=!on;showBench.visible=on;showSBag.g.visible=on;
-  B[0].gloves.forEach(g=>g.visible=!on);showHands.forEach(h=>{h.cover.visible=h.band.visible=on;});
+  if(B[0].model)modelColours(B[0],B[0].look,on?0xf1ede4:null);   // a character model: its gloves turn into white wraps
+  else{B[0].gloves.forEach(g=>g.visible=!on);showHands.forEach(h=>{h.cover.visible=h.band.visible=on;});}
   if(!on)showRope.visible=false;
   showKey.intensity=on?2.4:0;showRim.intensity=on?0.95:0;spot.intensity=on?0.32:1.35;if(showHemi)showHemi.intensity=on?0.16:0.4;
   rimR.intensity=rimB.intensity=on?0.25:0.45;
