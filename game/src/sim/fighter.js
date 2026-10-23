@@ -17,7 +17,7 @@ function newSim(mode,o){o=o||{};return {mode,tick:0,state:'fight',stateT:0,timer
   F:[newFighter(0),newFighter(1)],bag:{x:0,z:0,tx:0,tz:0,wx:0,wz:0,bob:0,bobV:0,flash:0},bagPrev:{tx:0,tz:0,bob:0,flash:0},
   st:{thrown:0,landed:0,best:0,combo:0,lastLandT:-1e9},names:o.names||['You','CPU'],diff:o.diff||'normal'};}
 const nowMs=()=>S.tick*STEP;
-const prac=()=>S.mode==='practice';
+const prac=()=>S.mode==='practice'||!!S.show;   // S.show: the title-screen film, which uses the bag like practice
 const tgt=f=>prac()?S.bag:S.F[1-f.i];
 function relAxes(f){const t=tgt(f),dx=t.x-f.x,dz=t.z-f.z,d=dhyp(dx,dz)||1e-4,ux=dx/d,uz=dz/d;return {d,ux,uz,lx:f.side*uz,lz:-f.side*ux};}
 const footFree=f=>f.action==='idle'||f.action==='walk'||f.action==='block';

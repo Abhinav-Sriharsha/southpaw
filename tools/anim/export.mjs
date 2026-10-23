@@ -24,7 +24,10 @@ const CLIPS={idle:'Idle.fbx',fwd:'Short_Step_Forward_1.fbx',back:'Step_Backward_
   gL:'Getting_Up_after_light_injury.fbx',gM:'Getting_Up_after_medium_injury.fbx',gH:'Getting_Up_after_heavy_injury.fbx',kdf:'Knocked_Out_1.fbx',
   t1:'Taunt.fbx',t2:'Taunt_2.fbx',t3:'Taunt_3.fbx',jab3:'Jab_Cross_1.fbx',
   rj:'right_hand_jab.fbx',rhN:'right_hand_hook_normal.fbx',rhL:'right_hand_hook_long.fbx',ruN:'right_hand_uppercut_normal.fbx',ruH:'right_hand_uppercut_heavy.fbx',
-  bhN:'Body_Block__hit_normal.fbx',bhH:'Body_Block_hit_heavy.fbx',bLL:'Body_Block_left_hit_light.fbx',bLH:'Body_Block_left_hit_heavy.fbx',bRL:'Body_Block_right_hit_light.fbx',bRH:'Body_Block_right_hit_heavy.fbx'};
+  bhN:'Body_Block__hit_normal.fbx',bhH:'Body_Block_hit_heavy.fbx',bLL:'Body_Block_left_hit_light.fbx',bLH:'Body_Block_left_hit_heavy.fbx',bRL:'Body_Block_right_hit_light.fbx',bRH:'Body_Block_right_hit_heavy.fbx',
+  // the title-screen training film (src/ui/titleShow.js)
+  s2s:'Sit_To_Stand.fbx',neck:'Neck_Stretching.fbx',arms:'Arm_Stretching.fbx',warm:'Warming_Up.fbx',rope:'Jumping_Rope.fbx',
+  squat:'Air_Squat.fbx',i2p:'Idle_To_Push_Up.fbx',push:'Push_Up.fbx',sbag:'Speedbag.fbx'};
 const LOCO=new Set(['idle','fwd','back','sl','sr','walkf','walkb','ml','mr','ll','lr']);
 const KEEP={upS:[30,74],upL:[30,74],dodge:[0,67],ko:[28,110],ko2:[32,105],win:[0,96],block:[20,50],
   hLL:[20,40],hLM:[18,34],hRL:[17,33],hRM:[31,58],uLL:[15,32],uLM:[19,40],uRL:[15,32],uRM:[19,38],kid:[18,50],sto:[18,46],liv:[42,128],

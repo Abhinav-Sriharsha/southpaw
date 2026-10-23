@@ -16,11 +16,11 @@ function setPlaying(on){document.body.classList.toggle('playing',on);touchEl.hid
   document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}
 const UI={state:'',mode:'',round:-1,match:-1,endShown:false};
 function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;SEEN.clear();SEENQ.length=0;cam.init=false;resetLocalInput();
-  const pr=s.mode==='practice';showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;}
+  const pr=s.mode==='practice'||!!s.show;showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;}
 function startAttract(){timers.length=0;
   if(S&&S.mode==='online')netLeave(true);
-  const s=newSim('attract');s.F[0].ai=makeAI('normal');s.F[1].ai=makeAI('normal');s.F[0].ai.aggr=0.4;s.F[1].ai.aggr=0.4;enterSim(s);
-  rebuildBoxer(0,lookIdx);rebuildBoxer(1,lookIdx);S.F.forEach(resetPose);setState('fight');
+  const s=newSim('attract');s.show=true;enterSim(s);   // the title film (src/ui/titleShow.js)
+  rebuildBoxer(0,lookIdx);rebuildBoxer(1,lookIdx);S.F.forEach(resetPose);setState('fight');showReset();titleStep(titlePressed?'menu':'press');
   hudEl.hidden=true;helpEl.hidden=true;lbox.classList.remove('on');hideScreens();$('#title').hidden=false;annBox.innerHTML='';popBox.innerHTML='';setPlaying(false);}
 /* Full screen. Browsers only allow it during a real tap, click or key press (a touch's pointerdown does not count),
    so we try on each of those until it works. Once the player leaves full screen on purpose, only the button

@@ -9,7 +9,8 @@ const BIDX={};AD.bones.forEach((b,i)=>BIDX[b.n]=i);
 const LOWER=new Uint8Array(NB);['Hips','LeftUpLeg','LeftLeg','LeftFoot','LeftToeBase','RightUpLeg','RightLeg','RightFoot','RightToeBase'].forEach(n=>LOWER[BIDX[n]]=1);
 const CLIPN=['idle','fwd','back','sl','sr','jc1','hook','upS','upL','block','hitL','hitH','ko','ko2','win','walkf','walkb','ml','mr','ll','lr','dodge',
   'hLL','hLM','hRL','hRM','uLL','uLM','uRL','uRM','kid','sto','liv','gL','gM','gH','kdf','t1','t2','t3',
-  'rj','rhN','rhL','ruN','ruH','bhN','bhH','bLL','bLH','bRL','bRH','jab3'];
+  'rj','rhN','rhL','ruN','ruH','bhN','bhH','bLL','bLH','bRL','bRH','jab3',
+  's2s','neck','arms','warm','rope','squat','i2p','push','sbag'];   // the last row: the title-screen training film
 const CI={};CLIPN.forEach((n,i)=>CI[n]=i);
 const CL=(()=>{
   const bin=atob(AD.b64),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);

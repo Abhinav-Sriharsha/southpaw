@@ -21,14 +21,14 @@ function lerpBag(out,a,b,t){out.tx=a.tx+(b.tx-a.tx)*t;out.tz=a.tz+(b.tz-a.tz)*t;
 let last=performance.now(),acc=0,lastAtkT=0,lastBoo=0;const BAGV={x:0,z:0};let rpLast=-1;
 function frame(now){
   requestAnimationFrame(frame);
-  let dt=now-last;last=now;if(dt>100)dt=100;if(dt<0)dt=0;realT+=dt;fitCheck();adaptRes(dt);
+  let dt=now-last;last=now;if(dt>100)dt=100;if(dt<0)dt=0;realT+=dt;fitCheck();adaptRes(dt);showUpdate(G.paused?0:dt);
   const online=S.mode==='online';
   if(online){netFrame(dt);tickTimers(dt);}
-  else if(!G.paused){tickTimers(dt);acc+=dt;let n=0;while(acc>=STEP&&n<12){step([S.mode==='attract'||S.F[0].ai?null:sampleLocal(),null]);acc-=STEP;n++;}if(n>=12)acc=0;}
+  else if(!G.paused){tickTimers(dt);acc+=dt;let n=0;while(acc>=STEP&&n<12){step([S.show?showInput():(S.mode==='attract'||S.F[0].ai?null:sampleLocal()),null]);acc-=STEP;n++;}if(n>=12)acc=0;}
   if(!S)return;
   drainEvents();syncUI();
   renderDt=G.paused?0:dt*(S.state==='replay'?1:(S.hitstop>0?0.15:S.scale*S.userScale));
-  const pr=S.mode==='practice';const Lc=LOC(),Rc=1-Lc;let va,vb,vg;
+  const pr=prac();const Lc=LOC(),Rc=1-Lc;let va,vb,vg;
   if(S.state==='replay'&&S.rp){const rp=S.rp,i=Math.floor(rp.pos),t=rp.pos-i,f0=rec[i%REC],f1=rec[Math.min(i+1,rp.end)%REC];
     va=lerpVis(VA,f0.a,f1.a,t);vb=lerpVis(VB,f0.b,f1.b,t);vg=lerpBag(VBAG,f0.g,f1.g,t);
     if(rpLast<rp.start||rpLast>i)rpLast=rp.start;for(let k=rpLast+1;k<=i;k++)rec[k%REC].ev.forEach(e=>spawnFx(e,false));rpLast=i;}
@@ -36,11 +36,12 @@ function frame(now){
     vg=lerpBag(VBAG,S.bagPrev,S.bag,al);
     if(S.hitstop>0){if(pr){vg.tx+=(Math.random()-.5)*0.01;vg.tz+=(Math.random()-.5)*0.01;}
       else if(S.hitTarget>=0){const v=S.hitTarget?vb:va;v.x+=(Math.random()-.5)*0.03;v.z+=(Math.random()-.5)*0.03;}}}
-  applyVis(B[0],va);if(!pr)applyVis(B[1],vb);applyBag(vg);
+  applyVis(B[0],va);showPose(B[0]);if(!pr)applyVis(B[1],vb);applyBag(vg);
   const fxScale=G.paused?0:S.state==='replay'?(S.rp&&S.rp.kind==='prac'?0.4:1):S.hitstop>0?0.08:S.scale*S.userScale;
   updateFx(dt/1000*fxScale);
   const vL=Lc===0?va:vb,vR=Lc===0?vb:va;
-  if(pr){const c=bagCenter(vg);BAGV.x=c[0];BAGV.z=c[1];updateCamera(dt,va,BAGV);}else updateCamera(dt,vL,vR);
+  if(S.show)showCamera(dt,va);
+  else if(pr){const c=bagCenter(vg);BAGV.x=c[0];BAGV.z=c[1];updateCamera(dt,va,BAGV);}else updateCamera(dt,vL,vR);
   B[0].root.updateMatrixWorld(true);if(!pr)B[1].root.updateMatrixWorld(true);
   const adv=fxScale>0.15;
   updateTrail(trails[0][0],B[0].gloves[0],va.trL,adv);updateTrail(trails[0][1],B[0].gloves[1],va.trR,adv);

@@ -86,7 +86,7 @@ southpaw/
 The page itself. It holds:
 
 - **Head:** title, phone viewport settings, fonts, `styles/main.css`.
-- **Markup:** the canvas, the HUD (`#hud`, health and stamina bars), the touch controls (`#touch`, the stick and the Left, Right, Block, Dodge and Taunt buttons), the practice toolbar, and the screens: title (`#title`), pause (`#pause`, which includes the Full screen button), match end (`#end`), online (`#online`), the private room lobby (`#lobby`), the get-up meter and the rotate-your-phone notice.
+- **Markup:** the canvas, the HUD (`#hud`, health and stamina bars), the touch controls (`#touch`, the stick and the Left, Right, Block, Dodge and Taunt buttons), the practice toolbar, and the screens: title (`#title`: the South Paw name, "Press any button", then the menu), the fade and film effects over the title film (`#showFade`, `#showFx`), pause (`#pause`, which includes the Full screen button), match end (`#end`), online (`#online`), the private room lobby (`#lobby`), the get-up meter and the rotate-your-phone notice.
 - **App settings:** `manifest.webmanifest` and the icons in `assets/icons/` let players add South Paw to their home screen, where it opens full screen in landscape.
 - **Scripts:** the libraries, then every game file in load order.
 
@@ -282,7 +282,7 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 
 ### `src/ui/screens.js` (menus and modes)
 - `MAP`: the keyboard layout. `KEYHELP`: the on-screen key hints.
-- `startAttract` (the idle fight behind the title screen), `startMatch` (vs CPU), `startPractice`.
+- `startAttract` (starts the title film: a sim with `show` set, see `src/ui/titleShow.js`), `startMatch` (vs CPU), `startPractice`.
 - `showEnd` (the match-end card, stats and brag line), `setPaused`, `cycleSpeed`/`cycleCam` (practice tools), `checkOrient` (the rotate-your-phone notice).
 - `goFull`, `fsToggle`, `fsUpdate`: full screen. Browsers only allow it during a real tap, click or key press. A finger's first touch (`pointerdown`) doesn't count, so the game listens for the tap ending (`pointerup`, `touchend`, `click`) and keys, and keeps trying until it works. If the player leaves full screen on purpose, only the button, Ready and starting a fight ask again. The corner button `#fsBtn` shows on every menu, and the pause menu has `#btnFull`. iPhones don't support full screen for web pages, so on iPhone the button shows `#fsHint` (Share, then Add to Home Screen); opened from the home screen, `manifest.webmanifest` makes it full screen.
 
@@ -336,6 +336,16 @@ The fixed stick (`sizeStick` sets its size from the screen; touching near it ste
 ### `src/ui/buttons.js`
 Wires up every menu button: CPU fight, difficulty, online (create, join, quick match, copy invite), practice, pause, sound, quit, rematch, copy brag, and the practice toolbar.
 
+### `src/ui/titleShow.js` (the title screen and its film)
+The title screen works like a big game's opening: the South Paw name on the left, "Press any button", then the menu. Behind it runs a training montage, about 68 seconds, cut like a film trailer: he wraps his hands on a bench, stands, stretches, warms up, skips rope, squats, drops into push-ups, works the speed bag and finishes on the heavy bag. Then it fades out and loops.
+- **Running order:** `SEGS`. Each segment has a length (`d`), a place in the ring (`st`, one of `STN`), a Mixamo clip (`c`, see the last row of `CLIPN`) or `'bag'`, and a shot (`cam`). To reorder, cut or retime the film, edit this list.
+- **Shots:** `cam.a` is the angle round him (0 in front, -90 his right side), `r` the distance at the start and end of the shot (a slow push), `h` the camera height, `y` the height it looks at, `x0` how far right he sits on screen. The camera tracks his hips and turns so the left of the screen stays clear for the name.
+- **Heavy bag:** the `'bag'` segments hand over to the real practice sim (`S.show` makes `prac()` true). `showInput` feeds it the combos in `SHOW_COMBOS` (1 jab, 7 cross, 2/8 hooks, 3/9 uppercuts, 5/11 body straights, 6/12 body hooks).
+- **Hand wrapping:** there's no clip for it, so the `'wrap'` segment holds the first frame of Sit_To_Stand and `wrapArms` poses the arms in code: one hand held out, the other circling its wrist with the roll. `showWraps` times the wraps building up on each hand.
+- **Props:** the bench, the speed bag on its stand (placed in front of his hands from the clip, `placeSBag`), the skipping rope (redrawn each frame between his hands in time with his jumps, `drawRope`), and the wraps on his hands. The gloves are hidden during the film.
+- **Look:** a warm key light and a cool rim light follow him, the arena is dimmed, the crowd hidden and fog added; `#showFx` in `index.html` adds the widescreen bars, colour grade, vignette and film grain. `showSetup` switches all of it on and off.
+- **Press any button:** `titleWake` switches `#title` from `data-step="press"` to `"menu"` on the first key or tap. After that, coming back to the title goes straight to the menu.
+
 ### `src/ui/install.js`
 Installing South Paw as an app; from the home screen it opens full screen.
 - **Android and computers (Chrome, Edge, Samsung Internet):** the browser tells the page it can be installed (`beforeinstallprompt`). The game then shows "Install the app" on the title menu and, on phones, a one-time banner. One tap opens the browser's own install box. Browsers only offer this over https and only when `sw.js` is in place.
@@ -346,7 +356,7 @@ Installing South Paw as an app; from the home screen it opens full screen.
 The service worker sits between the game and the network. It always fetches the newest files when online and keeps a copy for playing offline. It never touches matchmaking traffic. You normally never edit it; if you ever need everyone's saved copy cleared, change `CACHE` to a new name.
 
 ### `src/main.js`
-Starts the idle fight behind the title screen and starts the frame loop. `takeInvite` joins the room in an invite link (`#CODE`), both when the page opens and when a link is opened while the game is already open (`hashchange`). It then removes the code from the address so a reload doesn't rejoin an old room.
+Starts the title film and the frame loop. `takeInvite` joins the room in an invite link (`#CODE`), both when the page opens and when a link is opened while the game is already open (`hashchange`). It then removes the code from the address so a reload doesn't rejoin an old room.
 
 ---
 

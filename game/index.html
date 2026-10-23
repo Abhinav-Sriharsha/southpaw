@@ -77,23 +77,25 @@
 <div id="instBar" class="instbar" hidden><span id="instText"></span><button class="btn primary" id="btnInstGo">Install</button><button class="btn" id="btnInstNo">Not now</button></div>
 <div id="fsHint" class="fshint" hidden>Full screen on iPhone: tap <b>Share</b>, then <b>Add to Home Screen</b>, and open South Paw from there.</div>
 
-<section id="title" class="screen">
-  <div class="title-inner">
-    <div class="tcol">
-      <div class="kicker">Basement League · Est. 2006 · 0.52</div>
-      <h1 class="logo"><span>South</span><span>Paw</span></h1>
-      <p class="tag">Motion-captured boxing in your browser. Fight anyone online on a phone or a laptop, take on the CPU, or work the heavy bag.</p>
-      <p class="howto touch-only"><b>Left thumb:</b> drag to step in, out and circle.<br><b>Right thumb:</b> Left and Right are your hands. Tap for a straight, hold for a hook. Push the stick up to uppercut, down to go to the body. Hold Block to cover up against anything, Dodge leans away (stick down ducks). Taunt if you dare.</p>
-      <p class="howto keys-only"><b>D A</b> in and out · <b>W S</b> circle · <b>J</b> left hand · <b>K</b> right hand · tap for a straight, hold for a hook · <b>W</b>+punch uppercut · <b>S</b>+punch body · <b>Space</b> block · <b>Shift</b> dodge · <b>T</b> taunt · <b>Enter</b> fight</p>
-    </div>
-    <div class="tcol menu">
-      <button class="btn" id="btnCpu">Fight the CPU</button>
+<div id="showFade" aria-hidden="true"></div>
+<div id="showFx" aria-hidden="true"><div class="fx-grade"></div><div class="fx-vign"></div><div id="showGrain"></div><div class="fx-bar top"></div><div class="fx-bar bot"></div></div>
+<section id="title" class="screen" data-step="press">
+  <div class="tshade" aria-hidden="true"></div>
+  <div class="tbox">
+    <h1 class="logo3d" aria-label="South Paw"><span class="w1">South</span><span class="w2">Paw</span></h1>
+    <div class="msub tag">Basement League</div>
+    <button class="mpress" id="btnPress" type="button"><span class="keys-only">Press any button</span><span class="touch-only">Tap to start</span></button>
+    <nav class="mmenu" aria-label="Main menu">
+      <button class="mitem" id="btnCpu" type="button">Fight the CPU</button>
       <div class="diffs level" role="group" aria-label="CPU difficulty"><button data-d="easy" aria-pressed="false">Easy</button><button data-d="normal" aria-pressed="true">Normal</button><button data-d="hard" aria-pressed="false">Hard</button></div>
-      <button class="btn primary" id="btnOnline">Play online</button>
-      <button class="btn" id="btnPrac">Practice on the bag</button>
-      <button class="btn" id="btnInstall" hidden>Install the app</button>
-    </div>
+      <button class="mitem" id="btnOnline" type="button">Play online</button>
+      <button class="mitem" id="btnPrac" type="button">Practice on the bag</button>
+      <button class="mitem" id="btnInstall" type="button" hidden>Install the app</button>
+      <p class="howto touch-only"><b>Left thumb</b> moves. <b>Left</b> and <b>Right</b> are your hands: tap for a straight, hold for a hook. Stick up for an uppercut, down for the body. Hold <b>Block</b>, <b>Dodge</b> to lean away.</p>
+      <p class="howto keys-only"><b>D A</b> in and out · <b>W S</b> circle · <b>J</b> left · <b>K</b> right · tap straight, hold hook · <b>W</b>+punch uppercut · <b>S</b>+punch body · <b>Space</b> block · <b>Shift</b> dodge · <b>Enter</b> fight</p>
+    </nav>
   </div>
+  <div class="mfoot">Est. 2006 · v0.53</div>
 </section>
 
 <section id="pause" class="screen" hidden>
@@ -196,6 +198,7 @@
 <script src="src/input/touch.js"></script>
 <script src="src/ui/buttons.js"></script>
 <script src="src/ui/install.js"></script>
+<script src="src/ui/titleShow.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

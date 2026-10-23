@@ -284,3 +284,55 @@ body.touch .keys-only{display:none}body.touch .touch-only{display:block}
 body.playing .instbar{display:none}
 
 #btnPaste{margin-top:8px;font-size:clamp(13px,1.6vw,15px)}
+
+/* ---------- title screen: the film behind, the name on the left (src/ui/titleShow.js) ---------- */
+#showFade{position:fixed;inset:0;background:#000;opacity:1;pointer-events:none;z-index:1}
+#showFx{position:fixed;inset:0;pointer-events:none;z-index:1}
+body:not(.filming) #showFx{display:none}
+.fx-grade{position:absolute;inset:0;mix-blend-mode:soft-light;background:linear-gradient(105deg,rgba(40,90,170,.5) 0%,rgba(20,40,80,.12) 42%,rgba(255,160,90,.12) 75%,rgba(255,170,100,.24) 100%)}
+.fx-vign{position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 62% 50%,rgba(0,0,0,0) 45%,rgba(0,0,0,.6) 100%)}
+#showGrain{position:absolute;inset:-50px;opacity:.075;mix-blend-mode:overlay;background-size:160px 160px;animation:grain .6s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-37px,21px)}40%{transform:translate(19px,-33px)}60%{transform:translate(-11px,44px)}80%{transform:translate(41px,9px)}100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion:reduce){#showGrain{animation:none}}
+.fx-bar{position:absolute;left:0;right:0;height:max(0px,calc((100vh - 100vw / 2.39) / 2));background:#000}
+.fx-bar.top{top:0}.fx-bar.bot{bottom:0}
+#title{background:none;align-items:center;padding-left:max(clamp(24px,7vw,120px),var(--sl))}
+.tshade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.34) 38%,rgba(0,0,0,0) 60%)}
+.tbox{position:relative;display:flex;flex-direction:column;align-items:flex-start;max-width:min(680px,60vw);margin-top:-2vh}
+/* the name: the old South Paw lettering (cream SOUTH with red and blue edges, gold PAW), cut in 3D */
+.logo3d{margin:0;display:flex;gap:.16em;font-family:var(--display);font-weight:900;font-size:clamp(60px,9.6vw,168px);line-height:.86;text-transform:uppercase;
+  letter-spacing:.005em;white-space:nowrap;transform:perspective(900px) rotateY(9deg) skewX(-7deg);transform-origin:left center}
+.logo3d .w1{color:#f4efe4;text-shadow:-.035em 0 0 #d8302a,.035em 0 0 #2f6cf0,
+  .01em .012em 0 #262a3c,.02em .024em 0 #232637,.03em .036em 0 #202332,.04em .048em 0 #1c1f2d,.05em .06em 0 #191b28,.06em .072em 0 #151723,.07em .084em 0 #12131e,
+  .1em .16em .22em rgba(0,0,0,.6)}
+.logo3d .w2{color:#ffc83a;text-shadow:.01em .012em 0 #c4901c,.02em .024em 0 #a97a14,.03em .036em 0 #8f6510,.04em .048em 0 #78530c,.05em .06em 0 #62430a,.06em .072em 0 #4d3407,.07em .084em 0 #3a2705,
+  .1em .16em .22em rgba(0,0,0,.6)}
+.msub{margin-top:clamp(10px,1.4vw,20px);font-family:var(--display);font-weight:800;font-size:clamp(20px,2.7vw,44px);letter-spacing:.14em;line-height:1;text-transform:uppercase;
+  color:#f4efe4;padding-left:.08em;text-shadow:0 2px 16px rgba(0,0,0,.55)}
+.mpress{margin-top:clamp(18px,3.4vw,44px);font-family:var(--display);font-weight:800;font-size:clamp(15px,1.7vw,22px);letter-spacing:.3em;text-transform:uppercase;
+  color:#ef3b2d;background:none;border:0;padding:10px 0;min-height:44px;cursor:pointer;animation:mpulse 2.2s ease-in-out infinite;text-shadow:0 0 18px rgba(239,59,45,.4)}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.mpress{animation:none}}
+.mmenu{display:none;flex-direction:column;align-items:flex-start;gap:2px;margin-top:clamp(14px,2.4vw,30px);width:min(420px,100%)}
+#title[data-step="menu"] .mmenu{display:flex;animation:mfade .45s ease-out}
+#title[data-step="menu"] .mpress{display:none}
+@keyframes mfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.mitem{position:relative;font-family:var(--display);font-weight:800;font-size:clamp(20px,2.2vw,30px);letter-spacing:.07em;text-transform:uppercase;color:#e9e4d8;
+  background:none;border:0;padding:0 0 0 24px;min-height:44px;cursor:pointer;text-align:left;text-shadow:0 1px 12px rgba(0,0,0,.6);touch-action:manipulation}
+.mitem::before{content:"";position:absolute;left:0;top:50%;width:12px;height:3px;background:#ffc83a;transform:translateY(-50%) scaleX(0);transform-origin:left;transition:transform .15s}
+.mitem:hover,.mitem:focus-visible{color:#ffc83a;outline:none}
+.mitem:hover::before,.mitem:focus-visible::before{transform:translateY(-50%) scaleX(1)}
+.mmenu .diffs{margin:0 0 6px 24px;background:rgba(0,0,0,.4);width:min(300px,calc(100% - 24px))}
+.mmenu .howto{margin:10px 0 0 24px;font-size:12px;color:rgba(244,239,228,.66);max-width:44ch}
+.mmenu .howto b{color:#f4efe4}
+.mfoot{position:fixed;left:max(clamp(24px,7vw,120px),var(--sl));bottom:max(calc((100vh - 100vw / 2.39) / 2 + 10px),var(--sb),14px);font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.24em;
+  color:rgba(255,200,58,.75);text-transform:uppercase;pointer-events:none;white-space:nowrap}
+@media (max-height:520px){
+  #title .mmenu .howto{display:none}
+  .mitem{min-height:40px;font-size:20px}
+  .tbox{margin-top:0}
+  #title[data-step="menu"] .logo3d{font-size:clamp(44px,7vw,100px)}
+  #title[data-step="menu"] .mfoot{display:none}
+  .mmenu{margin-top:10px}
+}
+@media (max-width:700px) and (orientation:portrait){.tbox{max-width:100%}.tshade{background:rgba(0,0,0,.45)}.logo3d{font-size:clamp(48px,15vw,90px)}}

@@ -52,7 +52,7 @@ function drainEvents(){
         else if(e.text==='Caught taunting'){Sfx.react('gasp',0.9);Sfx.react('roar',0.7,1.4);}else if(e.text==='Kidney')Sfx.react('ooh',0.6);break;
       case 'taunt':if(S.mode!=='attract'){Sfx.react('ooh',0.4);crowdExcite=Math.max(crowdExcite,0.6);}break;
       case 'tauntDone':if(S.mode!=='attract'){Sfx.react('cheer',0.7,1.4);crowdExcite=Math.max(crowdExcite,0.75);if(e.f===LOC()&&S.mode!=='attract')pop(S.F[e.f],'Second wind','slip');}break;
-      case 'popAt':popAt(e.x,e.y,e.z,e.text,e.cls);break;
+      case 'popAt':if(!S.show)popAt(e.x,e.y,e.z,e.text,e.cls);break;
       case 'last':if(S.mode==='practice')lastEl.textContent=e.text;break;
       case 'fight':crowdExcite=Math.max(crowdExcite,0.5);Sfx.react('cheer',0.45,1.2);break;
       case 'liver':addTrauma(0.3);screenFlash(0.12);crowdExcite=1;cam.kick=0.6;if(S.mode!=='attract'){Sfx.react('ko',0.9,6);buzz(e.by===LOC()?[20,30,40]:[50,40,90]);}break;
