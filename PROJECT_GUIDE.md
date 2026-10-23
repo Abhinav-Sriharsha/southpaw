@@ -47,6 +47,8 @@ southpaw/
 ├── game/                     EVERYTHING PLAYERS DOWNLOAD. Host this folder.
 │   ├── index.html            The page: menus, HUD, touch buttons, script list
 │   ├── _headers              Cache rules for Netlify and Cloudflare Pages
+│   ├── manifest.webmanifest  App settings for installing to the home screen
+│   ├── sw.js                 Service worker: makes the game installable and playable offline
 │   ├── styles/main.css       All styling
 │   ├── data/                 Numbers and settings you will tweak most
 │   │   ├── config.js         Version and online settings
@@ -65,7 +67,7 @@ southpaw/
 │       ├── net/              Online play
 │       ├── render/           3D scene, boxers, camera, effects
 │       ├── practice/         The heavy bag
-│       ├── ui/               HUD, menus, buttons
+│       ├── ui/               HUD, menus, buttons, installing as an app
 │       ├── input/            Keyboard, touch, input sampling
 │       ├── audio/            Sound engine
 │       └── main.js           Starts the game
@@ -170,9 +172,11 @@ Page-level state shared by menus and the renderer: `STEP` (one sim tick, 1000/12
 ### `src/audio/sound.js` (sound engine)
 `Sfx` plays the recorded sounds from `data/sounds.js`:
 
-- `init` sets up audio (on the first tap or key, a browser rule) and fetches the files.
-- `punch` picks the punch, face or body impact by punch type, pitches it up through a combo, and dips the crowd under it (`duck`) so punches are always heard. Blocks use the punch sound, muffled.
-- `bell`, `knockdown`, `boom` (knockout) and `react` (crowd reactions, each a stretch of a recorded reaction) handle the rest, and `applause` uses the cheer.
+- `init` runs as soon as the page opens and loads every sound, so the first bell and punches are never silent. Browsers keep audio paused until the first tap or key; `wake` starts it then, and again whenever a phone paused it (switching apps, a call, a notification). On iPhone it also asks to play even with the silent switch on, like a video.
+- `punch` picks the punch, face or body impact by punch type and dips the crowd under it (`duck`) so punches are always heard. The same punch always sounds the same (no random pitch); only power and combos change it. Blocks use the punch sound, muffled.
+- `SND_HIT` (top of the file): where the smack is inside each recording. Playback starts there so the sound lands exactly on contact. If you replace `punch.mp3`, `face.mp3` or `body.mp3`, re-measure where its hit starts and update this.
+- `react` (crowd reactions) plays one reaction at a time. `REACT` lists each one: its priority, the file, where its loud part starts (`off`) and how long it plays. A bigger moment (knockout over gasp over cheer over ooh) cuts in over a smaller one, and a smaller one waits, so reactions never pile up.
+- `bell`, `knockdown` and `boom` (knockout) handle the rest, and `applause` uses the cheer.
 - `update` runs every frame. It fades the ambience between the walk-in crowd (`introAmb`) and the in-round crowd (`roundAmb`), swells it with excitement, and muffles everything when your fighter is badly hurt.
 
 **Edit it when** you change which sound plays for what, or the volumes. Volumes are the second argument of each `this.play(...)`.
@@ -225,6 +229,9 @@ Creates the two boxer models on screen (`B[0]` red, `B[1]` blue).
 
 ### `src/practice/bag.js`
 The heavy bag in practice mode: its model, swinging physics (`stepBag`), the dent where it is hit, and drawing it (`applyBag`).
+- **Size:** `BAG_R` (radius), `BAG_HH` (half the height) and `BAG_DROP` (how far the bag's middle sits below the swing point `BAG_L`). The bag is 1.3 m tall with its bottom about 0.65 m off the floor, so body shots land on it.
+- **It's solid:** `bagContact` checks every tick whether the punching glove touches the leather. The hit is then decided right there, and the punch is frozen at the frame it touched, between ticks, so the glove stops on the surface and then pulls straight back (`updateAnim` in `fighter.js`). A glove within 1.5 cm counts as a touch.
+- `bagCollide` runs after every tick. Your head, chest and both gloves push the bag away, so it swings off you and bounces back instead of passing through you. The punching glove is left to `bagContact` until its punch lands or misses. If the bag is already at full swing, you get pushed back instead.
 
 ### `src/sim/footwork.js`
 Stepping in and out and circling, built from the Mixamo step clips. A tap is a short step, holding gives a walk, and circling has short, medium and long steps. `FOOT` holds each step clip's settings.
@@ -268,7 +275,7 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 
 ### `src/ui/hud.js` (HUD and reactions to events)
 - `announce` (big text such as "ROUND 1", "K.O." and the count), `pop`/`popAt` (small text over a fighter such as "Counter" or "Gassed"), `updateHUD` (bars, timer, get-up meter), `renderPips` (rounds won).
-- `drainEvents`: the sim reports what happened (hits, knockdowns, pops) as events, and this function turns each one into sound, effects and text, once each, even when online rollback replays a moment.
+- `drainEvents`: the sim reports what happened (hits, knockdowns, pops) as events, and this function turns each one into sound, effects and text, once each, even when online rollback replays a moment. It remembers which events it has handled (`SEEN`). `enterSim` in `screens.js` clears that list for every new fight. Without that, a new fight's punches looked like the title-screen fight's and stayed silent.
 
 **Edit it when** you change on-screen text, or which crowd reaction goes with which moment.
 
@@ -322,6 +329,15 @@ The fixed stick (`sizeStick` sets its size from the screen; touching near it ste
 
 ### `src/ui/buttons.js`
 Wires up every menu button: CPU fight, difficulty, online (create, join, quick match, copy invite), practice, pause, sound, quit, rematch, copy brag, and the practice toolbar.
+
+### `src/ui/install.js`
+Installing South Paw as an app; from the home screen it opens full screen.
+- **Android and computers (Chrome, Edge, Samsung Internet):** the browser tells the page it can be installed (`beforeinstallprompt`). The game then shows "Install the app" on the title menu and, on phones, a one-time banner. One tap opens the browser's own install box. Browsers only offer this over https and only when `sw.js` is in place.
+- **iPhone and iPad:** Apple lets no website install itself, so the button and banner explain Share, then Add to Home Screen.
+- The banner shows once per phone; after Install or Not now it stays hidden (remembered in the browser).
+
+### `sw.js` (service worker)
+The service worker sits between the game and the network. It always fetches the newest files when online and keeps a copy for playing offline. It never touches matchmaking traffic. You normally never edit it; if you ever need everyone's saved copy cleared, change `CACHE` to a new name.
 
 ### `src/main.js`
 Starts the idle fight behind the title screen, joins a room straight away if the link has a `#CODE`, and starts the frame loop.

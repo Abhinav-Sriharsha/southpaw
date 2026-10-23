@@ -15,7 +15,7 @@ let usingTouch=TOUCH;
 function setPlaying(on){document.body.classList.toggle('playing',on);touchEl.hidden=!(on&&usingTouch);tbarEl.hidden=!on;resetStick();TB.block=false;
   document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}
 const UI={state:'',mode:'',round:-1,match:-1,endShown:false};
-function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;cam.init=false;resetLocalInput();
+function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;SEEN.clear();SEENQ.length=0;cam.init=false;resetLocalInput();
   const pr=s.mode==='practice';showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;}
 function startAttract(){timers.length=0;
   if(S&&S.mode==='online')netLeave(true);

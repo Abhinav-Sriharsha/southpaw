@@ -74,6 +74,7 @@
 <div id="lbox"><div class="lb top"></div><div class="lb bot"></div><div class="rtag">Instant replay</div><div class="rskip">Tap to skip</div></div>
 
 <button id="fsBtn" class="fsbtn" type="button" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div id="instBar" class="instbar" hidden><span id="instText"></span><button class="btn primary" id="btnInstGo">Install</button><button class="btn" id="btnInstNo">Not now</button></div>
 <div id="fsHint" class="fshint" hidden>Full screen on iPhone: tap <b>Share</b>, then <b>Add to Home Screen</b>, and open South Paw from there.</div>
 
 <section id="title" class="screen">
@@ -90,6 +91,7 @@
       <div class="diffs level" role="group" aria-label="CPU difficulty"><button data-d="easy" aria-pressed="false">Easy</button><button data-d="normal" aria-pressed="true">Normal</button><button data-d="hard" aria-pressed="false">Hard</button></div>
       <button class="btn primary" id="btnOnline">Play online</button>
       <button class="btn" id="btnPrac">Practice on the bag</button>
+      <button class="btn" id="btnInstall" hidden>Install the app</button>
     </div>
   </div>
 </section>
@@ -192,6 +194,7 @@
 <script src="src/input/keyboard.js"></script>
 <script src="src/input/touch.js"></script>
 <script src="src/ui/buttons.js"></script>
+<script src="src/ui/install.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

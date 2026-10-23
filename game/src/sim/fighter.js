@@ -95,7 +95,12 @@ function updateAnim(f,dt){
   v.sw=S1.w;v.sc=S1.w>0?S1.lastC:-1;v.st=S1.t;v.sc0=S1.c0;v.st0=S1.t0;v.sx=S1.x;
   let a1=-1,t1=0,low=1,gsL=1,gsR=1,trL=0,trR=0,aw=1,mir=0,msk=0,bk=0,hz=0,hipR=0;
   if(isAtk(act)){const m=f.move,r=atkFrame(f);a1=m.ci;t1=r.fr;
-    if(f.cut>=0){if(T<Math.max(f.su,f.cutT)+m.active*0.6+f.rc*0.3)t1=f.cut;else{f.cut=-1;f.evc++;}}aw=r.aw===undefined?1:r.aw;mir=m.mir?1:0;msk=m.msk?1:0;low=m.low;hipR=m.low===0?1:0;
+    let awCut=1;
+    if(f.cut>=0){const hEnd=Math.max(f.su,f.cutT)+m.active*0.6+f.rc*0.3;
+      if(T<hEnd)t1=f.cut;
+      else if(prac()){t1=f.cut;awCut=1-smooth(hEnd,f.su+m.active+f.rc,T);}   // the bag doesn't give way: pull straight back from the contact pose
+      else{f.cut=-1;f.evc++;}}
+    aw=Math.min(awCut,r.aw===undefined?1:r.aw);mir=m.mir?1:0;msk=m.msk?1:0;low=m.low;hipR=m.low===0?1:0;
     if(m.hand==='L'){gsL=r.gs;trL=r.tr*m.trail;}else{gsR=r.gs;trR=r.tr*m.trail;}
     if(m.bk){const su=f.su;bk=T<su?easeOut(clamp(T/(su*0.8),0,1)):1-smooth(su+m.active,su+m.active+f.rc*0.8,T);}
     hz=hzAt(m,t1)*aw;v.am=m.aim*aimW(m,t1)*aw;v.amx=m.ax[0];v.amy=m.ax[1];v.amz=m.ax[2];v.amh=m.hand==='R'?1:0;}
@@ -175,19 +180,18 @@ function startTaunt(f,safe){const o=S.F[1-f.i],hurt=o.wob>0||o.hp<35||grounded(o
   f.tauntMs=(CL[f.tauntClip].n-1)/(0.03*TAUNT_SP);f.tauntCd=f.tauntMs+2500;
   ev({ty:'taunt',f:f.i,k:'t'+f.i+'.'+S.matchId+'.'+S.round+'.'+f.tauntN+'.'+Math.round(nowMs()/100)});}
 const mk=(a,tag)=>tag+a.i+'.'+a.attackId+'.'+S.matchId;
-function resolveBag(a){
+function resolveBag(a,ct){
   a.resolved=true;const m=a.move,B0=S.bag,st=S.st;
   const rx=B0.x-a.x,rz=B0.z-a.z,c=dcos(a.yaw),s=dsin(a.yaw);
-  const lx=rx*c-rz*s,lz=rx*s+rz*c,gx=m.g[0],gz=m.g[2];
-  if(!(Math.abs(lx-gx)<BAG_R+0.07&&lz<gz+BAG_R&&lz>0.1)){ev({ty:'sfx',n:'whiff',k:mk(a,'x')});a.rc+=m.whiff;a.stam=Math.max(0,a.stam-m.cost*0.6);st.combo=0;ev({ty:'last',text:m.name+' · miss',k:mk(a,'l')});return;}
-  const d=dhyp(rx,rz)||1,dx=rx/d,dz=rz/d,p=clamp(m.dmg/16,0.25,1.25);
+  if(!ct){ev({ty:'sfx',n:'whiff',k:mk(a,'x')});a.rc+=m.whiff;a.stam=Math.max(0,a.stam-m.cost*0.6);st.combo=0;ev({ty:'last',text:m.name+' · miss',k:mk(a,'l')});return;}
+  const dx=ct.nx,dz=ct.nz,p=clamp(m.dmg/16,0.25,1.25);
   a.landed=true;st.landed++;
   st.combo=nowMs()-st.lastLandT<750?st.combo+1:1;st.lastLandT=nowMs();if(st.combo>st.best)st.best=st.combo;
   const imp=p*0.62;B0.wx+=dx*imp;B0.wz+=dz*imp;
   if(m.kind==='hook'){const sd=m.hand==='L'?1:-1;B0.wx+=-c*imp*0.6*sd;B0.wz+=s*imp*0.6*sd;}
   if(m.kind==='upper')B0.bobV+=1.1*p;
   B0.flash=1;S.hitstop=Math.max(S.hitstop,m.stop);
-  fx({x:B0.x-dx*BAG_R,y:m.g[1],z:B0.z-dz*BAG_R,p,blk:false,dx,dz,bag:true,to:-1,by:a.i,tr:m.shake*0.45,kick:p*0.7,cr:p*0.25,kind:m.kind,target:m.target,hand:m.hand,combo:st.combo,k:mk(a,'g')});
+  fx({x:ct.x,y:ct.y,z:ct.z,p,blk:false,dx,dz,bag:true,to:-1,by:a.i,tr:m.shake*0.45,kick:p*0.7,cr:p*0.25,kind:m.kind,target:m.target,hand:m.hand,combo:st.combo,k:mk(a,'g')});
   ev({ty:'last',text:m.name+' · '+m.dmg,k:mk(a,'l')});
   if(st.combo>=2)ev({ty:'popAt',x:B0.x,y:2.2,z:B0.z,text:st.combo+' hit combo',cls:'combo',k:mk(a,'c')});
 }

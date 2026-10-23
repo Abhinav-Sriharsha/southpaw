@@ -150,7 +150,8 @@ function stepFighter(f,dt){
   const inp=f.inp;if(inp.buf&&nowMs()-inp.buf.t>180)inp.buf=null;
   if(isAtk(a0)){const m=f.move;
     if(!f.swish&&f.actionT>=f.su*m.ext){f.swish=true;ev({ty:'sfx',n:'swish',a:m.sev,k:mk(f,'w')});}
-    if(pr){if(!f.resolved&&f.actionT>=f.su)resolveBag(f);}
+    if(pr){if(!f.resolved&&f.actionT>=f.su*0.3){const ct=bagContact(f);
+        if(ct){f.cut=ct.cut;f.cutT=f.actionT;resolveBag(f,ct);}else if(f.actionT>=f.su+m.active)resolveBag(f,null);}}
     else if(!f.resolved&&f.actionT>=f.su*0.7){
       if(grounded(o.action)){if(f.actionT>=f.su)f.resolved=true;}
       else{if(f.actionT>=f.su&&f.dodgeId!==f.attackId){f.dodgeId=f.attackId;f.dodge=dodgeCheck(f,o);}
@@ -166,7 +167,7 @@ function stepFighter(f,dt){
   if(footFree(f)){f.vx=fv[0];f.vz=fv[1];}
   else if(act==='slip'){if(f.dk===2&&f.actionT<200){const sp=1.4*(1-f.actionT/200);f.vx=-r.ux*sp;f.vz=-r.uz*sp;}else{const k=dexp(-dt*40);f.vx*=k;f.vz*=k;}}
   else{const k=dexp(-dt*30);f.vx*=k;f.vz*=k;}
-  if(isAtk(act)&&f.actionT<f.su&&(pr||!grounded(o.action))){const delta=r.d-(pr?f.move.g[2]+BAG_R-0.04:f.move.ideal);
+  if(isAtk(act)&&f.actionT<f.su&&(pr||!grounded(o.action))){const delta=r.d-(pr?f.move.g[2]+BAG_R+0.045:f.move.ideal);
     if(delta>-0.4&&delta<0.3){const st=clamp(delta,-1.6*dt,1.3*dt);f.x+=r.ux*st;f.z+=r.uz*st;}}
   f.x+=(f.vx+f.kx)*dt;f.z+=(f.vz+f.kz)*dt;
   const kk=dexp(-dt*9);f.kx*=kk;f.kz*=kk;
@@ -178,7 +179,6 @@ function stepFighter(f,dt){
     let ty=datan2(tx-f.x,tz-f.z);if(aiming)ty-=datan2(f.move.g[0],f.move.g[2]);
     f.yaw=wrapA(f.yaw+wrapA(ty-f.yaw)*(1-dexp(-dt*rate)));
   }
-  if(pr){const dx=f.x,dz=f.z,d=dhyp(dx,dz)||1e-4;if(d<BAG_MIN){f.x=dx/d*BAG_MIN;f.z=dz/d*BAG_MIN;}f.x=clamp(f.x,-BOUND,BOUND);f.z=clamp(f.z,-BOUND,BOUND);}
 }
 function clampRing(f){const x=clamp(f.x,-BOUND,BOUND),z=clamp(f.z,-BOUND,BOUND);const hit=x!==f.x||z!==f.z;f.x=x;f.z=z;return hit;}
 function spacing(){

@@ -81,7 +81,7 @@ function step(W){
   if(S.state==='matchEnd'&&S.mode==='online'&&S.ready[0]&&S.ready[1]&&S.stateT>800)restartMatchS();
   if(S.hitstop>0){S.hitstop-=STEP;S.tick=T+1;return;}
   const dt=STEP/1000*S.scale*S.userScale;
-  if(prac()){stepFighter(S.F[0],dt);stepBag(dt);updateAnim(S.F[0],dt);}
+  if(prac()){stepFighter(S.F[0],dt);stepBag(dt);updateAnim(S.F[0],dt);bagCollide(S.F[0]);}
   else{stepFighter(S.F[0],dt);stepFighter(S.F[1],dt);if(S.state==='down'&&S.down)stepDown(dt);spacing();updateAnim(S.F[0],dt);updateAnim(S.F[1],dt);
     if(S.state==='fight'&&(S.mode==='cpu'||S.mode==='online')){S.timer-=dt;if(S.timer<=0){S.timer=0;timeUp();}}}
   const r=rec[S.recN%REC];copyInto(r.a,S.F[0].vis);copyInto(r.b,S.F[1].vis);r.g.tx=bg.tx;r.g.tz=bg.tz;r.g.bob=bg.bob;r.g.flash=bg.flash;r.ev=frameEv;S.recN++;

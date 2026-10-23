@@ -273,3 +273,12 @@ body.touch .keys-only{display:none}body.touch .touch-only{display:block}
 .fshint{position:fixed;top:calc(62px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));z-index:60;max-width:min(320px,calc(100vw - 20px));
   padding:12px 14px;border-radius:10px;background:rgba(10,11,16,.94);border:1px solid var(--gold);color:#fff;font-size:14px;line-height:1.4}
 .fshint[hidden]{display:none}
+
+/* Install: a quiet button on the title menu and a one-time banner on phones */
+#btnInstall{font-size:clamp(13px,1.6vw,15px);opacity:.85}
+.instbar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:61;display:flex;align-items:center;gap:10px;
+  width:max-content;max-width:calc(100vw - 24px);padding:10px 12px;border-radius:12px;background:rgba(10,11,16,.95);border:1px solid var(--gold);color:#fff;font-size:14px;line-height:1.35}
+.instbar span{flex:1 1 auto;min-width:0}
+.instbar .btn{width:auto;min-height:40px;padding:8px 14px;margin:0;font-size:14px;flex:0 0 auto}
+.instbar[hidden]{display:none}
+body.playing .instbar{display:none}
