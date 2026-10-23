@@ -1,10 +1,12 @@
 /* South Paw · src/ui/titleShow.js
    The film behind the title screen: a pre-fight training montage in the empty arena, cut like a film trailer.
-   He wraps his hands on a bench, stands, stretches, warms up, skips rope, squats, drops into push-ups, works the speed bag,
-   and finishes on the heavy bag. Then it fades out and loops.
+   He sits on a bench, hands already wrapped, stands, stretches, warms up, skips rope, squats, drops into push-ups, works the
+   speed bag, and finishes on the heavy bag. Then it fades out and loops.
+   - It starts after the intro: the name in the middle of the screen and "Swipe up to start" (introGo). On phones the swipe
+     scrolls the page a little on purpose, which makes the browser shrink its address bar (iPhone Safari can't go full screen).
    - SEGS is the running order. Each segment plays a Mixamo clip at a "station" (a spot in the ring), or for the heavy bag
      ('bag') hands over to the real practice sim, so those punches and the bag are exactly the game's.
-   - The hand wrapping has no clip: it is the first frame of Sit_To_Stand with the arms posed in code (wrapArms).
+   - The opening sit is the first frame of Sit_To_Stand, held, with a little breathing.
    - Props built here: the bench, the skipping rope (redrawn every frame between his hands, in time with his jumps),
      the speed bag on its stand, and the wraps on his hands (the gloves are hidden during the film).
    - Each segment has its own shot (SEGS[i].cam): camera and target in the station's own frame, with a slow push,
@@ -25,7 +27,7 @@ const STN={
    cam: {a: angle round him in degrees (0 = in front, -90 = his right side), r: distance [start, end] (a slow push or pull),
          h: camera height [start, end], y: height looked at, fov, x0: how far right he sits on screen (0 middle, 1 edge)} ---- */
 const SEGS=[
-  {k:'wrap',st:'bench',d:8.5,cam:{a:-38,r:[3.1,2.55],h:[1.05,0.95],y:0.78,fov:30,x0:0.42}},
+  {k:'sit',st:'bench',d:4.5,cam:{a:-38,r:[3.1,2.6],h:[1.05,0.95],y:0.78,fov:30,x0:0.42}},
   {k:'clip',c:'s2s',st:'bench',d:2.6,cont:true,cam:{a:-38,r:[2.55,3.2],h:[0.95,1.25],y:0.95,fov:30,x0:0.42}},
   {k:'clip',c:'neck',st:'stretch',d:3.2,cam:{a:28,r:[2.1,1.95],h:[1.58,1.56],y:1.48,fov:27,x0:0.42}},
   {k:'clip',c:'arms',st:'stretch',d:5.2,from:40,cam:{a:-78,r:[3.6,3.25],h:[1.3,1.25],y:1.15,fov:30,x0:0.44}},
@@ -58,13 +60,11 @@ const showSBag=(function(){const g=new THREE.Group();   // a freestanding speed 
   const neck=part(new THREE.CylinderGeometry(0.02,0.035,0.06,12),showLeather);neck.position.y=-0.03;pivot.add(neck);
   scene.add(g);g.visible=false;return {g,pivot,placed:false};})();
 const showRope=new THREE.Mesh(new THREE.BufferGeometry(),toon(0x17181d));showRope.visible=false;scene.add(showRope);
-const showStrip=new THREE.Mesh(new THREE.CylinderGeometry(0.007,0.007,1,6).translate(0,0.5,0),showWhite);showStrip.visible=false;scene.add(showStrip);
-/* bare fists and wraps on our boxer's hands */
-const showHands=['Left','Right'].map(side=>{const h=B[0].bones[BIDX[side+'Hand']],skin=toon(CORNERS[0].skin);
-  const fist=ell(h,skin,4.4,5.5,4.7,0,6.6,1);const cover=ell(h,showWhite,4.75,5.85,5.05,0,6.6,1);
+/* white hand wraps on our boxer (the gloves are hidden during the film) */
+const showHands=['Left','Right'].map(side=>{const h=B[0].bones[BIDX[side+'Hand']];
+  const cover=ell(h,showWhite,4.75,5.85,5.05,0,6.6,1);
   const band=part(new THREE.CylinderGeometry(4.7,4.9,8,22).translate(0,0.5,0),showWhite);band.position.set(0,-2.5,0.3);h.add(band);
-  const roll=part(new THREE.CylinderGeometry(2.6,2.6,4.4,18),showWhite);roll.rotation.z=Math.PI/2;roll.position.set(0,6.5,6.5);h.add(roll);
-  [fist,cover,band,roll].forEach(m=>m.visible=false);return {fist,cover,band,roll};});
+  cover.visible=band.visible=false;return {cover,band};});
 /* lights: a warm key that follows him, a cool rim from behind, the arena dimmed */
 const showKey=new THREE.SpotLight(0xffd2a0,0,14,0.55,0.7,1.1);scene.add(showKey,showKey.target);
 const showRim=new THREE.DirectionalLight(0x7fa6ff,0);scene.add(showRim,showRim.target);
@@ -74,8 +74,8 @@ let showWasOn=false;const showFog={near:scene.fog?scene.fog.near:12,far:scene.fo
 function showSetup(on){
   if(on===showWasOn)return;showWasOn=on;
   crowd.bodies.visible=!on;crowd.heads.visible=!on;showBench.visible=on;showSBag.g.visible=on;
-  B[0].gloves.forEach(g=>g.visible=!on);showHands.forEach(h=>{h.fist.visible=on;});
-  if(!on){showHands.forEach(h=>{h.cover.visible=h.band.visible=h.roll.visible=false;});showStrip.visible=false;showRope.visible=false;}
+  B[0].gloves.forEach(g=>g.visible=!on);showHands.forEach(h=>{h.cover.visible=h.band.visible=on;});
+  if(!on)showRope.visible=false;
   showKey.intensity=on?2.4:0;showRim.intensity=on?0.95:0;spot.intensity=on?0.32:1.35;if(showHemi)showHemi.intensity=on?0.16:0.4;
   rimR.intensity=rimB.intensity=on?0.25:0.45;
   if(scene.fog){scene.fog.near=on?4.5:showFog.near;scene.fog.far=on?15:showFog.far;}
@@ -84,8 +84,17 @@ function showReset(){SHOW.t=0;SHOW.seg=-1;SHOW.q=[];SHOW.wait=900;SHOW.lastAtk=-
   const f=S.F[0],h=STN.heavy;Object.assign(f,{x:h.x,z:h.z,vx:0,vz:0,kx:0,kz:0,action:'idle',actionT:0});f.yaw=h.yaw;
   Object.assign(S.bag,{x:0,z:0,tx:0,tz:0,wx:0,wz:0,bob:0,bobV:0,flash:0});}
 function showSegAt(t){for(let i=SEGS.length-1;i>=0;i--)if(t>=SEGS[i].t0)return i;return 0;}
-function showUpdate(dt){
+/* If anything in the film goes wrong (for example an old cached animation file without its clips), switch the film off
+   and leave a plain title screen, rather than a black one. */
+const SHOW_CLIPS=['s2s','neck','arms','warm','rope','squat','i2p','push','sbag'];
+let showBroken=typeof CL_MISSING!=='undefined'&&SHOW_CLIPS.some(c=>CL_MISSING.includes(c));
+function showFail(e){if(!showBroken&&e)console.warn('Title film off:',e);showBroken=true;if(S)S.show=false;showSetup(false);
+  const el=$('#showFade');if(el)el.style.opacity='0';}
+function showUpdate(dt){try{showUpdate1(dt);}catch(e){showFail(e);}}
+function showUpdate1(dt){
+  if(showBroken&&S&&S.show){showFail();return;}
   const on=!!(S&&S.show);showSetup(on);if(!on)return;
+  if(INTRO.on){SHOW.t=0;const el=$('#showFade');if(el)el.style.opacity='1';return;}   // the film waits for the intro
   SHOW.t+=dt/1000;if(SHOW.t>=SHOW_LEN)showReset();
   const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=t-sg.t0;
   if(i!==SHOW.seg&&sg.k==='bag'&&!sg.cont){const f=S.F[0],h=STN.heavy;Object.assign(f,{x:h.x,z:h.z,vx:0,vz:0,action:'idle',actionT:0});f.yaw=h.yaw;}
@@ -94,7 +103,6 @@ function showUpdate(dt){
   if(!sg.cont&&i>0)fade=Math.max(fade,1-smooth(0,0.22,u));
   const nx=SEGS[i+1];if(nx&&!nx.cont)fade=Math.max(fade,smooth(sg.d-0.18,sg.d,u));
   const el=$('#showFade');if(el)el.style.opacity=fade.toFixed(3);}
-function showWraps(t){return {L:smooth(0.6,4.2,t),R:smooth(4.4,8.0,t),active:t<4.3?0:t<8.1?1:-1};}
 
 /* ---- inputs for the sim: stand at the heavy bag, then throw the combos ---- */
 function showInput(){
@@ -116,24 +124,6 @@ function stnFrame(st){const s=STN[st];return {x:s.x,z:s.z,yaw:s.yaw,fx:Math.sin(
 function clipFrame(sg,u){const n=CL[CI[sg.c]].n,fr=(sg.from||0)+u*30;return sg.loop?fr%(n-1):Math.min(fr,n-1);}
 function poseClip(b,ci,fr,st){sampleClip(ci,fr,SPO);for(let i=0;i<NB;i++)b.bones[i].quaternion.fromArray(SPO.q,i*4);
   b.hips.position.set(SPO.hp[0],SPO.hp[1],SPO.hp[2]);const s=STN[st];b.root.position.set(s.x,0,s.z);b.root.rotation.y=s.yaw;b.root.updateMatrixWorld(true);}
-/* one hand held out in front, the other circling its wrist with the roll of wrap. k: how much of this to apply */
-function wrapArms(b,t,k){
-  const bn=n=>b.bones[BIDX[n]];
-  for(let i=0;i<NB;i++)shQ[i].copy(b.bones[i].quaternion);
-  shA.set(1,0,0).applyQuaternion(b.root.quaternion);shF.set(0,0,1).applyQuaternion(b.root.quaternion);
-  const br=Math.sin(t*1.7)*0.02;
-  rotBoneWorld(bn('Spine1'),shR.setFromAxisAngle(shA,0.12+br));rotBoneWorld(bn('Neck'),shR.setFromAxisAngle(shA,0.3));rotBoneWorld(bn('Head'),shR.setFromAxisAngle(shA,0.18));
-  const w=showWraps(t),wl=w.active===1?1:0,arms=['Left','Right'].map(s=>[bn(s+'Arm'),bn(s+'ForeArm'),bn(s+'Hand')]);
-  arms.forEach((A,i)=>A[2].getWorldQuaternion(shHQ[i]));
-  bn('Spine2').getWorldPosition(shP);
-  const ws=wl===0?1:-1,ang=t*Math.PI*2*1.15;
-  const held=shC.copy(shP).addScaledVector(shF,0.36).addScaledVector(shU,-0.12).addScaledVector(shA,0.06*ws);
-  legIK(arms[wl][0],arms[wl][1],arms[wl][2],held,shHQ[wl]);
-  arms[wl][2].getWorldPosition(shHs);
-  const circ=shP.copy(shHs).addScaledVector(shF,-0.03).addScaledVector(shA,-ws*(0.05+Math.cos(ang)*0.06)).addScaledVector(shU,Math.sin(ang)*0.06+0.02);
-  legIK(arms[1-wl][0],arms[1-wl][1],arms[1-wl][2],circ,shHQ[1-wl]);
-  if(k<1)for(let i=0;i<NB;i++){shT.copy(b.bones[i].quaternion);b.bones[i].quaternion.copy(shQ[i]).slerp(shT,k);}
-  b.root.updateMatrixWorld(true);}
 /* the skipping rope: a loop from hand to hand, swung round in time with his jumps (worked out from the clip once) */
 let ropeSync=null;const ropePts=[];for(let i=0;i<=24;i++)ropePts.push(new V3());const ropeCurve=new THREE.CatmullRomCurve3(ropePts);
 function ropeTiming(){if(ropeSync)return ropeSync;const C=CL[CI.rope],ys=[];for(let f=0;f<C.n;f++)ys.push(C.hp[f*3+1]);
@@ -152,40 +142,30 @@ function placeSBag(b){const s=STN.sbag,C=CL[CI.sbag];const acc=new V3();let n=0;
   for(let f=0;f<C.n;f+=6){poseClip(b,CI.sbag,f,'sbag');b.bones[BIDX.LeftHand].getWorldPosition(shP);b.bones[BIDX.RightHand].getWorldPosition(shC);acc.add(shP).add(shC);n+=2;}
   acc.multiplyScalar(1/n);showSBag.g.position.set(acc.x+Math.sin(s.yaw)*0.16,acc.y+0.3-1.965,acc.z+Math.cos(s.yaw)*0.16);
   showSBag.g.rotation.y=s.yaw+Math.PI;showSBag.placed=true;}
-function showPose(b){
-  if(!S.show)return;const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=t-sg.t0;
+function showPose(b){if(!S.show)return;try{showPose1(b);}catch(e){showFail(e);}}
+function showPose1(b){
+  const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=t-sg.t0;
   if(!showSBag.placed)placeSBag(b);
   // the bench sits under him where Sit_To_Stand starts
   if(!showBench.userData.placed){poseClip(b,CI.s2s,0,'bench');b.hips.getWorldPosition(shP);const s=STN.bench;
     showBench.position.set(shP.x-Math.sin(s.yaw)*0.07,0,shP.z-Math.cos(s.yaw)*0.07);showBench.rotation.y=s.yaw;showBench.userData.placed=true;}
-  let wr={L:1,R:1,active:-1};
-  if(sg.k==='wrap'){poseClip(b,CI.s2s,0,'bench');wrapArms(b,u,1);wr=showWraps(u);}
-  else if(sg.k==='clip'){const fr=clipFrame(sg,u);poseClip(b,CI[sg.c],fr,sg.st);
-    if(sg.c==='s2s'&&u<0.5){   // the arms come off the wrapping pose into the clip over half a second
-      for(let k=0;k<NB;k++)shQ2[k].copy(b.bones[k].quaternion);
-      poseClip(b,CI.s2s,0,'bench');wrapArms(b,8.5,1);
-      const w=smooth(0,0.5,u);for(let k=0;k<NB;k++)b.bones[k].quaternion.slerp(shQ2[k],w);
-      sampleClip(CI.s2s,fr,SPO);b.hips.position.set(SPO.hp[0],SPO.hp[1],SPO.hp[2]);b.root.updateMatrixWorld(true);}}
+  if(sg.k==='sit'){poseClip(b,CI.s2s,0,'bench');   // sitting, wrapped and ready, breathing
+    shA.set(1,0,0).applyQuaternion(b.root.quaternion);rotBoneWorld(b.bones[BIDX.Spine1],shR.setFromAxisAngle(shA,0.04+Math.sin(t*1.6)*0.025));
+    rotBoneWorld(b.bones[BIDX.Head],shR.setFromAxisAngle(shA,0.1+Math.sin(t*0.5)*0.04));b.root.updateMatrixWorld(true);}
+  else if(sg.k==='clip')poseClip(b,CI[sg.c],clipFrame(sg,u),sg.st);
   if(sg.k==='clip'&&sg.c==='rope')drawRope(b,clipFrame(sg,u));else showRope.visible=false;
   // speed bag flutter, still otherwise
   const sb=sg.k==='clip'&&sg.c==='sbag'?1:0,tt=SHOW.t;
   showSBag.pivot.rotation.x=sb*(0.55*Math.sin(tt*2*Math.PI*6.3)+0.2*Math.sin(tt*2*Math.PI*12.6+1.1))*smooth(0,0.4,u);
   showSBag.pivot.rotation.z=sb*0.12*Math.sin(tt*2*Math.PI*3.1);
-  // wraps and the strip of wrap between the hands
-  const amt=[wr.L,wr.R];
-  showHands.forEach((h,k)=>{const a=amt[k];h.band.visible=a>0.02;h.band.scale.y=Math.max(0.05,smooth(0,0.6,a));h.cover.visible=a>0.55;
-    const c=0.9+0.1*smooth(0.55,1,a);h.cover.scale.set(4.75*c,5.85*c,5.05*c);h.roll.visible=wr.active===1-k;h.roll.scale.setScalar(1-0.45*amt[1-k]);});
-  if(wr.active>=0){const holder=showHands[1-wr.active].roll,dst=b.bones[BIDX[(wr.active===0?'Left':'Right')+'Hand']];
-    holder.getWorldPosition(shP);dst.getWorldPosition(shC);shC.sub(shP);const len=shC.length();
-    showStrip.visible=true;showStrip.position.copy(shP);showStrip.scale.set(1,len,1);showStrip.quaternion.setFromUnitVectors(shU,shC.normalize());}
-  else showStrip.visible=false;
   // the key light follows him; the rim light sits behind him from the camera
   b.hips.getWorldPosition(shP);showKey.position.set(shP.x+(camera.position.x-shP.x)*0.35,4.2,shP.z+(camera.position.z-shP.z)*0.35);showKey.target.position.copy(shP);
   showRim.position.set(shP.x-(camera.position.x-shP.x)*2,3.2,shP.z-(camera.position.z-shP.z)*2);showRim.target.position.copy(shP);}
 
 /* ---- the camera: one shot per segment, a slow push, a little hand-held drift, always on him ---- */
 const shCamT=new V3(),shLookT=new V3(),shHip=new V3();
-function showCamera(dt,v){
+function showCamera(dt,v){try{showCamera1(dt,v);}catch(e){showFail(e);}}
+function showCamera1(dt,v){
   const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=smooth(0,sg.d,t-sg.t0),C=sg.cam;
   let o;if(sg.k==='bag'){const dx=S.bag.x-v.x,dz=S.bag.z-v.z,dl=Math.hypot(dx,dz)||1;o={x:v.x,z:v.z,fx:dx/dl,fz:dz/dl,lx:dz/dl,lz:-dx/dl};}
   else o=stnFrame(sg.st);
@@ -203,14 +183,38 @@ function showCamera(dt,v){
   const th=Math.tan(camera.fov*Math.PI/360)*camera.aspect,xs=camera.aspect<1?0.1:C.x0;
   camera.rotateY(Math.atan(xs*th));}
 
-/* ---- the title screen: "press any button", then the menu ---- */
-let titlePressed=false;
+/* ---- the title screen ----
+   First visit: the name in the middle and "Swipe up to start" (phones) or "Press any button". Swiping, tapping, clicking or
+   any key starts it (introGo): the name slides to the left, the film starts and the menu comes in.
+   The swipe works by letting the page scroll a little (html.swipe adds room below), which is what makes phone browsers
+   shrink their address bar. After the intro, coming back to the title goes straight to the menu. */
+let titlePressed=false;const INTRO={on:false};
 function titleStep(step){const el=$('#title');if(el)el.dataset.step=step;}
-function titleWake(e){const el=$('#title');if(!el||el.hidden||el.dataset.step!=='press')return;
-  if(e.type==='keydown'){if(e.key==='Escape'||e.key==='F11'||e.key==='Tab')return;e.preventDefault();e.stopImmediatePropagation();}
-  titlePressed=true;titleStep('menu');setTimeout(()=>{const b=$('#btnCpu');if(b&&e.type==='keydown')b.focus({preventScroll:true});},50);}
-window.addEventListener('keydown',titleWake,true);
-window.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('#fsBtn,#instBar,#fsHint'))return;titleWake(e);},true);
+function titleEnter(){if(titlePressed){titleStep('menu');return;}
+  INTRO.on=true;titleStep('intro');document.body.classList.add('intro');
+  if(TOUCH&&!fsStandalone())document.documentElement.classList.add('swipe');
+  requestAnimationFrame(introLayout);}
+/* centre the name: measure where the left-aligned layout puts things, and shift them to the middle */
+function introLayout(){if(!INTRO.on)return;const box=$('#title .tbox'),logo=$('#title .logo3d'),sub=$('#title .msub'),pr=$('#btnPress');if(!box)return;
+  document.body.classList.add('nofx');[[box,'--cx'],[sub,'--mx'],[pr,'--px']].forEach(([e,k])=>e.style.setProperty(k,'0px'));
+  document.body.classList.remove('intro');void box.offsetWidth;
+  const L=logo.getBoundingClientRect(),Sr=sub.getBoundingClientRect(),P=pr.getBoundingClientRect(),mid=L.left+L.width/2;
+  document.body.classList.add('intro');
+  box.style.setProperty('--cx',(innerWidth/2-mid).toFixed(1)+'px');sub.style.setProperty('--mx',(mid-(Sr.left+Sr.width/2)).toFixed(1)+'px');
+  pr.style.setProperty('--px',(mid-(P.left+P.width/2)).toFixed(1)+'px');void box.offsetWidth;document.body.classList.remove('nofx');}
+window.addEventListener('resize',()=>{if(INTRO.on)setTimeout(introLayout,60);});
+function introGo(instant){if(!INTRO.on)return;INTRO.on=false;titlePressed=true;
+  if(instant)document.body.classList.add('nofx');
+  document.body.classList.remove('intro');document.documentElement.classList.add('swiped');
+  setTimeout(()=>{titleStep('menu');document.body.classList.remove('nofx');},instant?0:750);}
+function introSkip(){introGo(true);}
+window.addEventListener('keydown',e=>{if(!INTRO.on)return;if(e.key==='Escape'||e.key==='F11'||e.key==='Tab')return;
+  e.preventDefault();e.stopImmediatePropagation();introGo();},true);
+window.addEventListener('click',e=>{if(!INTRO.on)return;if(e.target&&e.target.closest&&e.target.closest('#fsBtn,#instBar,#fsHint'))return;introGo();},true);
+window.addEventListener('scroll',()=>{if(INTRO.on&&(window.scrollY||document.documentElement.scrollTop)>16)introGo();},{passive:true});
+let introY=null;
+window.addEventListener('touchstart',e=>{introY=e.touches&&e.touches[0]?e.touches[0].clientY:null;},{passive:true,capture:true});
+window.addEventListener('touchmove',e=>{if(INTRO.on&&introY!==null&&e.touches[0]&&introY-e.touches[0].clientY>50)introGo();},{passive:true,capture:true});
 /* film grain for the title film: one small noise tile, moved about by CSS */
 (function(){const c=document.createElement('canvas');c.width=c.height=160;const g=c.getContext('2d'),d=g.createImageData(160,160);
   for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}g.putImageData(d,0,0);

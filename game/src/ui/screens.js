@@ -20,7 +20,7 @@ function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classLis
 function startAttract(){timers.length=0;
   if(S&&S.mode==='online')netLeave(true);
   const s=newSim('attract');s.show=true;enterSim(s);   // the title film (src/ui/titleShow.js)
-  rebuildBoxer(0,lookIdx);rebuildBoxer(1,lookIdx);S.F.forEach(resetPose);setState('fight');showReset();titleStep(titlePressed?'menu':'press');
+  rebuildBoxer(0,lookIdx);rebuildBoxer(1,lookIdx);S.F.forEach(resetPose);setState('fight');showReset();titleEnter();
   hudEl.hidden=true;helpEl.hidden=true;lbox.classList.remove('on');hideScreens();$('#title').hidden=false;annBox.innerHTML='';popBox.innerHTML='';setPlaying(false);}
 /* Full screen. Browsers only allow it during a real tap, click or key press (a touch's pointerdown does not count),
    so we try on each of those until it works. Once the player leaves full screen on purpose, only the button

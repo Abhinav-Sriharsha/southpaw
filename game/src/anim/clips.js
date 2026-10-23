@@ -12,10 +12,12 @@ const CLIPN=['idle','fwd','back','sl','sr','jc1','hook','upS','upL','block','hit
   'rj','rhN','rhL','ruN','ruH','bhN','bhH','bLL','bLH','bRL','bRH','jab3',
   's2s','neck','arms','warm','rope','squat','i2p','push','sbag'];   // the last row: the title-screen training film
 const CI={};CLIPN.forEach((n,i)=>CI[n]=i);
+const CL_MISSING=[];
 const CL=(()=>{
   const bin=atob(AD.b64),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
   const raw=new Int16Array(u8.buffer);const per=3+NB*4;
-  return CLIPN.map(n=>{const m=AD.meta[n],hp=new Float32Array(m.n*3),q=new Float32Array(m.n*NB*4);
+  // a clip missing from the animation file (an old cached copy) falls back to idle, so the game still runs
+  return CLIPN.map(n=>{const m=AD.meta[n]||(CL_MISSING.push(n),AD.meta.idle),hp=new Float32Array(m.n*3),q=new Float32Array(m.n*NB*4);
     for(let f=0;f<m.n;f++){const o=m.o+f*per;hp[f*3]=raw[o]*0.1;hp[f*3+1]=raw[o+1]*0.1;hp[f*3+2]=raw[o+2]*0.1;
       for(let k=0;k<NB*4;k++)q[f*NB*4+k]=raw[o+3+k]/32767;}
     return {n:m.n,hp,q};});

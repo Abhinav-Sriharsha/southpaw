@@ -8,7 +8,7 @@ startAttract();
    so reloading later doesn't try to rejoin an old room. */
 function takeInvite(){const hm=(location.hash||'').match(/^#([A-Za-z0-9]{4})$/);if(!hm)return;
   try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
-  if(NET.started)return;const code=hm[1].toUpperCase();
+  if(NET.started)return;const code=hm[1].toUpperCase();introSkip();
   if(LOBBY.on&&LOBBY.code===code)return;
   if(S&&S.mode!=='attract')startAttract();
   openOnline();$('#codeIn').value=code;setTimeout(()=>joinRoom(code),300);}

@@ -104,6 +104,8 @@ Tells Netlify and Cloudflare Pages how long browsers may cache each folder. Anim
 
 ## 4. `game/data/`: the numbers you will tweak
 
+**Every release:** bump `?v=` on every file in `index.html` (it's on each `<script>` and the stylesheet, for example `?v=0.54`) together with `version` in `data/config.js`. Browsers then fetch the new files instead of using an old saved copy. `_headers` also tells browsers to check for a newer copy of the code, data, styles and animation file on every visit.
+
 ### `data/config.js`
 - `version`: shown to the other player in online handshakes. Bump it with any rules change.
 - `roomPrefix`: every quick-match slot starts with this. Different prefixes never meet, so bumping it keeps versions apart in quick match.
@@ -337,14 +339,15 @@ The fixed stick (`sizeStick` sets its size from the screen; touching near it ste
 Wires up every menu button: CPU fight, difficulty, online (create, join, quick match, copy invite), practice, pause, sound, quit, rematch, copy brag, and the practice toolbar.
 
 ### `src/ui/titleShow.js` (the title screen and its film)
-The title screen works like a big game's opening: the South Paw name on the left, "Press any button", then the menu. Behind it runs a training montage, about 68 seconds, cut like a film trailer: he wraps his hands on a bench, stands, stretches, warms up, skips rope, squats, drops into push-ups, works the speed bag and finishes on the heavy bag. Then it fades out and loops.
+The title screen works like a big game's opening: the South Paw name on the left, "Press any button", then the menu. Behind it runs a training montage, about 68 seconds, cut like a film trailer: he sits on a bench with his hands wrapped, stands, stretches, warms up, skips rope, squats, drops into push-ups, works the speed bag and finishes on the heavy bag. Then it fades out and loops.
 - **Running order:** `SEGS`. Each segment has a length (`d`), a place in the ring (`st`, one of `STN`), a Mixamo clip (`c`, see the last row of `CLIPN`) or `'bag'`, and a shot (`cam`). To reorder, cut or retime the film, edit this list.
 - **Shots:** `cam.a` is the angle round him (0 in front, -90 his right side), `r` the distance at the start and end of the shot (a slow push), `h` the camera height, `y` the height it looks at, `x0` how far right he sits on screen. The camera tracks his hips and turns so the left of the screen stays clear for the name.
 - **Heavy bag:** the `'bag'` segments hand over to the real practice sim (`S.show` makes `prac()` true). `showInput` feeds it the combos in `SHOW_COMBOS` (1 jab, 7 cross, 2/8 hooks, 3/9 uppercuts, 5/11 body straights, 6/12 body hooks).
-- **Hand wrapping:** there's no clip for it, so the `'wrap'` segment holds the first frame of Sit_To_Stand and `wrapArms` poses the arms in code: one hand held out, the other circling its wrist with the roll. `showWraps` times the wraps building up on each hand.
+- **Opening sit:** the `'sit'` segment holds the first frame of Sit_To_Stand with a little breathing. His hands are already wrapped.
 - **Props:** the bench, the speed bag on its stand (placed in front of his hands from the clip, `placeSBag`), the skipping rope (redrawn each frame between his hands in time with his jumps, `drawRope`), and the wraps on his hands. The gloves are hidden during the film.
 - **Look:** a warm key light and a cool rim light follow him, the arena is dimmed, the crowd hidden and fog added; `#showFx` in `index.html` adds the widescreen bars, colour grade, vignette and film grain. `showSetup` switches all of it on and off.
-- **Press any button:** `titleWake` switches `#title` from `data-step="press"` to `"menu"` on the first key or tap. After that, coming back to the title goes straight to the menu.
+- **The intro:** on the first visit the name sits in the middle of a black screen with "Swipe up to start" (phones) or "Press any button". `titleEnter` sets it up and `introLayout` measures how far to shift the name to centre it. A swipe, tap, click or key runs `introGo`: the name slides left, the film starts and the menu fades in. On phones (`html.swipe`) the page gets extra room below (`#swipeSpace`) so the swipe really scrolls it, which makes the browser shrink its address bar; afterwards `html.swiped` stops further page scrolling. Invite links skip the intro (`introSkip`). Coming back to the title later goes straight to the menu.
+- **If the film can't run** (for example an old cached animation file without its clips), `showFail` switches it off and the title shows over the plain arena instead of a black screen.
 
 ### `src/ui/install.js`
 Installing South Paw as an app; from the home screen it opens full screen.

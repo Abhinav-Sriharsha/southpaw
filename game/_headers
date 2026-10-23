@@ -1,13 +1,23 @@
 # South Paw · cache rules for Netlify and Cloudflare Pages.
-# Animations and sounds rarely change: cache them for a day. Code and data refresh on every visit.
-/assets/*
-  Cache-Control: public, max-age=86400
+# Code, data, styles and the animation data refresh on every visit (the browser checks for a newer copy first).
+# Every file in index.html also carries ?v=<version>; bump it with each release (see PROJECT_GUIDE.md) so nobody keeps an old copy.
+# Sounds and icons rarely change: cache them for a day.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
 /src/*
   Cache-Control: no-cache
 /data/*
   Cache-Control: no-cache
-/index.html
+/styles/*
   Cache-Control: no-cache
+/assets/anim/*
+  Cache-Control: no-cache
+/assets/sounds/*
+  Cache-Control: public, max-age=86400
+/assets/icons/*
+  Cache-Control: public, max-age=86400
 /sw.js
   Cache-Control: no-cache
 /manifest.webmanifest
