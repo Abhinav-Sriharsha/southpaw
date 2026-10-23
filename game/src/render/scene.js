@@ -16,9 +16,16 @@ const OUTLINE=new THREE.ShaderMaterial({
   vertexShader:'uniform float uW;uniform vec2 uRes;void main(){vec4 clip=projectionMatrix*modelViewMatrix*vec4(position,1.0);vec3 vn=normalize(normalMatrix*normal);vec2 d=(projectionMatrix*vec4(vn,0.0)).xy;float l=length(d);d=l>1e-5?d/l:vec2(0.0);clip.xy+=d*uW*clip.w*2.0/uRes;gl_Position=clip;}',
   fragmentShader:'uniform vec3 uC;void main(){gl_FragColor=vec4(uC,1.0);}',side:THREE.BackSide});
 const bufSize=new THREE.Vector2();
-function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+/* The picture is sized from the canvas's real on-screen size, checked every frame (fitCheck). Phones, and iPhone
+   home-screen apps above all, often report the old size or no resize event at all after rotating, which used to
+   leave a portrait-shaped picture stretched across a landscape screen. */
+let viewW=0,viewH=0;
+function viewSize(){const w=canvas.clientWidth||document.documentElement.clientWidth||window.innerWidth,h=canvas.clientHeight||document.documentElement.clientHeight||window.innerHeight;return [Math.max(1,w),Math.max(1,h)];}
+function resize(){const [w,h]=viewSize();viewW=w;viewH=h;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
   renderer.getDrawingBufferSize(bufSize);OUTLINE.uniforms.uRes.value.copy(bufSize);OUTLINE.uniforms.uW.value=1.7*pr;}
-window.addEventListener('resize',resize);resize();
+function fitCheck(){const [w,h]=viewSize();if(w!==viewW||h!==viewH)resize();}
+['resize','orientationchange'].forEach(t=>window.addEventListener(t,()=>{resize();[120,400,900].forEach(ms=>setTimeout(fitCheck,ms));}));
+if(window.visualViewport)visualViewport.addEventListener('resize',fitCheck);resize();
 let ftAcc=0,ftN=0;
 /* Resolution only drops when the device really can't keep up (under ~33 fps two checks in a row), never during loading,
    and climbs back as soon as frames are smooth again, so fast screens always stay at full sharpness. */

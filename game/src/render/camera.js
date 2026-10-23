@@ -5,7 +5,7 @@
 /* ================= CAMERA ================= */
 const cam={pos:new V3(0,2.6,8),look:new V3(0,1.2,0),trauma:0,kick:0,ang:0,angV:0,mid:new V3(),init:false,push:new V3()};
 const cTP=new V3(),cTL=new V3(),cS=new V3(),cL=new V3(),UPV=new V3(0,1,0);
-function camFar(){const aspect=window.innerWidth/window.innerHeight;return clamp(1.75/aspect,TOUCH?0.92:1,2.3);}
+function camFar(){const aspect=camera.aspect||1;return clamp(1.75/aspect,TOUCH?0.92:1,2.3);}
 function updateCamera(dt,va,vb){
   const ds=dt/1000,far=camFar(),pr=S.mode==='practice';
   const dx=vb.x-va.x,dz=vb.z-va.z,dl=Math.hypot(dx,dz)||1e-4,tAng=Math.atan2(-dz/dl,dx/dl);

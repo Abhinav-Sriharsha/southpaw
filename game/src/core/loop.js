@@ -21,7 +21,7 @@ function lerpBag(out,a,b,t){out.tx=a.tx+(b.tx-a.tx)*t;out.tz=a.tz+(b.tz-a.tz)*t;
 let last=performance.now(),acc=0,lastAtkT=0,lastBoo=0;const BAGV={x:0,z:0};let rpLast=-1;
 function frame(now){
   requestAnimationFrame(frame);
-  let dt=now-last;last=now;if(dt>100)dt=100;if(dt<0)dt=0;realT+=dt;adaptRes(dt);
+  let dt=now-last;last=now;if(dt>100)dt=100;if(dt<0)dt=0;realT+=dt;fitCheck();adaptRes(dt);
   const online=S.mode==='online';
   if(online){netFrame(dt);tickTimers(dt);}
   else if(!G.paused){tickTimers(dt);acc+=dt;let n=0;while(acc>=STEP&&n<12){step([S.mode==='attract'||S.F[0].ai?null:sampleLocal(),null]);acc-=STEP;n++;}if(n>=12)acc=0;}

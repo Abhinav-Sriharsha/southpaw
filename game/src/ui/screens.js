@@ -86,7 +86,7 @@ function cycleSpeed(){if(S.mode!=='practice')return;speedI=(speedI+1)%SPEEDS.len
 function cycleCam(){camMode=(camMode+1)%3;announce(CAM_LABEL[camMode],'small',800);}
 const isPortrait=()=>window.innerHeight>window.innerWidth*1.05;
 function checkOrient(){if(TOUCH&&isPortrait()&&S&&S.mode!=='attract'&&S.mode!=='online'&&!G.paused&&S.state!=='matchEnd'&&S.state!=='replay')setPaused(true);}
-window.addEventListener('resize',checkOrient);
+['resize','orientationchange'].forEach(t=>window.addEventListener(t,()=>{checkOrient();setTimeout(checkOrient,400);}));
 
 ['pointerup','touchend','click','keydown'].forEach(t=>window.addEventListener(t,e=>{if(e.type==='keydown'&&(e.key==='Escape'||e.key==='F11'))return;
   if(e.target&&e.target.closest&&e.target.closest('#fsBtn,#btnFull'))return;goFull();},{capture:true,passive:true}));

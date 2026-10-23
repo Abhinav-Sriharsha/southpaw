@@ -178,6 +178,7 @@ Page-level state shared by menus and the renderer: `STEP` (one sim tick, 1000/12
 **Edit it when** you change which sound plays for what, or the volumes. Volumes are the second argument of each `this.play(...)`.
 
 ### `src/render/scene.js` (3D scene)
+- **Screen size:** `resize` sizes the picture from the canvas's real size, and `fitCheck` (called every frame from the loop) redoes it whenever that size changes. Don't go back to relying only on the browser's resize event: iPhone home-screen apps often skip it or report the old size after rotating, which stretches a portrait picture across the screen.
 - **Sharpness:** the game renders at the screen's full pixel density, capped at 2× on computers and 1.75× on phones. `adaptRes` only lowers it if the device genuinely can't keep up (under about 33 fps for two checks in a row, never while loading), and raises it again as soon as frames are smooth.
 - The renderer, resolution scaling for slower phones (`adaptRes`), the ink-outline shader (`OUTLINE`) and toon shading (`toon`, `GRAD`).
 - Lights.
