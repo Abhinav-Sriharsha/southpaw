@@ -91,3 +91,27 @@ function checkOrient(){if(TOUCH&&isPortrait()&&S&&S.mode!=='attract'&&S.mode!=='
 ['pointerup','touchend','click','keydown'].forEach(t=>window.addEventListener(t,e=>{if(e.type==='keydown'&&(e.key==='Escape'||e.key==='F11'))return;
   if(e.target&&e.target.closest&&e.target.closest('#fsBtn,#btnFull'))return;goFull();},{capture:true,passive:true}));
 ['fullscreenchange','webkitfullscreenchange'].forEach(t=>document.addEventListener(t,fsUpdate));fsUpdate();
+/* Keeping full screen through every turn of the phone.
+   Phones bring the browser's bars back when they rotate (and iPhone Safari also on some taps near the edges).
+   fsKeep checks after every rotation, resize and scroll, and once a second, and shows a small pill (#fsSwipe) when the bars are back:
+   - iPhone Safari (no full-screen support): "Swipe up for full screen". Page scrolling is switched back on and the page is
+     moved to the top, so a swipe anywhere scrolls it and Safari tucks its bars away again; then scrolling is locked again.
+   - Android and iPad (real full screen): "Tap for full screen" when not in full screen; tapping the pill goes full screen.
+   - The home-screen app and computers never need it. */
+let fsKeepMode=null;
+function fsBarsShown(){const vh=window.visualViewport?visualViewport.height:innerHeight,sw=screen.width||0,sh=screen.height||0;if(!sw||!sh)return false;
+  const land=innerWidth>innerHeight,full=land?Math.min(sw,sh):Math.max(sw,sh);return vh<full*(land?0.88:0.85);}
+const fsIPhone=/iPhone|iPod/.test(navigator.userAgent);
+function fsKeep(){const b=$('#fsSwipe'),H=document.documentElement;if(!b)return;
+  const intro=typeof INTRO!=='undefined'&&INTRO.on;let need=null;
+  if(TOUCH&&!fsStandalone()&&!intro){
+    if(fsApi()&&!fsIPhone){if(!fsEl())need='tap';}
+    else if(H.classList.contains('swipe')&&fsBarsShown())need='swipe';}
+  if(need!==fsKeepMode){fsKeepMode=need;b.hidden=!need;b.dataset.mode=need||'';
+    if(need==='swipe'){H.classList.remove('swiped');if((window.scrollY||H.scrollTop)>0)window.scrollTo(0,0);}}
+  if(!need&&!intro&&H.classList.contains('swipe')&&!H.classList.contains('swiped'))H.classList.add('swiped');}
+['resize','orientationchange'].forEach(t=>window.addEventListener(t,()=>{fsKeep();setTimeout(fsKeep,400);setTimeout(fsKeep,1000);}));
+window.addEventListener('scroll',()=>{if(fsKeepMode==='swipe')setTimeout(fsKeep,350);},{passive:true});
+if(window.visualViewport)visualViewport.addEventListener('resize',fsKeep);
+['fullscreenchange','webkitfullscreenchange'].forEach(t=>document.addEventListener(t,()=>setTimeout(fsKeep,200)));
+setInterval(fsKeep,1000);

@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap">
-<link rel="stylesheet" href="styles/main.css?v=0.54">
+<link rel="stylesheet" href="styles/main.css?v=0.55">
 </head>
 <body>
 <canvas id="c" tabindex="-1" aria-label="Boxing ring"></canvas>
@@ -75,6 +75,7 @@
 
 <button id="fsBtn" class="fsbtn" type="button" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <div id="instBar" class="instbar" hidden><span id="instText"></span><button class="btn primary" id="btnInstGo">Install</button><button class="btn" id="btnInstNo">Not now</button></div>
+<button id="fsSwipe" class="fsswipe" type="button" hidden><svg viewBox="0 0 24 14" width="18" height="11" aria-hidden="true"><path d="M3 12 12 4l9 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="m-swipe">Swipe up for full screen</span><span class="m-tap">Tap for full screen</span></button>
 <div id="fsHint" class="fshint" hidden>Full screen on iPhone: tap <b>Share</b>, then <b>Add to Home Screen</b>, and open South Paw from there.</div>
 
 <div id="showFade" aria-hidden="true"></div>
@@ -95,7 +96,7 @@
       <p class="howto keys-only"><b>D A</b> in and out · <b>W S</b> circle · <b>J</b> left · <b>K</b> right · tap straight, hold hook · <b>W</b>+punch uppercut · <b>S</b>+punch body · <b>Space</b> block · <b>Shift</b> dodge · <b>Enter</b> fight</p>
     </nav>
   </div>
-  <div class="mfoot">Est. 2006 · v0.54</div>
+  <div class="mfoot">Est. 2006 · v0.55</div>
 </section>
 
 <section id="pause" class="screen" hidden>
@@ -163,43 +164,43 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <!-- game: data first, then the code in dependency order (see PROJECT_GUIDE.md). Every file shares one scope, so order matters. -->
-<script src="data/config.js?v=0.54"></script>
-<script src="data/rules.js?v=0.54"></script>
-<script src="data/cpu.js?v=0.54"></script>
-<script src="data/fighters.js?v=0.54"></script>
-<script src="data/sounds.js?v=0.54"></script>
-<script src="assets/anim/clips.js?v=0.54"></script>
+<script src="data/config.js?v=0.55"></script>
+<script src="data/rules.js?v=0.55"></script>
+<script src="data/cpu.js?v=0.55"></script>
+<script src="data/fighters.js?v=0.55"></script>
+<script src="data/sounds.js?v=0.55"></script>
+<script src="assets/anim/clips.js?v=0.55"></script>
 <div id="swipeSpace" aria-hidden="true"></div>
-<script src="src/core/util.js?v=0.54"></script>
-<script src="src/anim/clips.js?v=0.54"></script>
-<script src="src/core/state.js?v=0.54"></script>
-<script src="src/audio/sound.js?v=0.54"></script>
-<script src="src/render/scene.js?v=0.54"></script>
-<script src="src/render/boxer.js?v=0.54"></script>
-<script src="src/render/pose.js?v=0.54"></script>
-<script src="src/render/corners.js?v=0.54"></script>
-<script src="src/anim/reactions.js?v=0.54"></script>
-<script src="src/sim/snapshot.js?v=0.54"></script>
-<script src="src/sim/skeleton.js?v=0.54"></script>
-<script src="src/sim/punches.js?v=0.54"></script>
-<script src="src/practice/bag.js?v=0.54"></script>
-<script src="src/sim/footwork.js?v=0.54"></script>
-<script src="src/sim/fighter.js?v=0.54"></script>
-<script src="src/sim/combat.js?v=0.54"></script>
-<script src="src/ai/cpu.js?v=0.54"></script>
-<script src="src/sim/match.js?v=0.54"></script>
-<script src="src/render/fx.js?v=0.54"></script>
-<script src="src/ui/hud.js?v=0.54"></script>
-<script src="src/ui/screens.js?v=0.54"></script>
-<script src="src/input/local.js?v=0.54"></script>
-<script src="src/net/online.js?v=0.54"></script>
-<script src="src/render/camera.js?v=0.54"></script>
-<script src="src/core/loop.js?v=0.54"></script>
-<script src="src/input/keyboard.js?v=0.54"></script>
-<script src="src/input/touch.js?v=0.54"></script>
-<script src="src/ui/buttons.js?v=0.54"></script>
-<script src="src/ui/install.js?v=0.54"></script>
-<script src="src/ui/titleShow.js?v=0.54"></script>
-<script src="src/main.js?v=0.54"></script>
+<script src="src/core/util.js?v=0.55"></script>
+<script src="src/anim/clips.js?v=0.55"></script>
+<script src="src/core/state.js?v=0.55"></script>
+<script src="src/audio/sound.js?v=0.55"></script>
+<script src="src/render/scene.js?v=0.55"></script>
+<script src="src/render/boxer.js?v=0.55"></script>
+<script src="src/render/pose.js?v=0.55"></script>
+<script src="src/render/corners.js?v=0.55"></script>
+<script src="src/anim/reactions.js?v=0.55"></script>
+<script src="src/sim/snapshot.js?v=0.55"></script>
+<script src="src/sim/skeleton.js?v=0.55"></script>
+<script src="src/sim/punches.js?v=0.55"></script>
+<script src="src/practice/bag.js?v=0.55"></script>
+<script src="src/sim/footwork.js?v=0.55"></script>
+<script src="src/sim/fighter.js?v=0.55"></script>
+<script src="src/sim/combat.js?v=0.55"></script>
+<script src="src/ai/cpu.js?v=0.55"></script>
+<script src="src/sim/match.js?v=0.55"></script>
+<script src="src/render/fx.js?v=0.55"></script>
+<script src="src/ui/hud.js?v=0.55"></script>
+<script src="src/ui/screens.js?v=0.55"></script>
+<script src="src/input/local.js?v=0.55"></script>
+<script src="src/net/online.js?v=0.55"></script>
+<script src="src/render/camera.js?v=0.55"></script>
+<script src="src/core/loop.js?v=0.55"></script>
+<script src="src/input/keyboard.js?v=0.55"></script>
+<script src="src/input/touch.js?v=0.55"></script>
+<script src="src/ui/buttons.js?v=0.55"></script>
+<script src="src/ui/install.js?v=0.55"></script>
+<script src="src/ui/titleShow.js?v=0.55"></script>
+<script src="src/main.js?v=0.55"></script>
 </body>
 </html>

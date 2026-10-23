@@ -355,3 +355,24 @@ html.swiped .screen{touch-action:pan-y}
   .mmenu{margin-top:10px}
 }
 @media (max-width:700px) and (orientation:portrait){.tbox{max-width:100%}.tshade{background:rgba(0,0,0,.45)}.logo3d{font-size:clamp(48px,15vw,90px)}}
+
+/* the pill that brings full screen back after a rotation (fsKeep in screens.js) */
+.fsswipe{position:fixed;left:50%;bottom:calc(16% + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:63;display:flex;align-items:center;gap:10px;
+  min-height:44px;padding:10px 18px;border-radius:24px;border:1px solid rgba(255,200,58,.6);background:rgba(8,9,13,.82);color:#f4efe4;
+  font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;touch-action:pan-y;cursor:pointer}
+.fsswipe[hidden]{display:none}
+.fsswipe svg{color:#ffc83a;animation:mchev 1.4s ease-in-out infinite}
+.fsswipe .m-tap{display:none}
+.fsswipe[data-mode="tap"] .m-tap{display:inline}.fsswipe[data-mode="tap"] .m-swipe,.fsswipe[data-mode="tap"] svg{display:none}
+/* portrait: no widescreen bars, the title stacked in the middle, the footer under it */
+@media (orientation:portrait){
+  .fx-bar{display:none}
+  #title{flex-direction:column;justify-content:center;padding:max(24px,var(--st)) 20px max(20px,var(--sb))}
+  .tbox{max-width:100%;width:100%;margin-top:0}
+  .logo3d{font-size:clamp(46px,14vw,92px)}
+  .msub{font-size:clamp(18px,5.4vw,30px)}
+  .tshade{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.35) 60%,rgba(0,0,0,.6))}
+  .mmenu{width:100%;max-width:440px}
+  .mitem{font-size:clamp(20px,6vw,26px)}
+  .mfoot{position:static;transform:none;margin-top:22px;align-self:flex-start}
+}
