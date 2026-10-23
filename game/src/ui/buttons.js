@@ -11,10 +11,16 @@ document.querySelectorAll('.diffs.level button').forEach(b=>{b.setAttribute('ari
 $('#btnCpu').addEventListener('click',startMatch);$('#btnPrac').addEventListener('click',startPractice);$('#btnOnline').addEventListener('click',openOnline);
 $('#btnQuick').addEventListener('click',quickMatch);$('#btnCreate').addEventListener('click',hostRoom);
 $('#btnJoin').addEventListener('click',()=>joinRoom($('#codeIn').value));$('#codeIn').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom($('#codeIn').value);});
+// typing or pasting a code (or a whole invite message) keeps just the 4 characters, in capitals
+$('#codeIn').addEventListener('input',e=>{const el=e.target,c=cleanCode(el.value);if(el.value!==c)el.value=c;});
+// Paste invite: reads the message your friend sent (link or code) from the clipboard and joins straight away
+if(navigator.clipboard&&navigator.clipboard.readText){$('#btnPaste').hidden=false;
+  $('#btnPaste').addEventListener('click',()=>{navigator.clipboard.readText().then(t=>{const c=cleanCode(t);if(c.length===4){$('#codeIn').value=c;joinRoom(c);}
+    else netStatus("No room code found in what you copied. Type the 4-letter code instead.");}).catch(()=>netStatus('Type the 4-letter room code your friend sent.'));});}
 $('#btnNetBack').addEventListener('click',cancelOnline);
 $('#btnReady').addEventListener('click',()=>{goFull(true);lobbySetReady(!LOBBY.me);});$('#btnLobLeave').addEventListener('click',lobbyLeave);
 $('#btnLobCopy').addEventListener('click',e=>lobbyCopy(e.currentTarget));$('#btnLobRetry').addEventListener('click',()=>{if(LOBBY.retry)LOBBY.retry();});
-$('#btnLobShare').addEventListener('click',()=>{try{navigator.share({title:'South Paw',text:'Fight me on South Paw',url:lobbyLink()}).catch(()=>{});}catch(e){}});
+$('#btnLobShare').addEventListener('click',()=>{try{navigator.share({title:'South Paw',text:'Fight me on South Paw! Room code '+LOBBY.code,url:lobbyLink()}).catch(()=>{});}catch(e){}});
 $('#btnFull').addEventListener('click',fsToggle);$('#fsBtn').addEventListener('click',fsToggle);
 $('#fsHint').addEventListener('click',()=>{$('#fsHint').hidden=true;});
 $('#btnCopyLink').addEventListener('click',()=>{const link=location.origin+location.pathname+'#'+NET.code;const done=()=>{$('#btnCopyLink').textContent='Copied';setTimeout(()=>{$('#btnCopyLink').textContent='Copy invite';},1500);};

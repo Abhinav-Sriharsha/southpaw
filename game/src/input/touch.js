@@ -41,3 +41,8 @@ canvas.addEventListener('pointerdown',()=>{canvas.focus({preventScroll:true});if
 lbox.addEventListener('pointerdown',()=>{if(S.state==='replay')LI.skip=1;});
 $('.rskip').textContent=usingTouch?'Tap to skip':'Space to skip';
 sizeStick();
+
+/* Knocked down: every tap or click anywhere counts toward getting up (not just the punch buttons).
+   The pause button and menus still work as normal. */
+function getUpTap(){const D=S&&S.down;if(!D||D.up||S.state!=='down'||G.paused||S.mode==='attract'||D.i!==LOC())return false;LI.act=1;return true;}
+window.addEventListener('pointerdown',e=>{if(e.target&&e.target.closest&&e.target.closest('#tbar,.screen,#fsBtn,#instBar,#fsHint'))return;getUpTap();},true);

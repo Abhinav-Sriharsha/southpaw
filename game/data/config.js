@@ -3,8 +3,9 @@
    players only meet online when their room prefix matches, so different versions never end up in the same fight. */
 'use strict';
 const CONFIG={
-  version:'0.51',
-  roomPrefix:'southpaw051-',      // every online room and quick-match slot id starts with this
+  version:'0.52',
+  roomPrefix:'southpaw052-',      // every quick-match slot id starts with this, so only the same version is matched
+  roomIdPrefix:'southpaw-room-',  // private rooms: the same on every version, so a friend on another version is told to update instead of 'room not found'
   quickMatchSlots:6,              // how many quick-match queue slots the game scans
   // Matchmaking server for online play. Empty = the free public PeerJS server.
   // To run your own: {host:'your-server.example.com',port:443,path:'/southpaw',secure:true}

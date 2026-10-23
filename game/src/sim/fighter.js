@@ -3,12 +3,12 @@
    See PROJECT_GUIDE.md for how this file fits with the rest. */
 'use strict';
 /* ================= SIM STATE ================= */
-const newStats=()=>({thrown:0,landed:0,dmg:0,best:0,slips:0,counters:0,kd:0,parries:0});
+const newStats=()=>({thrown:0,landed:0,dmg:0,best:0,slips:0,counters:0,kd:0});
 function freshHealth(f){f.hp=HP0;f.cap=100;f.hpGhost=HP0;f.ghostDelay=0;f.body=100;f.stam=ST0;f.stamMax=100;f.guard=100;f.wob=0;f.kd=0;f.sinceHit=9999;f.dheat=0;
   f.gw=0;f.gwT=0;f.gassed=false;f.lastPunch=-1e9;f.rdmg=0;}
 function newFighter(i){const f={i,side:1,x:0,z:0,yaw:0,vx:0,vz:0,kx:0,kz:0,action:'idle',actionT:0,move:null,su:0,rc:0,
   landed:false,resolved:true,tired:false,swish:false,stunMs:0,heavy:false,hitSide:1,hitId:0,flash:0,counterWin:0,slipCd:0,slipSide:1,dk:0,combo:0,comboN:0,attackId:0,koClip:CI.ko,riseClip:CI.gL,rise0:0,riseMs:1300,riseP:0,hc:-1,hv:1e9,hvd:0,bhc:-1,bhv:1e9,bhd:0,bhId:0,tauntClip:CI.t1,tauntMs:2000,tauntCd:0,tauntN:0,tauntSafe:false,stamR:1,
-  blockStun:0,lowGuard:false,guardHit:0,parryOk:true,gw:0,gwT:0,gassed:false,lastPunch:-1e9,rdmg:0,
+  blockStun:0,lowGuard:false,guardHit:0,gw:0,gwT:0,gassed:false,lastPunch:-1e9,rdmg:0,
   it:i*20,evc:0,chF:newChan(),chS:newChan(),hs:{x:0,r:0,vx:0,vr:0},vis:blankVis(),prev:blankVis(),actKey:'',bt:1,bd:0,low0:1,
   stats:newStats(),ai:null,inp:{fwd:0,lat:0,block:false,lowG:false,buf:null,pf:0,pl:0}};freshHealth(f);return f;}
 let S=null;
@@ -171,7 +171,7 @@ function decide(f){const inp=f.inp,ca=canAct(f);
   if(ca&&inp.buf){const c=inp.buf.a;
     if(c===TAUNT){if(ca===true&&f.action!=='taunt'&&f.tauntCd<=0&&!prac())startTaunt(f,false);inp.buf=null;}
     else if(c>=13){if(ca===true&&f.slipCd<=0&&f.stam>=5){startSlip(f,c-13);inp.buf=null;}}else{if(!f.gassed)startAttack(f,c);inp.buf=null;}}
-  if(canAct(f)===true){if(inp.block){if(f.action!=='block'){f.action='block';f.actionT=0;f.parryOk=f.ai?Math.random()<f.ai.parry:true;}f.lowGuard=false;}else if(f.action!=='idle'&&f.action!=='taunt')f.action='idle';}}
+  if(canAct(f)===true){if(inp.block){if(f.action!=='block'){f.action='block';f.actionT=0;}f.lowGuard=false;}else if(f.action!=='idle'&&f.action!=='taunt')f.action='idle';}}
 /* Taunts: drop your hands and play to the crowd. Finish it and you get a breather and a cheer.
    Get caught in the middle of one and the punch lands harder. Celebrating a knockdown is free. */
 const TAUNT=16;

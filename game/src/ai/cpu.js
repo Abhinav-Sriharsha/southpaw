@@ -88,7 +88,7 @@ function aiThink(ai,me,op){
     if(pn&&Math.random()<ai.read*pn.p*0.09){const mv=MOVES[pn.key];if(mv){ai.blockUntil=now+280;ai.low=mv.target==='body';ai.readUntil=now+650;}}}
   if(now<ai.blockUntil){inp.block=true;inp.lowG=ai.low;aiMove(me,0,0);return;}
   inp.block=false;inp.lowG=false;
-  // 3) counters: after a parry or a clean dodge, and when the player misses
+  // 3) counters: after a clean dodge, and when the player misses
   if(me.counterWin>0&&d<1.25&&!inp.buf){press(d<1.1?PCODE(Math.random()<.5?0:1,1):PCODE(1,0));return;}
   if(now-pm.opWhiffT<330&&d<1.27&&!inp.buf&&Math.random()<ai.punish*0.14){pm.opWhiffT=-1e9;press(d<1.12?PCODE(Math.random()<.5?0:1,1):PCODE(1,0));return;}
   // 4) footwork and offence on a rhythm

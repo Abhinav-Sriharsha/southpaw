@@ -68,7 +68,7 @@
 </div>
 
 <div id="note" aria-live="polite"></div>
-<div id="getup" hidden><b><span class="touch-only">Tap any button to get up</span><span class="keys-only">Mash J or K to get up</span></b><div class="gtrack"><div class="gfill" id="guFill"></div></div></div>
+<div id="getup" hidden><b><span class="touch-only">Tap anywhere to get up</span><span class="keys-only">Mash any key or click to get up</span></b><div class="gtrack"><div class="gfill" id="guFill"></div></div></div>
 <div id="ann"></div>
 <div id="pops"></div>
 <div id="lbox"><div class="lb top"></div><div class="lb bot"></div><div class="rtag">Instant replay</div><div class="rskip">Tap to skip</div></div>
@@ -80,7 +80,7 @@
 <section id="title" class="screen">
   <div class="title-inner">
     <div class="tcol">
-      <div class="kicker">Basement League · Est. 2006 · 0.51</div>
+      <div class="kicker">Basement League · Est. 2006 · 0.52</div>
       <h1 class="logo"><span>South</span><span>Paw</span></h1>
       <p class="tag">Motion-captured boxing in your browser. Fight anyone online on a phone or a laptop, take on the CPU, or work the heavy bag.</p>
       <p class="howto touch-only"><b>Left thumb:</b> drag to step in, out and circle.<br><b>Right thumb:</b> Left and Right are your hands. Tap for a straight, hold for a hook. Push the stick up to uppercut, down to go to the body. Hold Block to cover up against anything, Dodge leans away (stick down ducks). Taunt if you dare.</p>
@@ -127,7 +127,8 @@
     <label class="olabel" for="nameIn">Your name</label>
     <input id="nameIn" class="oin" maxlength="12" autocomplete="nickname" placeholder="Boxer name">
     <div class="obtns"><button class="btn primary" id="btnQuick">Quick match</button><button class="btn" id="btnCreate">Create room</button></div>
-    <div class="orow"><input id="codeIn" class="oin code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code" aria-label="Room code"><button class="btn" id="btnJoin">Join</button></div>
+    <div class="orow"><input id="codeIn" class="oin code" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code" aria-label="Room code"><button class="btn" id="btnJoin">Join</button></div>
+    <button class="btn" id="btnPaste" hidden>Paste invite from your friend</button>
     <div id="roomBox" class="roombox" hidden><span>Room code</span><b id="roomCode">----</b><button class="btn" id="btnCopyLink">Copy invite</button></div>
     <p id="netStatus" class="ostatus" aria-live="polite"></p>
     <button class="btn" id="btnNetBack">Back</button>

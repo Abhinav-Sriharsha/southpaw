@@ -282,3 +282,5 @@ body.touch .keys-only{display:none}body.touch .touch-only{display:block}
 .instbar .btn{width:auto;min-height:40px;padding:8px 14px;margin:0;font-size:14px;flex:0 0 auto}
 .instbar[hidden]{display:none}
 body.playing .instbar{display:none}
+
+#btnPaste{margin-top:8px;font-size:clamp(13px,1.6vw,15px)}

@@ -60,7 +60,7 @@ function showEnd(){
   const acc2=f=>f.stats.thrown?Math.round(f.stats.landed/f.stats.thrown*100)+'%':'0%';
   $('#stats').innerHTML='<thead><tr><th></th><th class="'+(Lc===0?'r':'b')+'">'+nm(Lc)+'</th><th class="'+(Lc===0?'b':'r')+'">'+esc(nm(1-Lc))+'</th></tr></thead><tbody>'+
     row('Thrown',f=>f.stats.thrown)+row('Landed',f=>f.stats.landed)+row('Accuracy',acc2)+
-    row('Damage',f=>Math.round(f.stats.dmg))+row('Biggest shot',f=>Math.round(f.stats.best))+row('Knockdowns',f=>f.stats.kd)+row('Counters',f=>f.stats.counters)+row('Dodged',f=>f.stats.slips)+row('Parries',f=>f.stats.parries)+'</tbody>';
+    row('Damage',f=>Math.round(f.stats.dmg))+row('Biggest shot',f=>Math.round(f.stats.best))+row('Knockdowns',f=>f.stats.kd)+row('Counters',f=>f.stats.counters)+row('Dodged',f=>f.stats.slips)+'</tbody>';
   const how=S.lastKO?'knocked out':'beat',tail=S.lastKO?' in round '+S.round:' on the cards',oppName=online?S.names[1-Lc]:S.names[1];
   const brag=w===Lc?'I '+how+' '+oppName+tail+(online?' online':'')+' on South Paw. '+me.stats.landed+' of '+me.stats.thrown+' punches landed. Your turn.':oppName+' '+how+' me'+tail+' on South Paw. Rematch incoming.';
   $('#bragText').value=brag;$('#btnCopy').textContent='Copy';$('#btnRematch').textContent='Rematch';$('#rematchNote').textContent='';

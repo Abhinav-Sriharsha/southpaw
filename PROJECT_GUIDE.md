@@ -29,7 +29,7 @@ This guide explains what every folder and file does, how they fit together, and 
 
 - Use `dsin`, `dcos`, `datan2`, `dexp`, `dhyp` from `src/core/util.js`, never `Math.sin`, `Math.cos`, `Math.atan2` or `Math.exp`. Different browsers round those slightly differently.
 - Never use `Math.random()`, the clock or anything from the screen. The only exception is the CPU (`src/ai/cpu.js`), which only runs offline.
-- Whenever you change fight rules or punch data, bump `version` and `roomPrefix` in `data/config.js` so old and new versions never meet online.
+- Whenever you change fight rules or punch data, bump `version` and `roomPrefix` in `data/config.js` so old and new versions never meet online. (Private rooms tell a friend on another version to update.)
 
 ---
 
@@ -106,7 +106,8 @@ Tells Netlify and Cloudflare Pages how long browsers may cache each folder. Anim
 
 ### `data/config.js`
 - `version`: shown to the other player in online handshakes. Bump it with any rules change.
-- `roomPrefix`: every online room and quick-match slot starts with this. Different prefixes never meet, so bumping it keeps versions apart.
+- `roomPrefix`: every quick-match slot starts with this. Different prefixes never meet, so bumping it keeps versions apart in quick match.
+- `roomIdPrefix`: private rooms start with this. It stays the same across versions on purpose: a friend on an older or newer version still reaches the room and is told to reload, instead of getting "room not found". Don't change it.
 - `quickMatchSlots`: how many quick-match queue slots are scanned.
 - `peerServer`: empty uses the free public PeerJS server. Fill it in to use your own (see `tools/peer-server`).
 - `iceServers`: how two browsers find each other. STUN servers find a direct route; TURN servers relay the fight when a network blocks direct connections (common on mobile data and office Wi-Fi).
@@ -126,7 +127,7 @@ The fight rules, matching `docs/south-paw-mechanics.xlsx`:
 Each value has a comment in the file. Change a number, reload, and it applies. Bump the version in `config.js` too.
 
 ### `data/cpu.js`
-`CPU_LEVELS`: one entry per difficulty (`easy`, `normal`, `hard`), with how fast the CPU reacts, how often it defends, dodges, punches and parries, how quickly it learns your habits, and its name. The comment at the top explains every field. The menu buttons pick these by key, so adding a level needs a button in `index.html` too.
+`CPU_LEVELS`: one entry per difficulty (`easy`, `normal`, `hard`), with how fast the CPU reacts, how often it defends, dodges and punches, how quickly it learns your habits, and its name. The comment at the top explains every field. The menu buttons pick these by key, so adding a level needs a button in `index.html` too.
 
 ### `data/fighters.js`
 `FIGHTER_LOOKS`: red corner first, blue second. Skin, trunks, trim and glove colours as `0xRRGGBB`, `hair` (or `null` for bald), and `trail` (the punch trail colour).
@@ -246,7 +247,7 @@ Stepping in and out and circling, built from the Mixamo step clips. A tap is a s
 ### `src/sim/combat.js` (hitting, blocking, knockdowns)
 - **Hit detection:** `contact` tests the real glove against the opponent's head sphere, torso capsule and guard gloves every tick of a punch. Sizes are `GLOVE_R`, `HEAD_R` and `TORSO_R`.
 - `dodgeCheck`: which dodge beats which punch.
-- `resolveFighter`: counters, too-close and fingertip range, blocks, parries.
+- `resolveFighter`: counters, too-close and fingertip range, blocks.
 - `guardBreak`, `blockReact`, `react`: the block and hit reactions.
 - `land`: health damage, the body-hook stamina drain, stun, which reaction clip plays, knockdown checks.
 - `liverShot`: down to one knee, not a knockdown.
@@ -292,7 +293,10 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 - `sampleLocal`: turns all of that into one input word per tick. It also stops circling for a moment while you aim a punch, which is not needed while blocking.
 
 ### `src/net/online.js` (online play)
-- **Private rooms:** `hostRoom` makes a 4-letter room and opens the lobby. `joinRoom` (also used when someone opens an invite link such as `/#ABCD`) opens the same lobby and keeps retrying for about a minute, in case the host is still connecting or switched apps to send the link.
+- **Private rooms:** `hostRoom` makes a 4-letter room and opens the lobby. `joinRoom` (typed code, Paste invite, or an invite link such as `/#ABCD`) opens the same lobby and keeps retrying for about a minute, in case the host is still connecting or switched apps to send the link. Only one join attempt is open at a time, and a host that gets a newer connection from the same friend switches to it.
+- **Codes:** they use `ROOM_AB`, which leaves out 0, O, 1, I and L. `cleanCode` pulls the code out of whatever was typed or pasted (a bare code, a link, or the whole invite message); `codeProblem` explains a bad one. `inviteText` is the invite message, which includes the code so a friend playing from the home-screen app can type it.
+- **Reliable lobby:** the connection doesn't resend lost messages, so `netPump` repeats the lobby messages every 0.4 s until they're answered: `hello` (with `g`, whether we've heard theirs), the Ready state (`rdy`), and the host's `start` until the guest answers `go`. Every handler is safe to receive twice. Without this, one lost message on mobile data left the lobby stuck on "connecting".
+- **Versions:** `hello` carries the version. If the two differ, both lobbies say so (`verText`) and Ready is disabled.
 - **Lobby** (bottom of the file): `LOBBY` holds the lobby state. `lobbyOpen`, `lobbyRender` (the red and blue corner cards), `lobbySetReady` and `lobbyCheck` (when both players are ready, the host starts the match), `lobbyLost` (a player left), `lobbyCopy` (copies the invite link) and `lobbyLeave`. The host is always the red corner and the guest the blue corner, but each player sees themselves on the left of their own screen.
 - **Quick match:** `quickMatch` scans `CONFIG.quickMatchSlots` queue slots and starts straight away, with no lobby.
 - **Relays:** `prepareIce` builds the STUN and TURN list from `data/config.js` before connecting.
@@ -327,6 +331,8 @@ Key presses: punches, dodge, taunt, pause, mute, and the practice keys. The layo
 ### `src/input/touch.js`
 The fixed stick (`sizeStick` sets its size from the screen; touching near it steers from its centre) and the touch buttons (Block holds, Dodge, Taunt, Left/Right tap or hold).
 
+`getUpTap`: when you're knocked down, every tap or click anywhere on the screen counts toward getting up (any key too, in `keyboard.js`). The pause button and menus still work normally.
+
 ### `src/ui/buttons.js`
 Wires up every menu button: CPU fight, difficulty, online (create, join, quick match, copy invite), practice, pause, sound, quit, rematch, copy brag, and the practice toolbar.
 
@@ -340,7 +346,7 @@ Installing South Paw as an app; from the home screen it opens full screen.
 The service worker sits between the game and the network. It always fetches the newest files when online and keeps a copy for playing offline. It never touches matchmaking traffic. You normally never edit it; if you ever need everyone's saved copy cleared, change `CACHE` to a new name.
 
 ### `src/main.js`
-Starts the idle fight behind the title screen, joins a room straight away if the link has a `#CODE`, and starts the frame loop.
+Starts the idle fight behind the title screen and starts the frame loop. `takeInvite` joins the room in an invite link (`#CODE`), both when the page opens and when a link is opened while the game is already open (`hashchange`). It then removes the code from the address so a reload doesn't rejoin an old room.
 
 ---
 
@@ -350,7 +356,7 @@ Starts the idle fight behind the title screen, joins a room straight away if the
 2. **Input word:** `sampleLocal` packs it into this tick's input word. Online, the word is also sent to the other player.
 3. **Tick:** `step()` (`src/sim/match.js`) applies the word. `decide()` (`src/sim/fighter.js`) picks the punch with `moveFor` and starts it with `startAttack`, which spends stamina.
 4. **Animation:** each tick, `updateAnim` and `atkFrame` advance the punch clip. In the late wind-up, `stepFighter` (`src/sim/combat.js`) starts testing `contact`.
-5. **Contact:** on contact, `resolveFighter` decides block, parry, counter or range. `land` applies damage, picks the reaction clip and reports events.
+5. **Contact:** on contact, `resolveFighter` decides block, counter or range. `land` applies damage, picks the reaction clip and reports events.
 6. **Presentation:** `drainEvents` (`src/ui/hud.js`) turns those events into the punch sound (`Sfx.punch`), sparks (`spawnFx`), shake and text. The renderer shows the poses.
 
 ---

@@ -3,12 +3,12 @@
    See PROJECT_GUIDE.md for how this file fits with the rest. */
 'use strict';
 /* ================= ONLINE: PeerJS rooms + rollback ================= */
-const PFX=CONFIG.roomPrefix,QN=CONFIG.quickMatchSlots,ROOM_AB='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const PFX=CONFIG.roomPrefix,RPFX=CONFIG.roomIdPrefix||'southpaw-room-',QN=CONFIG.quickMatchSlots,ROOM_AB='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const RN=1024,SNN=180,MAXPRED=40;
 const NET={on:false,peer:null,conn:null,local:0,delay:4,role:'',W:[new Int32Array(RN),new Int32Array(RN)],T:[new Int32Array(RN),new Int32Array(RN)],
   pred:new Int32Array(RN),predT:new Int32Array(RN),snaps:new Array(SNN),snapT:new Int32Array(SNN),contig:-1,remAck:-1,genTo:-1,rb:1e9,
   inbox:[],lastRecv:0,rtt:80,remTick:0,remTickAt:0,nextCk:240,myH:new Map(),remH:new Map(),resyncs:0,rollbacks:0,maxRb:0,acc:0,started:false,
-  hello:null,opp:{name:'Rival',style:0},lastPing:0,searching:null,code:'',drift:0,
+  hello:null,gotHello:false,badVer:'',startMsg:null,opp:{name:'Rival',style:0},lastPing:0,searching:null,code:'',drift:0,
   confirmedState(){return !this.on||this.contig>=(S.endTick||0)+1;}};
 function netReset(){for(let p=0;p<2;p++){NET.T[p].fill(-1);NET.W[p].fill(NEUTRAL);}NET.predT.fill(-1);NET.snapT.fill(-1);NET.contig=-1;NET.remAck=-1;NET.genTo=-1;NET.rb=1e9;
   NET.inbox.length=0;NET.nextCk=240;NET.myH.clear();NET.remH.clear();NET.resyncs=0;NET.rollbacks=0;NET.maxRb=0;NET.acc=0;}
@@ -41,24 +41,40 @@ function closePeer(){try{if(NET.conn)NET.conn.close();}catch(e){}try{if(NET.peer
 function netLeave(silent){if(NET.conn)netSend({k:'bye'});NET.on=false;NET.started=false;setTimeout(closePeer,120);if(!silent)netStatus('');}
 function genCode(){let s='';for(let i=0;i<4;i++)s+=ROOM_AB[Math.floor(Math.random()*ROOM_AB.length)];return s;}
 function setupConn(c,role){
-  NET.conn=c;NET.role=role;NET.hello=null;
+  NET.conn=c;NET.role=role;NET.hello=null;NET.gotHello=false;NET.badVer='';NET.startMsg=null;
   c.on('data',m=>onNetData(m));
   c.on('close',()=>{if(NET.conn!==c)return;if(!NET.started&&LOBBY.on){NET.conn=null;lobbyLost();return;}if(!NET.started){NET.conn=null;if(role==='host')netStatus(NET.qm!==undefined&&NET.peer&&String(NET.peer.id||'').includes(PFX+'q')?'Waiting for an opponent… You are in the queue.':'Waiting for your opponent. Send them the code or the invite link.');return;}onNetLost('Your opponent left the match.');});
   c.on('error',()=>{});
-  const hi=()=>{netSend({k:'hello',v:CONFIG.version,name:myName(),style:lookIdx});};
+  const hi=()=>netSend(helloMsg());
   if(c.open)hi();else c.on('open',hi);
 }
+/* The match connection is fast but does not resend lost messages (right for the fight, where inputs are resent anyway).
+   So until the fight starts, netPump repeats the lobby messages every 0.4 s until they are answered:
+   hello until we have heard theirs (g says whether we have), our Ready state, and the host's start until the guest says go.
+   Every handler below is safe to receive twice. */
+function helloMsg(){return {k:'hello',v:CONFIG.version,g:NET.gotHello?1:0,name:myName(),style:lookIdx};}
+function netPump(){const c=NET.conn;if(!c||!c.open||NET.started)return;
+  if(!NET.gotHello)netSend(helloMsg());
+  if(LOBBY.on&&LOBBY.opp&&!NET.badVer)netSend({k:'rdy',r:LOBBY.me?1:0});
+  if(NET.startMsg&&NET.role==='host')netSend(NET.startMsg);}
+setInterval(netPump,400);
+function verText(v){return 'Your friend has version '+v+' and you have '+CONFIG.version+'. Both of you reload the page, or close and reopen the app, to get the latest. Then try again.';}
 function onNetData(m){if(!m||typeof m!=='object')return;NET.lastRecv=performance.now();
   switch(m.k){
     case 'i':case 'c':case 's':NET.inbox.push(m);break;
     case 'p':netSend({k:'q',ts:m.ts});break;
     case 'q':{const r=performance.now()-m.ts;if(r>=0&&r<5000)NET.rtt=NET.rtt*0.8+r*0.2;break;}
-    case 'hello':NET.opp={name:String(m.name||'Rival').slice(0,12),style:clamp(m.style|0,0,2)};
-      if(LOBBY.on){LOBBY.opp=true;LOBBY.oppReady=false;lobbyRender();lobbyStatus(NET.role==='host'?NET.opp.name+' joined. Press Ready when you are set.':'You are in. Press Ready when you are set.');buzz([20]);break;}
-      if(NET.role==='host'&&!NET.started){netSend({k:'start',delay:4,names:[myName(),NET.opp.name],styles:[lookIdx,NET.opp.style]});}break;
-    case 'rdy':if(LOBBY.on){LOBBY.oppReady=!!m.r;lobbyRender();lobbyCheck();}break;
-    case 'start':if(NET.role==='guest'&&!NET.started){netSend({k:'go'});lobbyClose();netBegin(1,m.names,m.styles,m.delay);}break;
-    case 'go':if(NET.role==='host'&&!NET.started){lobbyClose();netBegin(0,[myName(),NET.opp.name],[lookIdx,NET.opp.style],4);}break;
+    case 'hello':{const first=!NET.gotHello;NET.gotHello=true;
+      if(!m.g)netSend(helloMsg());                 // they have not heard us yet
+      if(!first||NET.started)break;
+      NET.opp={name:String(m.name||'Rival').slice(0,12),style:clamp(m.style|0,0,2)};
+      if(m.v&&String(m.v)!==CONFIG.version){NET.badVer=String(m.v);
+        if(LOBBY.on){LOBBY.opp=true;lobbyRender();lobbyStatus(verText(m.v));}else{netStatus(verText(m.v));NET.qm=null;setTimeout(closePeer,400);}break;}
+      if(LOBBY.on){const was=LOBBY.opp;LOBBY.opp=true;lobbyRender();if(!was){lobbyStatus(NET.role==='host'?NET.opp.name+' joined. Press Ready when you are set.':'You are in. Press Ready when you are set.');buzz([20]);}lobbyCheck();break;}
+      if(NET.role==='host'){NET.startMsg={k:'start',delay:4,names:[myName(),NET.opp.name],styles:[lookIdx,NET.opp.style]};netSend(NET.startMsg);}break;}
+    case 'rdy':if(LOBBY.on&&!NET.badVer){const r=!!m.r;if(r!==LOBBY.oppReady){LOBBY.oppReady=r;lobbyRender();}lobbyCheck();}break;
+    case 'start':if(NET.role==='guest'&&!NET.badVer){netSend({k:'go'});if(!NET.started){lobbyClose();netBegin(1,m.names,m.styles,m.delay);}}break;
+    case 'go':if(NET.role==='host'){NET.startMsg=null;if(!NET.started){lobbyClose();netBegin(0,[myName(),NET.opp.name],[lookIdx,NET.opp.style],4);}}break;
     case 'look':if(NET.on){const st=clamp(m.s|0,0,2);rebuildBoxer(1-NET.local,st);}break;
     case 'busy':break;
     case 'rq':if(NET.on)netDesync(-1);break;
@@ -128,24 +144,27 @@ function netFrame(dt){
 /* --- rooms --- */
 async function hostRoom(){if(!netAvailable())return;closePeer();NET.qm=null;const code=genCode();NET.code=code;netStatus('Creating a room…');
   await prepareIce();
-  const p=new Peer(PFX+code,peerOpts());NET.peer=p;NET.role='host';
+  const p=new Peer(RPFX+code,peerOpts());NET.peer=p;NET.role='host';
   p.on('open',()=>{if(NET.peer!==p)return;if(!LOBBY.on){lobbyOpen('host',code);lobbyStatus('Send the invite link to a friend. Keep this screen open until they join.');}else lobbyStatus('Back online. Waiting for your friend…');});
   p.on('connection',c=>acceptHost(c,''));
   p.on('disconnected',()=>{if(NET.peer===p&&!NET.started)setTimeout(()=>{try{if(NET.peer===p&&p.disconnected&&!p.destroyed)p.reconnect();}catch(e){}},800);});
   p.on('error',err=>{if(err&&err.type==='unavailable-id'&&!LOBBY.on){hostRoom();return;}if(err&&(err.type==='network'||err.type==='server-error'||err.type==='socket-error'||err.type==='socket-closed'))return;
     if(LOBBY.on)lobbyStatus(peerErrText(err));else netStatus(peerErrText(err));});}
-async function joinRoom(code){if(!netAvailable())return;code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);if(code.length!==4){netStatus('Room codes are 4 letters or numbers.');return;}
+async function joinRoom(code){if(!netAvailable())return;code=cleanCode(code);const bad=codeProblem(code);if(bad){if(LOBBY.on)lobbyClose(),openOnline();netStatus(bad);return;}
+  if(NET.started)return;$('#codeIn').value=code;
   closePeer();NET.qm=null;NET.code=code;NET.role='guest';lobbyOpen('guest',code);lobbyStatus('Connecting to room '+code+'…');
   await prepareIce();if(!LOBBY.on||LOBBY.code!==code)return;
-  const p=new Peer(peerOpts());NET.peer=p;let tries=0,cur=0;
-  // keep knocking: the host may still be connecting, or switched apps to send the link and just came back
+  const p=new Peer(peerOpts());NET.peer=p;let tries=0,cur=0,pend=null;
+  // keep knocking: the host may still be connecting, or switched apps to send the link and just came back.
+  // Only one attempt is ever open, so the host never ends up holding a different connection from the one we use.
   const attempt=()=>{if(NET.peer!==p||NET.started||(NET.conn&&NET.conn.open))return;const id=++cur;tries++;
-    const c=p.connect(PFX+code,{reliable:false,serialization:'json'});let ok=false;
+    if(pend){try{pend.close();}catch(e){}pend=null;}
+    const c=p.connect(RPFX+code,{reliable:false,serialization:'json'});pend=c;let ok=false;
     const take=()=>{if(ok)return;if(NET.peer!==p||(NET.conn&&NET.conn.open&&NET.conn!==c)){try{c.close();}catch(e){}return;}
-      ok=true;cur++;setupConn(c,'guest');lobbyStatus('Connected. Saying hello…');};
-    c.on('open',take);   // a slow attempt that opens late is still welcome
+      ok=true;pend=null;cur++;setupConn(c,'guest');lobbyStatus('Connected. Saying hello…');};
+    c.on('open',take);
     const isOpen=()=>c.open||(c.dataChannel&&c.dataChannel.readyState==='open');
-    setTimeout(()=>{if(ok||NET.peer!==p||NET.started)return;if(isOpen()){take();return;}if(id===cur)next();},12000);};
+    setTimeout(()=>{if(ok||NET.peer!==p||NET.started)return;if(isOpen()){take();return;}if(id===cur)next();},15000);};
   const next=()=>{if(tries>=10){lobbyStatus("Couldn't reach room "+code+". Check the code, and ask your friend to keep South Paw open on the room screen.");$('#btnLobRetry').hidden=false;return;}
     lobbyStatus(tries<2?'Still connecting…':'Waiting for the host. They need South Paw open on the room screen. Trying again…');setTimeout(attempt,1500);};
   LOBBY.retry=()=>{tries=0;$('#btnLobRetry').hidden=true;lobbyStatus('Connecting to room '+code+'…');attempt();};
@@ -165,7 +184,9 @@ function openPeer(id){return new Promise(res=>{const p=id?new Peer(id,peerOpts()
 /* A host only claims a connection once it really opens; the broker also delivers stale requests from players who already gave up */
 function acceptHost(c,msg){
   const t=setTimeout(()=>{if(!c.open){try{c.close();}catch(e){}}},20000);
-  c.on('open',()=>{clearTimeout(t);if(NET.conn||NET.started){try{c.send({k:'busy'});}catch(e){}setTimeout(()=>{try{c.close();}catch(e){}},300);return;}
+  c.on('open',()=>{clearTimeout(t);
+    if(!NET.started&&LOBBY.on&&NET.conn&&NET.conn!==c&&NET.conn.peer===c.peer){const old=NET.conn;NET.conn=null;try{old.close();}catch(e){}setupConn(c,'host');return;}  // the same friend reconnected: use the newest line
+    if(NET.conn||NET.started){try{c.send({k:'busy'});}catch(e){}setTimeout(()=>{try{c.close();}catch(e){}},300);return;}
     NET.qm=null;setupConn(c,'host');if(msg)netStatus(msg);else lobbyStatus('Your friend is connecting…');});}
 function scanAll(p,n,ms){return new Promise(res=>{let left=n,won=null;if(n<=0){res(null);return;}
   for(let i=0;i<n;i++)tryJoin(p,PFX+'q'+i,ms).then(r=>{left--;
@@ -198,6 +219,13 @@ function cancelOnline(){NET.qm=null;if(!NET.started)closePeer();netStatus('');$(
    When both press Ready, the host starts the match. Red corner = the host, blue corner = the guest. */
 const LOBBY={on:false,role:'',code:'',me:false,opp:false,oppReady:false,starting:false,retry:null};
 function lobbyLink(){return location.origin+location.pathname+'#'+LOBBY.code;}
+/* The invite carries the code as well as the link: a friend who plays from the home-screen app opens the app and types it,
+   or taps Paste invite on the online screen. */
+function inviteText(){return 'Fight me on South Paw! Room code '+LOBBY.code+' \u2022 '+lobbyLink();}
+/* Room codes never use 0, O, 1, I or L. Clean up whatever was typed or pasted; return the 4-letter code or ''. */
+function cleanCode(t){t=String(t||'').toUpperCase();const m=t.match(/#([A-Z0-9]{4})\b/)||t.match(/ROOM(?: CODE)?\s*([A-Z0-9]{4})\b/)||t.match(/^\s*([A-Z0-9]{4})\s*$/);
+  return m?m[1]:t.replace(/[^A-Z0-9]/g,'').slice(0,4);}
+function codeProblem(c){if(c.length!==4)return 'Room codes are 4 letters or numbers.';if(/[0O1IL]/.test(c))return 'Room codes never use 0, O, 1, I or L. Check the code your friend sent.';return '';}
 function lobbyOpen(role,code){Object.assign(LOBBY,{on:true,role,code,me:false,opp:false,oppReady:false,starting:false,retry:null});
   hideScreens();$('#lobby').hidden=false;$('#lobCode').textContent=code;$('#lobInvite').hidden=role!=='host';$('#btnLobRetry').hidden=true;
   $('#btnLobShare').hidden=!navigator.share;lobbyRender();}
@@ -208,17 +236,17 @@ function lobbyRender(){const host=LOBBY.role==='host',me=myName(),opp=LOBBY.opp?
   const blue=host?{n:opp,you:false,r:LOBBY.oppReady,on:LOBBY.opp}:{n:me,you:true,r:LOBBY.me,on:true};
   for(const [k,v] of [['Red',red],['Blue',blue]]){$('#lob'+k+'Name').textContent=v.n+(v.you?' (you)':'');
     const st=$('#lob'+k+'State');st.textContent=!v.on?'':v.r?'Ready':'Not ready';st.classList.toggle('ok',!!v.r);$('#lob'+k).classList.toggle('empty',!v.on);}
-  const b=$('#btnReady');b.disabled=!LOBBY.opp||LOBBY.starting;b.textContent=LOBBY.me?'Not ready':'Ready';b.classList.toggle('primary',!LOBBY.me);}
-function lobbySetReady(r){if(!LOBBY.on||!LOBBY.opp||LOBBY.starting)return;LOBBY.me=r;netSend({k:'rdy',r:r?1:0});lobbyRender();
+  const b=$('#btnReady');b.disabled=!LOBBY.opp||LOBBY.starting||!!NET.badVer;b.textContent=LOBBY.me?'Not ready':'Ready';b.classList.toggle('primary',!LOBBY.me);}
+function lobbySetReady(r){if(!LOBBY.on||!LOBBY.opp||LOBBY.starting||NET.badVer)return;LOBBY.me=r;netSend({k:'rdy',r:r?1:0});lobbyRender();
   lobbyStatus(r?(LOBBY.oppReady?'Both ready…':'Waiting for '+NET.opp.name+' to press Ready.'):'Press Ready when you are set.');lobbyCheck();}
 function lobbyCheck(){if(!LOBBY.on)return;if(LOBBY.me&&LOBBY.oppReady){lobbyStatus('Both ready. Starting the fight…');
     if(NET.role==='host'&&!LOBBY.starting&&!NET.started){LOBBY.starting=true;lobbyRender();
-      setTimeout(()=>{if(LOBBY.on&&LOBBY.me&&LOBBY.oppReady&&NET.conn&&NET.conn.open&&!NET.started)netSend({k:'start',delay:4,names:[myName(),NET.opp.name],styles:[lookIdx,NET.opp.style]});else{LOBBY.starting=false;lobbyRender();}},700);}}
+      setTimeout(()=>{if(LOBBY.on&&LOBBY.me&&LOBBY.oppReady&&NET.conn&&NET.conn.open&&!NET.started){NET.startMsg={k:'start',delay:4,names:[myName(),NET.opp.name],styles:[lookIdx,NET.opp.style]};netSend(NET.startMsg);}else{LOBBY.starting=false;lobbyRender();}},700);}}
   else if(LOBBY.oppReady)lobbyStatus(NET.opp.name+' is ready. Press Ready to start.');}
-function lobbyLost(){LOBBY.opp=false;LOBBY.oppReady=false;LOBBY.me=false;LOBBY.starting=false;lobbyRender();
+function lobbyLost(){LOBBY.opp=false;LOBBY.oppReady=false;LOBBY.me=false;LOBBY.starting=false;NET.startMsg=null;NET.badVer='';lobbyRender();
   lobbyStatus(LOBBY.role==='host'?'Your friend left. The room is still open: send the link again.':'The host closed the room.');}
 function lobbyLeave(){if(NET.conn)netSend({k:'bye'});lobbyClose();NET.on=false;NET.started=false;setTimeout(closePeer,120);openOnline();netStatus('');}
-function lobbyCopy(btn){const link=lobbyLink(),text='Fight me on South Paw: '+link;const done=()=>{btn.textContent='Copied';setTimeout(()=>{btn.textContent='Copy invite link';},1600);};
+function lobbyCopy(btn){const link=lobbyLink(),text=inviteText();const done=()=>{btn.textContent='Copied';setTimeout(()=>{btn.textContent='Copy invite link';},1600);};
   const fallback=()=>{const i=$('#lobLink');i.hidden=false;i.value=link;i.select();};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(fallback);else fallback();}
 // coming back to the browser after sending the link: make sure the room is still reachable

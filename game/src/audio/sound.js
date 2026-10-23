@@ -40,8 +40,8 @@ const Sfx={buf:{},ctx:null,on:true,master:null,muffle:null,fx:null,crowd:null,am
   /* ---- punches: every landed or blocked punch makes a sound, and the crowd dips under it ---- */
   /* Same punch, same sound: the sample, loudness and pitch follow the shot type and power only (no random pitch). */
   punch(e,pan){if(!this.ok())return;this.wake();const p=clamp(e.p||0.3,0,1),dest=this.pan(pan),H=SND_HIT;
-    if(e.blk){this.duck(0.8);const f=this.ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=e.parry?2600:1500;f.connect(dest);
-      this.play('punch',e.parry?0.75:0.65,e.parry?1.2:0.85,f,0,H.punch);return;}
+    if(e.blk){this.duck(0.8);const f=this.ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1500;f.connect(dest);
+      this.play('punch',0.65,0.85,f,0,H.punch);return;}
     this.duck(0.6-0.15*p);
     const body=e.target==='body',k=e.kind||'straight',combo=Math.min(e.combo||1,6),big=k==='hook'||k==='upper'||e.label==='Counter'||p>0.75;
     const r=1+0.02*(combo-1);

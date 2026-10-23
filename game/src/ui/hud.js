@@ -41,7 +41,7 @@ function drainEvents(){
   for(const e of EVQ){if(e.k&&seen(e.k))continue;
     switch(e.ty){
       case 'fx':spawnFx(e,true);lastAtkT=realT;
-        if(S.mode!=='attract'&&!e.bag){if(e.parry)Sfx.react('ooh',0.35);else if(!e.blk){
+        if(S.mode!=='attract'&&!e.bag){if(!e.blk){
           if(e.label==='Counter'){Sfx.react('gasp',0.8);Sfx.react('ooh',0.95);}else if(e.p>0.62)Sfx.react('ooh',0.55+e.p*0.35);
           if(e.combo>=3)Sfx.react('cheer',0.35+0.12*Math.min(e.combo,6));}}
         else if(e.bag&&e.combo>=3)Sfx.react('ooh',0.3);break;

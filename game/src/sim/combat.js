@@ -45,25 +45,19 @@ function resolveFighter(a,o,ct,punished){
   if(punished){mult*=CTR;label='Counter';}
   // range: too close smothers the punch, the very tip of the reach only grazes
   const base=body?0.10:0.17;if(lz-gz<base-0.24||ct.smother){mult*=0.55;stunMul*=0.6;}else if(lz-gz>base+0.05){mult*=0.55;stunMul*=0.5;}
-  // counters: after a perfect dodge or parry, or hitting a man while he throws (or taunts)
+  // counters: after a perfect dodge, or hitting a man while he throws (or taunts)
   if(label!=='Counter'){if(a.counterWin>0){mult*=CTR;a.counterWin=0;label='Counter';}
     else if(isAtk(o.action)&&!o.resolved){mult*=CTR;label='Counter';}
     else if(o.action==='taunt'&&!o.tauntSafe){mult*=CTR;label='Caught taunting';}}
   let dmg=m.dmg*mult;
   const ex=ct.x,ey=ct.y,ez=ct.z;
   if(ct.blk){
-    const match=true;
-    if(match&&o.actionT<=130&&o.parryOk!==false){ // parry: guard came up right on time
-      a.action='hit';a.actionT=0;a.hitId++;a.stunMs=380;a.heavy=false;a.flash=0.5;react(a,CI.hitL,380);o.counterWin=650;o.stats.parries++;
-      fx({x:ex,y:ey,z:ez,p:0.35,blk:true,parry:true,dx,dz,to:o.i,by:a.i,tr:0.06,kick:0,cr:0.05,k:mk(a,'b')});S.hitstop=Math.max(S.hitstop,70);S.hitTarget=a.i;
-      ev({ty:'sfx',n:'block',k:mk(a,'B')});ev({ty:'pop',f:o.i,text:'Parry',cls:'slip',k:mk(a,'p')});return;}
-    if(match){ // blocked: no damage. The guard quietly wears: 3 normal shots in a row or 1 power shot breaks it
+    { // blocked: no damage, and the puncher is never hurt by it. The guard quietly wears: 3 normal shots in a row or 1 power shot breaks it
       o.gw+=m.pow?GUARD_HITS:1;o.gwT=0;o.kx+=dx*0.9;o.kz+=dz*0.9;
       if(o.gw>=GUARD_HITS){o.gw=0;guardBreak(a,o,m,dx,dz,ex,ey,ez);return;}
       o.blockStun=90+m.dmg*8;blockReact(o,m,m.dmg);
       const e={x:ex,y:ey-0.12,z:ez,p:0.3,blk:true,dx,dz,to:o.i,by:a.i,tr:0.05,kick:0,cr:0,k:mk(a,'b')};fx(e);S.hitstop=Math.max(S.hitstop,40);S.hitTarget=o.i;
       ev({ty:'sfx',n:'block',k:mk(a,'B')});return;}
-    // wrong guard (head guard against a body shot, or the other way round): it lands clean
   }
   land(a,o,m,dmg,label,dx,dz,ex,ey,ez,stunMul,!guarded&&stunMul===1);
 }

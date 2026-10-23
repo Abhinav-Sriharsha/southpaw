@@ -12,6 +12,7 @@ window.addEventListener('keydown',e=>{
   if(S.mode==='attract'){if(c==='Enter'&&!$('#title').hidden&&!onButton()){e.preventDefault();startMatch();}return;}
   if((c==='Escape'||c==='KeyP')&&!e.repeat){setPaused($('#pause').hidden);return;}
   if(G.paused)return;
+  if(!e.repeat&&getUpTap())return;
   if(S.state==='replay'){if(c==='Space'||c==='Enter'||c==='KeyR'){e.preventDefault();LI.skip=1;}return;}
   if(S.state==='matchEnd'){if(c==='Enter'&&!$('#end').hidden&&!onButton()){e.preventDefault();rematch();}return;}
   if(!e.repeat){
