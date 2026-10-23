@@ -426,7 +426,7 @@ Starts the title film and the frame loop. `takeInvite` joins the room in an invi
 2. Put it in `tools/anim/fbx/models/` and run `cd tools/anim && npm install && node model.mjs fbx/models/<file>.fbx <name>`. This writes `game/assets/models/<name>.js`.
 3. Check `partOf` in `model.mjs`: it turns the character's texture colours into parts (skin, trunks, gloves...), written for the 2x2 palette of `fighter03`. A character with a different texture needs its own rule there.
 4. Add `<script src="assets/models/<name>.js?v=...">` to `index.html` after the animation file, and set `FIGHTER_MODEL` in `data/fighters.js`.
-5. Look at the hands in a fight: if the fingers bend backwards, flip the palm direction (`DOWN`) in `model.mjs`.
+5. The fists come from the finger pose in a Mixamo boxing clip (`FIST_FROM`, the game's `Idle.fbx`), copied joint by joint onto the new character, so they close the same way on any Mixamo rig.
 
 ### Adding a new sound
 1. Put the original in `tools/sounds/originals/`, and add an ffmpeg line for it to `tools/sounds/prepare.sh`, copying a similar one. Then run the script.
@@ -440,7 +440,7 @@ Starts the title film and the frame loop. `takeInvite` joins the room in an invi
 ### `tools/anim/`
 - `fbx/`: the Mixamo source files.
 - `export.mjs`: the converter. It samples each clip at 30 fps, trims it (`KEEP`), strips root motion from step clips and stores it separately, lines up the knockdown fall with the get-ups, compresses everything and writes `game/assets/anim/clips.js`.
-- `model.mjs`: turns a Mixamo character into a body in `game/assets/models/` (scale, fists, bones, parts). See "Using a new character".
+- `model.mjs`: turns a Mixamo character into a body in `game/assets/models/` (scale, fists copied from a boxing clip, bones, parts). See "Using a new character".
 - `fbx/models/`: the source characters.
 - `package.json`: needs Node and the `three` package (`npm install`).
 

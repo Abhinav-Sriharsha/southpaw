@@ -21,22 +21,15 @@ const GAME_HIPS=104.3;   // the game skeleton's rest hip height in cm (tools/ani
 let sk=null;M.traverse(o=>{if(o.isSkinnedMesh&&!sk)sk=o;});if(!sk)throw new Error('no skinned mesh: download from Mixamo with Skin set to "With Skin"');
 M.updateMatrixWorld(true);
 const bones=sk.skeleton.bones,inv=sk.skeleton.boneInverses;
-/* Fists. Mixamo characters are rigged with open hands (T-pose, palms down), and the game folds the finger bones into
-   the hand, so the fingers are closed here before the mesh is baked. Each joint turns about the axis across the finger
-   (finger direction x down), which rolls the fingertip under toward the palm; the thumb then folds across the fingers. */
-const FB=n=>bones.find(b=>b.name==='mixamorig'+n);
-const wp=o=>{o.updateMatrixWorld(true);return new THREE.Vector3().setFromMatrixPosition(o.matrixWorld);};
-function turnWorld(bone,axis,ang){const q=new THREE.Quaternion().setFromAxisAngle(axis,ang),wq=new THREE.Quaternion(),pq=new THREE.Quaternion();
-  bone.getWorldQuaternion(wq);bone.parent.getWorldQuaternion(pq);bone.quaternion.copy(pq.invert().multiply(q.multiply(wq)));bone.updateMatrixWorld(true);}
-const DOWN=new THREE.Vector3(0,1,0);   // the side the palm faces in this rig's rest pose (checked by eye: -Y bent the fingers backwards)
-for(const side of ['Left','Right']){
-  for(const f of ['Index','Middle','Ring','Pinky'])[[1,1.5],[2,1.65],[3,1.2]].forEach(([j,ang])=>{const b=FB(side+'Hand'+f+j),c=FB(side+'Hand'+f+(j+1));if(!b||!c)return;
-    const d=wp(c).sub(wp(b)).normalize(),ax=new THREE.Vector3().crossVectors(d,DOWN).normalize();turnWorld(b,ax,ang);});
-  // thumb: fold its tip toward the middle of the index finger, a little per joint
-  const tgt=()=>wp(FB(side+'HandIndex2')).lerp(wp(FB(side+'HandMiddle2')),0.35).add(new THREE.Vector3(0,-0.015,0));
-  [[1,0.45],[2,0.6],[3,0.6]].forEach(([j,frac])=>{const b=FB(side+'HandThumb'+j),tip=FB(side+'HandThumb4')||FB(side+'HandThumb3');if(!b||!tip)return;
-    const o=wp(b),u=wp(tip).sub(o).normalize(),v=tgt().sub(o).normalize(),ax=new THREE.Vector3().crossVectors(u,v);const l=ax.length();if(l<1e-6)return;
-    turnWorld(b,ax.divideScalar(l),Math.asin(Math.min(1,l))*frac);});}
+/* Fists. Mixamo characters are rigged with open hands, and the game folds the finger bones into the hand, so the
+   fingers are closed here before the mesh is baked. The finger pose is copied from a Mixamo boxing clip (FIST_FROM,
+   one of the game's own animation files): Mixamo poses every finger joint into a real fist there, and all Mixamo rigs
+   share the same bone conventions, so the same local rotations close this character's hands the same way. */
+const FIST_FROM='fbx/Idle.fbx';
+{const fb=fs.readFileSync(FIST_FROM);const F=new FBXLoader().parse(fb.buffer.slice(fb.byteOffset,fb.byteOffset+fb.byteLength),'');
+  const mx=new THREE.AnimationMixer(F);mx.clipAction(F.animations[0]).play();mx.update(0.1);
+  let n=0;F.traverse(o=>{if(!o.isBone||!/Hand(Thumb|Index|Middle|Ring|Pinky)[1-3]$/.test(o.name))return;const t=M.getObjectByName(o.name);if(t){t.quaternion.copy(o.quaternion);n++;}});
+  console.log('fists: copied',n,'finger joints from',FIST_FROM);}
 M.updateMatrixWorld(true);
 const skinM=bones.map((b,i)=>new THREE.Matrix4().multiplyMatrices(b.matrixWorld,inv[i]));   // posed (fists) relative to bind
 // each source bone -> one of the 22 game bones (walk up the parents until a game bone)
