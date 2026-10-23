@@ -11,15 +11,16 @@ const INST={evt:null,
   seen(){try{return localStorage.getItem('sp.instBar')==='1';}catch(e){return false;}},
   mark(){try{localStorage.setItem('sp.instBar','1');}catch(e){}}};
 function instUpdate(){const can=!INST.installed()&&(INST.evt||INST.ios);
-  const b=$('#btnInstall');b.hidden=!can;b.textContent=INST.ios?'Add to Home Screen':'Install the app';
+  const b=$('#btnInstall');b.hidden=!can;const bt=b.querySelector('b')||b;bt.textContent=INST.ios?'Add to Home Screen':'Install the app';
   if(!can)$('#instBar').hidden=true;}
 function instBar(){if(!TOUCH||INST.installed()||INST.seen()||!(INST.evt||INST.ios))return;
   $('#instText').innerHTML=INST.ios?'Play full screen: tap <b>Share</b>, then <b>Add to Home Screen</b>.':'Play full screen: install South Paw on your home screen.';
-  $('#btnInstGo').hidden=INST.ios;$('#btnInstNo').textContent=INST.ios?'Got it':'Not now';$('#instBar').hidden=false;}
+  $('#btnInstGo').hidden=INST.ios;$('#btnInstNo').textContent=INST.ios?'Got it':'Not now';$('#instBar').hidden=false;
+  clearTimeout(instBar.t);instBar.t=setTimeout(()=>{$('#instBar').hidden=true;INST.mark();},2000);}   // shows for two seconds
 function instGo(){INST.mark();$('#instBar').hidden=true;
   if(INST.evt){const e=INST.evt;e.prompt();(e.userChoice||Promise.resolve()).then(()=>{INST.evt=null;instUpdate();}).catch(()=>{});return;}
   if(INST.ios){const h=$('#fsHint');h.innerHTML='Install on iPhone: tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>. Open South Paw from your home screen to play full screen.';
-    h.hidden=false;clearTimeout(instGo.t);instGo.t=setTimeout(()=>{h.hidden=true;},9000);}}
+    h.hidden=false;clearTimeout(instGo.t);instGo.t=setTimeout(()=>{h.hidden=true;},4000);}}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();INST.evt=e;instUpdate();instBar();});
 window.addEventListener('appinstalled',()=>{INST.evt=null;instUpdate();});
 $('#btnInstall').addEventListener('click',instGo);$('#btnInstGo').addEventListener('click',instGo);

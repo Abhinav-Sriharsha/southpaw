@@ -1,6 +1,6 @@
 # South Paw
 
-Motion-captured boxing in the browser. Fight the CPU, work the heavy bag, or box anyone online, phone against laptop. Version 0.55.
+Motion-captured boxing in the browser. Fight the CPU, work the heavy bag, or box anyone online, phone against laptop. Version 0.56.
 
 - **Host the `game/` folder.** That is everything players download.
 - **`PROJECT_GUIDE.md`** explains every file and where to make common changes.

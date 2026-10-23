@@ -10,7 +10,7 @@ let speedI=0,camMode=0;
 const KH_FIGHT='<span><kbd>D</kbd><kbd>A</kbd> in / out</span><span><kbd>W</kbd><kbd>S</kbd> circle</span><span><kbd>J</kbd> left hand</span><span><kbd>K</kbd> right hand</span><span>tap jab/cross, hold hook</span><span><kbd>W</kbd>+punch uppercut</span><span><kbd>S</kbd>+punch body</span><span><kbd>Space</kbd> block</span><span><kbd>Shift</kbd> dodge</span><span><kbd>T</kbd> taunt</span>';
 const KEYHELP={cpu:KH_FIGHT+'<span><kbd>Esc</kbd> menu</span>',online:KH_FIGHT+'<span><kbd>Esc</kbd> menu</span>',
   practice:KH_FIGHT.replace('<span><kbd>T</kbd> taunt</span>','')+'<span><kbd>T</kbd> slow-mo</span><span><kbd>C</kbd> camera</span><span><kbd>R</kbd> replay</span><span><kbd>Esc</kbd> pause</span>'};
-function hideScreens(){$('#title').hidden=true;$('#end').hidden=true;$('#pause').hidden=true;$('#online').hidden=true;const l=$('#lobby');if(l)l.hidden=true;}
+function hideScreens(){$('#title').hidden=true;$('#end').hidden=true;$('#pause').hidden=true;$('#online').hidden=true;const l=$('#lobby');if(l)l.hidden=true;const c=$('#cpu');if(c)c.hidden=true;}
 let usingTouch=TOUCH;
 function setPlaying(on){document.body.classList.toggle('playing',on);touchEl.hidden=!(on&&usingTouch);tbarEl.hidden=!on;resetStick();TB.block=false;
   document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}
@@ -29,16 +29,18 @@ const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
 const fsApi=()=>{const d=document.documentElement;return d.requestFullscreen||d.webkitRequestFullscreen||null;};
 const fsStandalone=()=>{try{return matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}catch(e){return false;}};
 let fullDeclined=false,fullWas=false;
+/* the full-screen and install buttons only show for two seconds, then fade away (flash2) */
+function flash2(el,ms){if(!el)return;el.classList.remove('gone');clearTimeout(el._ft);el._ft=setTimeout(()=>el.classList.add('gone'),ms||2000);}
 function goFull(force){if(fsEl()||(fullDeclined&&!force))return;const rq=fsApi();if(!rq)return;
   try{const d=document.documentElement,p=rq.call(d,{navigationUI:'hide'});
     const lock=()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}};
     if(p&&p.then)p.then(lock).catch(()=>{});else lock();}catch(e){}}
 function fsUpdate(){const on=!!fsEl();if(fullWas&&!on)fullDeclined=true;fullWas=on;
   const b=$('#btnFull');if(b)b.textContent=on?'Exit full screen':'Full screen';
-  const f=$('#fsBtn');if(f){f.hidden=on||fsStandalone();f.setAttribute('aria-label',on?'Exit full screen':'Full screen');}}
+  const f=$('#fsBtn');if(f){const was=f.hidden;f.hidden=on||fsStandalone();f.setAttribute('aria-label',on?'Exit full screen':'Full screen');if(was&&!f.hidden)flash2(f);}}
 function fsToggle(){if(fsEl()){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document);}catch(e){}return;}
   if(fsApi()){goFull(true);return;}
-  const h=$('#fsHint');if(h){h.hidden=false;clearTimeout(fsToggle.t);fsToggle.t=setTimeout(()=>{h.hidden=true;},6000);}}
+  const h=$('#fsHint');if(h){h.hidden=false;clearTimeout(fsToggle.t);fsToggle.t=setTimeout(()=>{h.hidden=true;},4000);}}
 function beginMode(){
   Sfx.init();goFull(true);timers.length=0;G.paused=false;G.map=MAP;speedI=0;
   hideScreens();annBox.innerHTML='';popBox.innerHTML='';lbox.classList.remove('on');
@@ -108,9 +110,11 @@ function fsKeep(){const b=$('#fsSwipe'),H=document.documentElement;if(!b)return;
     if(fsApi()&&!fsIPhone){if(!fsEl())need='tap';}
     else if(H.classList.contains('swipe')&&fsBarsShown())need='swipe';}
   if(need!==fsKeepMode){fsKeepMode=need;b.hidden=!need;b.dataset.mode=need||'';
+    if(need==='tap')flash2(b);else b.classList.remove('gone');   // tap: a two-second reminder; swipe: stays until swiped
     if(need==='swipe'){H.classList.remove('swiped');if((window.scrollY||H.scrollTop)>0)window.scrollTo(0,0);}}
   if(!need&&!intro&&H.classList.contains('swipe')&&!H.classList.contains('swiped'))H.classList.add('swiped');}
 ['resize','orientationchange'].forEach(t=>window.addEventListener(t,()=>{fsKeep();setTimeout(fsKeep,400);setTimeout(fsKeep,1000);}));
+window.addEventListener('orientationchange',()=>setTimeout(()=>{if(fsKeepMode==='tap')flash2($('#fsSwipe'));},500));
 window.addEventListener('scroll',()=>{if(fsKeepMode==='swipe')setTimeout(fsKeep,350);},{passive:true});
 if(window.visualViewport)visualViewport.addEventListener('resize',fsKeep);
 ['fullscreenchange','webkitfullscreenchange'].forEach(t=>document.addEventListener(t,()=>setTimeout(fsKeep,200)));

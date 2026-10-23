@@ -189,7 +189,7 @@ function showCamera1(dt,v){
    The swipe works by letting the page scroll a little (html.swipe adds room below), which is what makes phone browsers
    shrink their address bar. After the intro, coming back to the title goes straight to the menu. */
 let titlePressed=false;const INTRO={on:false};
-function titleStep(step){const el=$('#title');if(el)el.dataset.step=step;}
+function titleStep(step){const el=$('#title');if(el)el.dataset.step=step;if(step==='menu'){flash2($('#fsBtn'));flash2($('#btnInstall'));}}
 function titleEnter(){if(titlePressed){titleStep('menu');return;}
   INTRO.on=true;titleStep('intro');document.body.classList.add('intro');
   if(TOUCH&&!fsStandalone())document.documentElement.classList.add('swipe');
