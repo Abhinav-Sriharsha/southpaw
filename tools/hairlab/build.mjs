@@ -1,6 +1,6 @@
 /* South Paw · tools/hairlab/build.mjs
-   Builds the standalone hair lab (Basement Barbershop): the fighter from game/assets/models plus template.html.
-   Run:  node tools/hairlab/build.mjs   ->  tools/hairlab/barbershop.html (open it in a browser, or publish it). */
+   Builds the standalone fitting room (hair, face, body, kit): the fighter from game/assets/models plus template.html.
+   Run:  node tools/hairlab/build.mjs   ->  tools/hairlab/barbershop.html, the fitting room (open it in a browser, or publish it). */
 import fs from 'fs';import path from 'path';import {fileURLToPath} from 'url';
 const here=path.dirname(fileURLToPath(import.meta.url));
 globalThis.window={};await import(path.join(here,'../../game/assets/models/fighter03.js'));const M=window.SP_MODELS.fighter03;

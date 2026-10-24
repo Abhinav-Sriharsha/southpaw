@@ -1,4 +1,4 @@
-<title>Basement Barbershop</title>
+<title>Basement Fitting Room</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -10,6 +10,7 @@
   color-scheme:dark;
 }
 html,body{height:100%}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.45;overflow:hidden}
 .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 360px}
 .stage{position:relative;min-width:0;background:radial-gradient(120% 90% at 50% 30%,#1b1e27 0%,#0d0e13 55%,#07080b 100%)}
@@ -57,6 +58,14 @@ h2{margin:0 0 10px;font:600 11px/1 var(--mono);letter-spacing:.18em;text-transfo
 .copy p{margin:0;color:var(--muted);font-size:12px}
 #lookText{width:100%;min-height:62px;background:var(--raise);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:400 11px/1.4 var(--mono);padding:8px;resize:vertical}
 .msg{color:var(--gold);font-size:12px;min-height:1em}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;position:sticky;top:-18px;z-index:2;background:var(--panel);padding-block:8px;margin-block:-8px}
+.tab{font:700 16px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:10px 4px;cursor:pointer}
+.tab[aria-selected="true"]{color:#16130a;background:var(--gold);border-color:var(--gold)}
+.tab:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tabpanel{display:flex;flex-direction:column;gap:22px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.panel .chip{background:var(--raise)}
+.note{color:var(--muted);font-size:11.5px;margin:8px 0 0}
 @media (max-width:760px){
   body{overflow:auto}
   .app{height:auto;grid-template-columns:1fr;grid-template-rows:58vh auto}
@@ -75,7 +84,7 @@ h2{margin:0 0 10px;font:600 11px/1 var(--mono);letter-spacing:.18em;text-transfo
       <button class="chip" id="vTurn" type="button" aria-pressed="true">Turn</button>
     </div>
     <div class="board" aria-live="polite">
-      <div class="eyebrow">South Paw · in the chair</div>
+      <div class="eyebrow">South Paw · fitting room</div>
       <div class="cut" id="boardCut">Curly top</div>
       <div class="spec" id="boardSpec"></div>
     </div>
@@ -83,39 +92,111 @@ h2{margin:0 0 10px;font:600 11px/1 var(--mono);letter-spacing:.18em;text-transfo
 
   <aside class="panel">
     <div class="head">
-      <h1>Basement Barbershop</h1>
-      <p>Try haircuts on the South Paw fighter. Every cut is grown from his own scalp, so it fits his head exactly. Drag the view to turn him.</p>
+      <h1>Basement Fitting Room</h1>
+      <p>Build the South Paw fighter: haircut, face, body and kit. Drag the view to turn him.</p>
     </div>
 
-    <div>
-      <h2>Cut</h2>
-      <div class="cuts" id="cuts"></div>
+    <div class="tabs" role="tablist" aria-label="What to change">
+      <button class="tab" role="tab" id="tabHair" aria-controls="pHair" aria-selected="true" type="button">Hair</button>
+      <button class="tab" role="tab" id="tabFace" aria-controls="pFace" aria-selected="false" type="button">Face</button>
+      <button class="tab" role="tab" id="tabBody" aria-controls="pBody" aria-selected="false" type="button">Body</button>
+      <button class="tab" role="tab" id="tabKit" aria-controls="pKit" aria-selected="false" type="button">Kit</button>
     </div>
 
-    <div>
-      <h2>Clippers</h2>
-      <div class="sliders">
-        <div class="sl" id="slLen"><label for="len">Length</label><output id="lenOut"></output><input id="len" type="range" min="0" max="1" step="0.01"></div>
-        <div class="sl" id="slVol"><label for="vol">Volume</label><output id="volOut"></output><input id="vol" type="range" min="0" max="1" step="0.01"><small id="volNote"></small></div>
-        <div class="sl" id="slFade"><label for="fade">Sides</label><output id="fadeOut"></output><input id="fade" type="range" min="0" max="1" step="0.01"><small>Left is a skin fade, right keeps the sides full.</small></div>
-        <div class="sl" id="slLine"><label for="line">Hairline</label><output id="lineOut"></output><input id="line" type="range" min="-1" max="1" step="0.01"><small>Lower or higher at the forehead.</small></div>
+    <section class="tabpanel" id="pHair" role="tabpanel" aria-labelledby="tabHair">
+      <div>
+        <h2>Cut</h2>
+        <div class="cuts" id="cuts"></div>
       </div>
-    </div>
-
-    <div>
-      <h2>Hair colour</h2>
-      <div class="swatches" id="hairSw"></div>
-      <div class="row" style="margin-top:10px">
-        <label class="custom" for="hairPick">Any colour <input id="hairPick" type="color" value="#1b120d"></label>
-        <label class="toggle" for="tips"><input id="tips" type="checkbox"> Dyed tips</label>
-        <label class="custom" for="tipPick">Tips <input id="tipPick" type="color" value="#e8c55a"></label>
+      <div>
+        <h2>Clippers</h2>
+        <div class="sliders">
+          <div class="sl" id="slLen"><label for="len">Length</label><output id="lenOut"></output><input id="len" type="range" min="0" max="1" step="0.01"></div>
+          <div class="sl" id="slVol"><label for="vol">Volume</label><output id="volOut"></output><input id="vol" type="range" min="0" max="1" step="0.01"><small id="volNote"></small></div>
+          <div class="sl" id="slFade"><label for="fade">Sides</label><output id="fadeOut"></output><input id="fade" type="range" min="0" max="1" step="0.01"><small>Left is a skin fade, right keeps the sides full.</small></div>
+          <div class="sl" id="slLine"><label for="line">Hairline</label><output id="lineOut"></output><input id="line" type="range" min="-1" max="1" step="0.01"><small>Lower or higher at the forehead.</small></div>
+        </div>
       </div>
-    </div>
+      <div>
+        <h2>Hair colour</h2>
+        <div class="swatches" id="hairSw"></div>
+        <div class="row" style="margin-top:10px">
+          <label class="custom" for="hairPick">Any colour <input id="hairPick" type="color" value="#1b120d"></label>
+          <label class="toggle" for="tips"><input id="tips" type="checkbox"> Dyed tips</label>
+          <label class="custom" for="tipPick">Tips <input id="tipPick" type="color" value="#e8c55a"></label>
+        </div>
+      </div>
+    </section>
 
-    <div>
-      <h2>Skin</h2>
-      <div class="swatches" id="skinSw"></div>
-    </div>
+    <section class="tabpanel" id="pFace" role="tabpanel" aria-labelledby="tabFace" hidden>
+      <div>
+        <h2>Eyes</h2>
+        <div class="swatches" id="eyeSw"></div>
+      </div>
+      <div>
+        <h2>Eyebrows</h2>
+        <div class="chips" id="browChips"></div>
+        <div class="row" style="margin-top:10px">
+          <label class="toggle" for="browHair"><input id="browHair" type="checkbox" checked> Match the hair</label>
+          <label class="custom" for="browPick">Brows <input id="browPick" type="color" value="#1b120d"></label>
+        </div>
+      </div>
+      <div>
+        <h2>Ears</h2>
+        <div class="chips" id="earChips"></div>
+        <p class="note">Cauliflower ear is the swollen, lumpy ear years of sparring leave on a boxer.</p>
+      </div>
+    </section>
+
+    <section class="tabpanel" id="pBody" role="tabpanel" aria-labelledby="tabBody" hidden>
+      <div>
+        <h2>Skin</h2>
+        <div class="swatches" id="skinSw"></div>
+        <div class="row" style="margin-top:10px"><label class="custom" for="skinPick">Any tone <input id="skinPick" type="color" value="#d59a6c"></label></div>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <div class="sliders">
+          <div class="sl"><label for="weight">Weight</label><output id="weightOut"></output><input id="weight" type="range" min="-1" max="1" step="0.01"><small>Thin on the left, heavy on the right: belly, waist, limbs and neck.</small></div>
+          <div class="sl"><label for="muscle">Muscle</label><output id="muscleOut"></output><input id="muscle" type="range" min="0" max="1" step="0.01"><small>Chest, shoulders, arms and thighs.</small></div>
+        </div>
+        <p class="note">Only the look changes. In the game every fighter keeps the same reach and the same hit areas.</p>
+      </div>
+    </section>
+
+    <section class="tabpanel" id="pKit" role="tabpanel" aria-labelledby="tabKit" hidden>
+      <div>
+        <h2>Shorts</h2>
+        <div class="swatches" id="trunkSw"></div>
+        <div class="row" style="margin-top:10px"><label class="custom" for="trunkPick">Any colour <input id="trunkPick" type="color" value="#d8302a"></label></div>
+        <div class="sliders" style="margin-top:12px">
+          <div class="sl"><label for="shortLen">Leg length</label><output id="shortLenOut"></output><input id="shortLen" type="range" min="-1" max="1" step="0.01"></div>
+        </div>
+      </div>
+      <div>
+        <h2>Waistband and stripe</h2>
+        <div class="swatches" id="bandSw"></div>
+        <div class="row" style="margin-top:10px">
+          <label class="custom" for="bandPick">Waistband <input id="bandPick" type="color" value="#f4efe4"></label>
+          <label class="toggle" for="stripe"><input id="stripe" type="checkbox"> Side stripe</label>
+          <label class="custom" for="stripePick">Stripe <input id="stripePick" type="color" value="#ffc83a"></label>
+        </div>
+      </div>
+      <div>
+        <h2>Hand wraps</h2>
+        <div class="swatches" id="wrapSw"></div>
+        <div class="row" style="margin-top:10px"><label class="custom" for="wrapPick">Any colour <input id="wrapPick" type="color" value="#e0342a"></label></div>
+      </div>
+      <div>
+        <h2>Shoes</h2>
+        <div class="chips" id="bootChips"></div>
+        <div class="swatches" id="shoeSw" style="margin-top:10px"></div>
+        <div class="row" style="margin-top:10px">
+          <label class="custom" for="shoePick">Shoe <input id="shoePick" type="color" value="#16171c"></label>
+          <label class="custom" for="solePick">Sole <input id="solePick" type="color" value="#f4efe4"></label>
+        </div>
+      </div>
+    </section>
 
     <div class="budget">
       <h2>Game budget</h2>
@@ -128,7 +209,7 @@ h2{margin:0 0 10px;font:600 11px/1 var(--mono);letter-spacing:.18em;text-transfo
       <button id="copyBtn" type="button">Copy look</button>
       <textarea id="lookText" readonly aria-label="This look as text"></textarea>
       <div class="msg" id="copyMsg" role="status"></div>
-      <p>Paste this to Claude to put the cut on the fighters in the game.</p>
+      <p>Paste this to Claude to put this fighter in the game.</p>
     </div>
   </aside>
 </div>
@@ -165,7 +246,20 @@ const rig=new THREE.Group();scene.add(rig);
 function partGeo(test){const idx=[];for(let t=0;t<TRI.length;t+=3)if(test(PART[TRI[t]]))idx.push(TRI[t],TRI[t+1],TRI[t+2]);
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(POS,3));g.setAttribute('normal',new THREE.BufferAttribute(NOR,3));
   g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(NV*3),3));g.setIndex(idx);return g;}
-const bodyGeo=partGeo(p=>p!==PARTS.hair),origGeo=partGeo(p=>p===PARTS.hair);
+const origGeo=partGeo(p=>p===PARTS.hair);
+/* the body: every corner of every triangle is its own vertex (flat facets), remembering which model vertex it came from,
+   so the build sliders can move points and the kit can repaint them. */
+const GID=new Int32Array(NV);let NG=0;{const m=new Map();for(let i=0;i<NV;i++){const k=P16[i*3]+','+P16[i*3+1]+','+P16[i*3+2];let g=m.get(k);if(g===undefined){g=NG++;m.set(k,g);}GID[i]=g;}}
+const GN=new Float32Array(NG*3),GB=new Uint8Array(NG),ADJ=Array.from({length:NG},()=>new Set());
+for(let i=0;i<NV;i++)GB[GID[i]]=BONE[i];
+for(let t=0;t<TRI.length;t+=3){const a=TRI[t],b=TRI[t+1],c=TRI[t+2];
+  const ax=POS[b*3]-POS[a*3],ay=POS[b*3+1]-POS[a*3+1],az=POS[b*3+2]-POS[a*3+2],bx=POS[c*3]-POS[a*3],by=POS[c*3+1]-POS[a*3+1],bz=POS[c*3+2]-POS[a*3+2];
+  const nx=ay*bz-az*by,ny=az*bx-ax*bz,nz=ax*by-ay*bx;for(const v of [a,b,c]){const g=GID[v];GN[g*3]+=nx;GN[g*3+1]+=ny;GN[g*3+2]+=nz;}
+  const ga=GID[a],gb=GID[b],gc=GID[c];ADJ[ga].add(gb).add(gc);ADJ[gb].add(ga).add(gc);ADJ[gc].add(ga).add(gb);}
+for(let g=0;g<NG;g++){const l=Math.hypot(GN[g*3],GN[g*3+1],GN[g*3+2])||1;GN[g*3]/=l;GN[g*3+1]/=l;GN[g*3+2]/=l;}
+const ADJA=ADJ.map(s=>[...s]);
+const BV=[];for(let t=0;t<TRI.length;t+=3)if(PART[TRI[t]]!==PARTS.hair)BV.push(TRI[t],TRI[t+1],TRI[t+2]);
+const bodyGeo=new THREE.BufferGeometry();bodyGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(BV.length*3),3));bodyGeo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(BV.length*3),3));
 const bodyMat=toon(),bodyMesh=new THREE.Mesh(bodyGeo,bodyMat),bodyLine=new THREE.Mesh(bodyGeo,OUT);
 const origMesh=new THREE.Mesh(origGeo,toon()),origLine=new THREE.Mesh(origGeo,OUT);
 rig.add(bodyMesh,bodyLine,origMesh,origLine);
@@ -264,7 +358,7 @@ function sc(th,ph){let i=(th/(Math.PI*2))*NT;i=((i%NT)+NT)%NT;let j=Math.min(NP-
   return (SC[i0*NP+j0]*(1-u)+SC[i1*NP+j0]*u)*(1-v)+(SC[i0*NP+j1]*(1-u)+SC[i1*NP+j1]*u)*v;}
 
 /* ---------- building the hair mesh ---------- */
-const state={cut:'curly',L:0.5,V:0.6,F:0.3,line:0,hair:'#1b120d',tips:false,tip:'#e8c55a',skin:'#d59a6c'};
+const state={cut:'curly',L:0.5,V:0.6,F:0.3,line:0,hair:'#1b120d',tips:false,tip:'#e8c55a',skin:'#d59a6c',eye:'#3a2618',brow:'natural',browHair:true,browCol:'#1b120d',ear:'normal',weight:0,muscle:0.3,trunks:'#d8302a',band:'#f4efe4',stripe:false,stripeCol:'#ffc83a',shortLen:0,wraps:'#e0342a',boot:'low',shoe:'#16171c',sole:'#f4efe4'};
 let hairMesh=null,hairLine=null,triCount=0;
 const cA=new THREE.Color(),cB=new THREE.Color(),cS=new THREE.Color(),cT=new THREE.Color();
 function build(){
@@ -300,7 +394,7 @@ function build(){
     if(j>0)push(a,b,c,cc(a),cc(b),cc(c),C);push(a,c,e,cc(a),cc(c),cc(e),C);}
   if(cut.extra){const solid=new THREE.Color().copy(cA);
     const surf=(th,ph,out)=>{dirOf(th,ph,d);const i=Math.round(th/(Math.PI*2)*NT)%NT,j=Math.round(Math.min(NP-1,ph/PHIMAX*(NP-1)));const k=((i%NT)+NT)%NT*NP+j;const r=sc(th,ph)+T[k]*0.85;return (out||new THREE.Vector3()).copy(C).addScaledVector(d,r);};
-    cut.extra({L,V,F,surf,d,push,mask:maskAt,base:solid,tipC:state.tips?cT:solid});}
+    cut.extra({L,V,F,surf,d,push,mask:maskAt,left:Math.round(16+V*24),base:solid,tipC:state.tips?cT:solid});}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
   hairMesh=new THREE.Mesh(g,toon());hairLine=new THREE.Mesh(g,OUT);rig.add(hairMesh,hairLine);
   updateBudget(cut);
@@ -344,26 +438,94 @@ function rows(o){const n=Math.round(6+o.V*6),d=new THREE.Vector3();
       if(o.mask(th,ph)<0.55){if(pts.length)break;continue;}
       pts.push(C.clone().addScaledVector(d,sc(th,ph)+o.L*0.55));rad.push(pts.length%2?o.L:o.L*0.72);}
     if(pts.length>2)tube(pts,rad,4,{push:o.push},q=>mixC(o,q));}}
-function locks(o){const n=Math.round(14+o.V*22),gold=137.5*DEG;
-  for(let k=0;k<n;k++){const f=(k+0.5)/n,ph=(40+f*62)*DEG,th=Math.PI+((k*gold)%(Math.PI*2)-Math.PI)*0.82;   // the back and sides, not over the face
-    const front=Math.max(0,Math.cos(th));const len=o.L*(1-0.75*front)*(0.85+0.15*Math.sin(k*3.7));
+function locks(o){const n=Math.round(16+o.V*24),gold=137.5*DEG;
+  for(let k=0;k<n*3&&k<200;k++){const f=((k*0.618)%1),ph=(36+f*56)*DEG,th=Math.PI+((k*gold)%(Math.PI*2)-Math.PI)*0.6;   // the back half of the head, behind the ears
+    if(o.mask(th,ph)<0.85)continue;if(--o.left<0)break;
+    const side=Math.max(0,Math.cos(th)+0.5);const len=o.L*(1-0.45*side)*(0.85+0.15*Math.sin(k*3.7));
     const b=o.surf(th,ph),out=o.d.clone().normalize();const pts=[b.clone().addScaledVector(out,-0.5)];let dir=out.clone();const seg=len/6;
-    for(let s=1;s<=6;s++){dir.lerp(new THREE.Vector3(out.x*0.35,-1,out.z*0.35).normalize(),0.45).normalize();pts.push(pts[s-1].clone().addScaledVector(dir,s===1?1.2:seg));}
+    const fall=new THREE.Vector3(out.x*0.3,-1,out.z*0.3-0.3).normalize();
+    for(let s=1;s<=6;s++){dir.lerp(fall,0.42).normalize();pts.push(pts[s-1].clone().addScaledVector(dir,s===1?1.2:seg));}
     tube(pts,pts.map((_,s)=>s===6?0.5:0.95-s*0.05),5,{push:o.push},q=>mixC(o,q));}}
 
+/* ---------- build: thin to heavy, lean to muscled ----------
+   Each point moves along its smoothed normal by an amount set by its bone, then the amounts are blended across
+   neighbours so regions meet without steps. The head, hands and feet never move, so hair and wraps still fit. */
+const OFF=new Float32Array(NG),FIXED=new Set([5,9,13,16,17,20,21]);
+function shapeOf(b,nz,W,Mu){const h=Math.max(0,W)*1.7,t=Math.max(0,-W)*1.5,f=Math.max(0,nz);Mu*=1.5;
+  switch(b){case 0:return 2.0*h-0.8*t+2.2*h*f;case 1:return 2.4*h-0.9*t+4.6*h*f+0.3*Mu;case 2:return 2.1*h-0.9*t+3.2*h*f+0.9*Mu;
+    case 3:return 1.5*h-0.8*t+Mu*(1.0+1.2*f);case 4:return 1.1*h-0.4*t+0.8*Mu;case 6:case 10:return 1.1*h-0.5*t+1.9*Mu;
+    case 7:case 11:return 1.3*h-0.7*t+1.6*Mu;case 8:case 12:return 0.5*h-0.45*t+0.7*Mu;case 14:case 18:return 1.9*h-0.9*t+1.1*Mu;
+    case 15:case 19:return 0.8*h-0.5*t+0.8*Mu;default:return 0;}}
+function applyBody(){
+  for(let g=0;g<NG;g++)OFF[g]=FIXED.has(GB[g])?0:shapeOf(GB[g],GN[g*3+2],state.weight,state.muscle);
+  for(let pass=0;pass<4;pass++){const o=OFF.slice();for(let g=0;g<NG;g++){if(GB[g]===5)continue;let s=o[g]*2,n=2;for(const a of ADJA[g]){s+=o[a];n++;}OFF[g]=s/n;}}
+  const P=bodyGeo.attributes.position.array;
+  for(let k=0;k<BV.length;k++){const v=BV[k],g=GID[v],o=OFF[g];P[k*3]=POS[v*3]+GN[g*3]*o;P[k*3+1]=POS[v*3+1]+GN[g*3+1]*o;P[k*3+2]=POS[v*3+2]+GN[g*3+2]*o;}
+  bodyGeo.attributes.position.needsUpdate=true;bodyGeo.computeVertexNormals();bodyGeo.computeBoundingSphere();}
+/* ---------- kit: repainting the model's own faces ---------- */
+let HEM=1e9;for(let i=0;i<NV;i++)if(PART[i]===PARTS.trunks&&(BONE[i]===14||BONE[i]===18))HEM=Math.min(HEM,POS[i*3+1]);
+const BOOTS={low:0,mid:15,high:27};
+function paintBody(){const c=new THREE.Color(),col=bodyGeo.attributes.color.array,hem=HEM-state.shortLen*13,boot=BOOTS[state.boot];
+  const pick=(v,y,nx,x)=>{const p=PART[v],b=BONE[v];
+    const leg=b===15||b===19,thigh=b===14||b===18,stripe=state.stripe&&Math.abs(nx)>0.72&&nx*x>0;
+    if(p===PARTS.shoes||(boot&&leg&&y<boot&&p===PARTS.skin))return y<1.7?state.sole:state.shoe;
+    if(p===PARTS.trunks)return y<hem?state.skin:stripe?state.stripeCol:state.trunks;
+    if(p===PARTS.skin&&thigh&&y>=hem)return stripe?state.stripeCol:state.trunks;
+    if(p===PARTS.wraps)return state.wraps;if(p===PARTS.band||p===PARTS.cuffs)return state.band;
+    return state.skin;};
+  // one colour per triangle, judged at its middle, so hems and boot tops stay crisp
+  for(let k=0;k<BV.length;k+=3){const a=BV[k],b=BV[k+1],d=BV[k+2],y=(POS[a*3+1]+POS[b*3+1]+POS[d*3+1])/3,x=(POS[a*3]+POS[b*3]+POS[d*3])/3,nx=(GN[GID[a]*3]+GN[GID[b]*3]+GN[GID[d]*3])/3;
+    c.set(pick(a,y,nx,x));for(let q=0;q<3;q++){col[(k+q)*3]=c.r;col[(k+q)*3+1]=c.g;col[(k+q)*3+2]=c.b;}}bodyGeo.attributes.color.needsUpdate=true;
+  const oc=origGeo.attributes.color;c.set(state.hair);for(let i=0;i<NV;i++)oc.setXYZ(i,c.r,c.g,c.b);oc.needsUpdate=true;}
+/* ---------- face: eyes, eyebrows, ears (the model has none of these) ----------
+   Rays from inside the head find the eye sockets (the deepest point under the brow ridge) and the ears (the widest points). */
+const toonC=c=>new THREE.MeshToonMaterial({color:c,gradientMap:grad});
+const face=new THREE.Group();rig.add(face);let faceTris=0;
+const FACE=(()=>{const r=new THREE.Raycaster();r.near=0.5;r.far=40;const out={};
+  for(const side of [1,-1]){let best=null;for(let y=168.5;y<=174;y+=0.25){r.set(new THREE.Vector3(3.3*side,y,C.z),new THREE.Vector3(0,0,1));const h=r.intersectObject(headMesh,false)[0];if(h&&(!best||h.point.z<best.point.z))best=h;}
+    out['eye'+side]=best?{p:best.point.clone(),n:best.face.normal.clone()}:{p:new THREE.Vector3(3.3*side,171,14),n:new THREE.Vector3(0,0,1)};}
+  let mx=0;for(const i of headIdx)mx=Math.max(mx,Math.abs(POS[i*3]));
+  for(const side of [1,-1]){const c=new THREE.Vector3();let n=0;for(const i of headIdx){const x=POS[i*3];if(x*side>mx-1.6){c.x+=x;c.y+=POS[i*3+1];c.z+=POS[i*3+2];n++;}}
+    c.divideScalar(Math.max(1,n));c.x=side*(mx+0.02);out['ear'+side]={p:c,n:new THREE.Vector3(side,0,-0.15).normalize()};}
+  return out;})();
+const BROWS={natural:{name:'Natural',ang:-6,th:0.62},thick:{name:'Thick',ang:-4,th:0.95},thin:{name:'Thin',ang:-8,th:0.36},angry:{name:'Angry',ang:18,th:0.7},raised:{name:'Raised',ang:-16,th:0.6}};
+const EARS={normal:'Normal',cauli:'Cauliflower'};
+function facing(obj,p,n,push){obj.position.copy(p).addScaledVector(n,push||0);obj.lookAt(obj.position.clone().add(n));return obj;}
+function addMesh(parent,geo,mat){const m=new THREE.Mesh(geo,mat);parent.add(m);faceTris+=(geo.index?geo.index.count:geo.attributes.position.count)/3;return m;}
+function buildFace(){while(face.children.length){const o=face.children.pop();o.traverse(x=>{if(x.geometry)x.geometry.dispose();});}faceTris=0;
+  const skin=new THREE.Color(state.skin),brow=state.browHair?state.hair:state.browCol,B=BROWS[state.brow];
+  for(const side of [1,-1]){
+    // eye: a white almond with a six-sided iris
+    const E=FACE['eye'+side],g=facing(new THREE.Group(),E.p,E.n,0.15);face.add(g);
+    const scl=addMesh(g,new THREE.CylinderGeometry(1.25,1.25,0.4,8).rotateX(Math.PI/2),toonC(0xefe9de));scl.scale.set(1,0.56,1);
+    const iris=addMesh(g,new THREE.CylinderGeometry(0.52,0.52,0.42,6).rotateX(Math.PI/2),toonC(state.eye));iris.position.set(0,-0.03,0.12);
+    const pup=addMesh(g,new THREE.CylinderGeometry(0.22,0.22,0.44,5).rotateX(Math.PI/2),toonC(0x0c0a0c));pup.position.set(0,-0.03,0.16);
+    // eyebrow: a wedge on the brow ridge
+    const bg=facing(new THREE.Group(),E.p.clone().add(new THREE.Vector3(side*0.15,1.75,0)),E.n,0.45);face.add(bg);
+    const bm=addMesh(bg,new THREE.BoxGeometry(3.0,B.th,0.7),toonC(brow));bm.rotation.z=side*B.ang*DEG;bm.position.x=side*0.1;
+    // ear: the bowl and the curled rim; cauliflower ear swells and lumps
+    const R=FACE['ear'+side],eg=facing(new THREE.Group(),R.p,R.n,0);face.add(eg);
+    const dark=skin.clone().multiplyScalar(0.7),light=skin.clone().lerp(new THREE.Color(0xffffff),0.06);
+    if(state.ear==='cauli'){const lump=skin.clone().lerp(new THREE.Color(0x8a3d3d),0.22);
+      for(const [x,y,r] of [[0.2,0.6,0.95],[-0.5,-0.3,0.8],[0.5,-0.6,0.7],[-0.1,0.1,0.75]]){const m=addMesh(eg,new THREE.IcosahedronGeometry(r,0),toonC(lump));m.position.set(x,y,0.25);m.scale.z=0.7;}
+      const rim=addMesh(eg,new THREE.TorusGeometry(1.5,0.5,4,8,Math.PI*1.55),toonC(lump));rim.rotation.z=-0.35*Math.PI;rim.position.z=0.1;}
+    else{const bowl=addMesh(eg,new THREE.CylinderGeometry(0.85,0.7,0.5,6).rotateX(Math.PI/2),toonC(dark));bowl.scale.set(0.85,1.15,1);bowl.position.z=0.05;
+      const rim=addMesh(eg,new THREE.TorusGeometry(1.45,0.3,3,8,Math.PI*1.5),toonC(light));rim.rotation.z=-0.3*Math.PI;rim.position.z=0.12;rim.scale.set(0.85,1.15,1);}
+  }}
 /* ---------- the panel ---------- */
 const $=s=>document.querySelector(s);
 const HAIRS=[['Black','#141013'],['Dark brown','#2a1a12'],['Brown','#5a3820'],['Auburn','#7a3016'],['Blond','#c9a25a'],['Platinum','#e6dcc2'],['Grey','#8d8b88'],['Corner red','#c8281f'],['Corner blue','#2457c9']];
+const EYES=[['Dark brown','#2a1a10'],['Brown','#5a3a1e'],['Hazel','#7a6a2e'],['Green','#3f7a45'],['Blue','#3a6fb8'],['Grey','#7d8a94']];
+const KIT=[['Red','#d8302a'],['Blue','#1e5bd0'],['Black','#17181d'],['White','#f1ece1'],['Gold','#ffc83a'],['Green','#2f8f4e'],['Purple','#6a3fb5'],['Pink','#e0699a']];
+const SHOES=[['Black','#16171c'],['White','#eeeae0'],['Red','#c8281f'],['Blue','#2457c9'],['Gold','#d8aa2e']];
 const SKINS=[['Red corner','#d59a6c'],['Blue corner','#8a5636'],['Fair','#f0c9a4'],['Olive','#c08a5c'],['Deep','#5e3a24'],['Model','#ffe1bc']];
 function swatches(el,list,keyName,pick){el.innerHTML='';for(const [n,h] of list){const b=document.createElement('button');b.type='button';b.className='sw';b.style.background=h;b.title=n;b.setAttribute('aria-label',n);
   b.setAttribute('aria-pressed',String(state[keyName]===h));b.addEventListener('click',()=>{state[keyName]=h;if(pick)$(pick).value=h;refresh();});el.appendChild(b);}}
 function cutButtons(){const el=$('#cuts');el.innerHTML='';for(const c of CUTS){const b=document.createElement('button');b.type='button';b.className='cutbtn';b.setAttribute('aria-pressed',String(state.cut===c.id));
   b.innerHTML='<b></b><span></span>';b.querySelector('b').textContent=c.name;b.querySelector('span').textContent=c.note;
   b.addEventListener('click',()=>{applyCut(c.id);refresh(true);});el.appendChild(b);}}
-function updateBudget(cut){const tris=cut.id==='original'?origGeo.index.count/3:triCount,limit=2000;$('#meter i').style.width=Math.min(100,tris/limit*100)+'%';$('#meter').classList.toggle('over',tris>limit);
-  $('#budgetText').textContent=tris.toLocaleString()+' triangles of hair · '+(tris>limit?'over':'within')+' the 2,000 a phone handles easily beside the 4,232 of the body';}
-function paintBody(){const c=new THREE.Color(),cols={0:state.skin,1:'#d8302a',2:'#e0342a',3:state.hair,4:'#f4efe4',5:'#f4efe4',6:'#16171c'};
-  for(const g of [bodyGeo,origGeo]){const a=g.attributes.color;for(let i=0;i<NV;i++){c.set(cols[PART[i]]);a.setXYZ(i,c.r,c.g,c.b);}a.needsUpdate=true;}}
+function updateBudget(cut){const hair=cut.id==='original'?origGeo.index.count/3:triCount,tris=hair+faceTris,limit=2000;$('#meter i').style.width=Math.min(100,tris/limit*100)+'%';$('#meter').classList.toggle('over',tris>limit);
+  $('#budgetText').textContent=hair.toLocaleString()+' hair + '+faceTris.toLocaleString()+' face = '+tris.toLocaleString()+' triangles · '+(tris>limit?'over':'within')+' the 2,000 a phone handles easily beside the 4,232 of the body';}
 function refresh(cutChanged){
   const cut=CUTS.find(c=>c.id===state.cut);
   $('#len').value=state.L;$('#vol').value=state.V;$('#fade').value=state.F;$('#line').value=state.line;
@@ -372,13 +534,35 @@ function refresh(cutChanged){
   $('#lineOut').textContent=state.line>0.05?'Higher':state.line<-0.05?'Lower':'Natural';$('#volNote').textContent=cut.vNote||'';
   $('#slLen').classList.toggle('off',!cut.len);$('#slVol').classList.toggle('off',!cut.vNote);$('#slFade').classList.toggle('off',!cut.t||cut.fade==null);$('#slLine').classList.toggle('off',!cut.t);
   document.querySelectorAll('.cutbtn').forEach((b,i)=>b.setAttribute('aria-pressed',String(CUTS[i].id===state.cut)));
-  swatches($('#hairSw'),HAIRS,'hair','#hairPick');swatches($('#skinSw'),SKINS,'skin');
-  $('#boardCut').textContent=cut.name;$('#boardSpec').textContent=cut.len?fmtLen(L)+(cut.fade!=null?' · sides '+(state.F<0.08?'faded to skin':Math.round(state.F*100)+'%'):''):cut.note;
-  paintBody();build();
-  const look={cut:state.cut,length:L==null?null:+L.toFixed(2),volume:+state.V.toFixed(2),sides:+state.F.toFixed(2),hairline:+state.line.toFixed(2),hair:state.hair,tips:state.tips?state.tip:null,skin:state.skin};
-  $('#lookText').value='South Paw hair: '+JSON.stringify(look);
-  try{localStorage.setItem('barber.look',JSON.stringify(state));}catch(e){}
+  swatches($('#hairSw'),HAIRS,'hair','#hairPick');swatches($('#skinSw'),SKINS,'skin','#skinPick');swatches($('#eyeSw'),EYES,'eye');
+  swatches($('#trunkSw'),KIT,'trunks','#trunkPick');swatches($('#bandSw'),KIT,'band','#bandPick');swatches($('#wrapSw'),KIT,'wraps','#wrapPick');swatches($('#shoeSw'),SHOES,'shoe','#shoePick');
+  chips($('#browChips'),Object.entries(BROWS).map(([k,v])=>[k,v.name]),'brow');chips($('#earChips'),Object.entries(EARS),'ear');chips($('#bootChips'),[['low','Low shoes'],['mid','Mid boots'],['high','High boots']],'boot');
+  $('#weight').value=state.weight;$('#muscle').value=state.muscle;$('#shortLen').value=state.shortLen;
+  $('#weightOut').textContent=buildName();$('#muscleOut').textContent=state.muscle<0.2?'Lean':state.muscle<0.55?'Toned':state.muscle<0.85?'Built':'Bodybuilder';
+  $('#shortLenOut').textContent=state.shortLen<-0.35?'Short':state.shortLen>0.35?'Long':'Standard';
+  $('#browPick').value=state.browHair?state.hair:state.browCol;$('#browHair').checked=state.browHair;$('#stripe').checked=state.stripe;$('#stripePick').value=state.stripeCol;$('#solePick').value=state.sole;
+  $('#boardCut').textContent=cut.name;$('#boardSpec').textContent=buildName()+' · '+(cut.len?fmtLen(L)+(cut.fade!=null?' · sides '+(state.F<0.08?'faded to skin':Math.round(state.F*100)+'%'):''):cut.note);
+  applyBody();paintBody();build();buildFace();updateBudget(cut);
+  const r2=x=>+(+x).toFixed(2);
+  const look={hair:{cut:state.cut,length:L==null?null:r2(L),volume:r2(state.V),sides:r2(state.F),hairline:r2(state.line),colour:state.hair,tips:state.tips?state.tip:null},
+    face:{eyes:state.eye,brows:state.brow,browColour:state.browHair?'hair':state.browCol,ears:state.ear},body:{skin:state.skin,weight:r2(state.weight),muscle:r2(state.muscle)},
+    kit:{shorts:state.trunks,legLength:r2(state.shortLen),waistband:state.band,stripe:state.stripe?state.stripeCol:null,wraps:state.wraps,shoes:state.boot,shoeColour:state.shoe,sole:state.sole}};
+  $('#lookText').value='South Paw fighter: '+JSON.stringify(look);
+  try{localStorage.setItem('fitting.look',JSON.stringify(state));}catch(e){}
 }
+function buildName(){const w=state.weight;return w<-0.6?'Very lean':w<-0.2?'Lean':w<0.2?'Middleweight':w<0.6?'Heavy':'Heavyweight';}
+function chips(el,list,keyName){el.innerHTML='';for(const [k,n] of list){const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=n;b.setAttribute('aria-pressed',String(state[keyName]===k));
+  b.addEventListener('click',()=>{state[keyName]=k;refresh();});el.appendChild(b);}}
+for(const [id,k] of [['#weight','weight'],['#muscle','muscle'],['#shortLen','shortLen']])$(id).addEventListener('input',e=>{state[k]=+e.target.value;refresh();});
+for(const [id,k] of [['#skinPick','skin'],['#trunkPick','trunks'],['#bandPick','band'],['#wrapPick','wraps'],['#shoePick','shoe'],['#solePick','sole']])$(id).addEventListener('input',e=>{state[k]=e.target.value;refresh();});
+$('#browPick').addEventListener('input',e=>{state.browCol=e.target.value;state.browHair=false;refresh();});
+$('#browHair').addEventListener('change',e=>{state.browHair=e.target.checked;refresh();});
+$('#stripe').addEventListener('change',e=>{state.stripe=e.target.checked;refresh();});
+$('#stripePick').addEventListener('input',e=>{state.stripeCol=e.target.value;state.stripe=true;refresh();});
+const TABS=[['#tabHair','#pHair'],['#tabFace','#pFace'],['#tabBody','#pBody'],['#tabKit','#pKit']];
+function showTab(i){TABS.forEach(([t,p],k)=>{$(t).setAttribute('aria-selected',String(k===i));$(p).hidden=k!==i;});
+  if(i===0||i===1)setView(HEADV);else setView(BODYV);try{localStorage.setItem('fitting.tab',String(i));}catch(e){}}
+TABS.forEach(([t],i)=>$(t).addEventListener('click',()=>showTab(i)));
 for(const [id,k] of [['#len','L'],['#vol','V'],['#fade','F'],['#line','line']])$(id).addEventListener('input',e=>{state[k]=+e.target.value;refresh();});
 $('#hairPick').addEventListener('input',e=>{state.hair=e.target.value;refresh();});
 $('#tipPick').addEventListener('input',e=>{state.tip=e.target.value;state.tips=true;$('#tips').checked=true;refresh();});
@@ -409,7 +593,8 @@ function tick(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
   controls.update();renderer.render(scene,camera);requestAnimationFrame(tick);}
 function applyCut(id){const c=CUTS.find(x=>x.id===id);state.cut=id;if(c.len)state.L=(c.len[2]-c.len[0])/(c.len[1]-c.len[0]);if(c.vol!=null)state.V=c.vol;if(c.fade!=null)state.F=c.fade;}
 applyCut(state.cut);
-try{const s=JSON.parse(localStorage.getItem('barber.look')||'null');if(s&&CUTS.some(c=>c.id===s.cut))Object.assign(state,s);}catch(e){}
+try{const s=JSON.parse(localStorage.getItem('fitting.look')||'null');if(s&&CUTS.some(c=>c.id===s.cut))Object.assign(state,s);}catch(e){}
 $('#hairPick').value=state.hair;$('#tipPick').value=state.tip;$('#tips').checked=state.tips;
 cutButtons();refresh();size();requestAnimationFrame(tick);
+try{const t=+localStorage.getItem('fitting.tab');if(t>0&&t<4){$(TABS[0][1]).hidden=true;TABS.forEach(([a,p],k)=>{$(a).setAttribute('aria-selected',String(k===t));$(p).hidden=k!==t;});}}catch(e){}
 </script>
