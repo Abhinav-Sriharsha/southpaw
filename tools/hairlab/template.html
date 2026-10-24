@@ -1,0 +1,415 @@
+<title>Basement Barbershop</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the fighter fills a dark viewport like the game's basement; the barber's card of cuts and clippers sits beside it (below it on phones). */
+:root{
+  --bg:#0a0b0f; --panel:#111319; --raise:#181b23; --line:rgba(244,239,228,.11); --fg:#f1ece1; --muted:#9a958a; --gold:#ffc83a; --red:#d8302a; --blue:#2b6ef2;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif; --body:"Archivo","Helvetica Neue",Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.45;overflow:hidden}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 360px}
+.stage{position:relative;min-width:0;background:radial-gradient(120% 90% at 50% 30%,#1b1e27 0%,#0d0e13 55%,#07080b 100%)}
+#view{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.board{position:absolute;left:max(18px,env(safe-area-inset-left,0px));bottom:16px;pointer-events:none;display:grid;gap:2px}
+.board .eyebrow{font:500 11px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.board .cut{font:900 clamp(34px,6vw,64px)/.9 var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--fg);text-shadow:0 2px 18px rgba(0,0,0,.6)}
+.board .spec{font:400 12px/1.3 var(--mono);color:var(--muted)}
+.viewbtns{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));display:flex;gap:6px}
+.chip{font:600 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--fg);background:rgba(17,19,25,.82);border:1px solid var(--line);padding:9px 12px;border-radius:6px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+.chip:focus-visible,.cutbtn:focus-visible,.sw:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding-block:18px 28px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+.head h1{margin:0;font:900 30px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+.head p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+h2{margin:0 0 10px;font:600 11px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.cuts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cutbtn{text-align:left;background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--fg);cursor:pointer;display:grid;gap:2px;min-width:0}
+.cutbtn b{font:700 17px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.cutbtn span{font-size:11.5px;color:var(--muted);line-height:1.25}
+.cutbtn[aria-pressed="true"]{border-color:var(--gold);background:rgba(255,200,58,.08)}
+.cutbtn[aria-pressed="true"] b{color:var(--gold)}
+.sliders{display:grid;gap:12px}
+.sl{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.sl label{font-weight:600}
+.sl output{font:500 12px/1 var(--mono);color:var(--gold);font-variant-numeric:tabular-nums}
+.sl input{grid-column:1/-1;width:100%;accent-color:var(--gold)}
+.sl small{grid-column:1/-1;color:var(--muted);font-size:11.5px;margin-top:-2px}
+.sl.off{opacity:.38}
+.swatches{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{border-color:var(--gold)}
+.custom{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.custom input[type=color]{width:34px;height:30px;border:1px solid var(--line);background:none;border-radius:6px;padding:2px;cursor:pointer}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.toggle{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
+.toggle input{accent-color:var(--gold);width:16px;height:16px}
+.budget{display:grid;gap:6px}
+.meter{height:6px;background:var(--raise);border-radius:3px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--gold);width:0}
+.meter.over i{background:var(--red)}
+.budget p{margin:0;font:400 12px/1.35 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.copy{display:grid;gap:8px}
+.copy button{font:700 16px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--gold);color:#16130a;border:0;border-radius:6px;padding:12px 14px;cursor:pointer}
+.copy p{margin:0;color:var(--muted);font-size:12px}
+#lookText{width:100%;min-height:62px;background:var(--raise);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:400 11px/1.4 var(--mono);padding:8px;resize:vertical}
+.msg{color:var(--gold);font-size:12px;min-height:1em}
+@media (max-width:760px){
+  body{overflow:auto}
+  .app{height:auto;grid-template-columns:1fr;grid-template-rows:58vh auto}
+  .stage{height:58vh}
+  .panel{border-left:0;border-top:1px solid var(--line);overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){.chip,.cutbtn{transition:none}}
+</style>
+
+<div class="app">
+  <section class="stage" aria-label="Fighter preview">
+    <canvas id="view" aria-label="3D view of the fighter. Drag to turn, pinch or scroll to zoom."></canvas>
+    <div class="viewbtns">
+      <button class="chip" id="vHead" type="button" aria-pressed="true">Head</button>
+      <button class="chip" id="vBody" type="button" aria-pressed="false">Full body</button>
+      <button class="chip" id="vTurn" type="button" aria-pressed="true">Turn</button>
+    </div>
+    <div class="board" aria-live="polite">
+      <div class="eyebrow">South Paw · in the chair</div>
+      <div class="cut" id="boardCut">Curly top</div>
+      <div class="spec" id="boardSpec"></div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="head">
+      <h1>Basement Barbershop</h1>
+      <p>Try haircuts on the South Paw fighter. Every cut is grown from his own scalp, so it fits his head exactly. Drag the view to turn him.</p>
+    </div>
+
+    <div>
+      <h2>Cut</h2>
+      <div class="cuts" id="cuts"></div>
+    </div>
+
+    <div>
+      <h2>Clippers</h2>
+      <div class="sliders">
+        <div class="sl" id="slLen"><label for="len">Length</label><output id="lenOut"></output><input id="len" type="range" min="0" max="1" step="0.01"></div>
+        <div class="sl" id="slVol"><label for="vol">Volume</label><output id="volOut"></output><input id="vol" type="range" min="0" max="1" step="0.01"><small id="volNote"></small></div>
+        <div class="sl" id="slFade"><label for="fade">Sides</label><output id="fadeOut"></output><input id="fade" type="range" min="0" max="1" step="0.01"><small>Left is a skin fade, right keeps the sides full.</small></div>
+        <div class="sl" id="slLine"><label for="line">Hairline</label><output id="lineOut"></output><input id="line" type="range" min="-1" max="1" step="0.01"><small>Lower or higher at the forehead.</small></div>
+      </div>
+    </div>
+
+    <div>
+      <h2>Hair colour</h2>
+      <div class="swatches" id="hairSw"></div>
+      <div class="row" style="margin-top:10px">
+        <label class="custom" for="hairPick">Any colour <input id="hairPick" type="color" value="#1b120d"></label>
+        <label class="toggle" for="tips"><input id="tips" type="checkbox"> Dyed tips</label>
+        <label class="custom" for="tipPick">Tips <input id="tipPick" type="color" value="#e8c55a"></label>
+      </div>
+    </div>
+
+    <div>
+      <h2>Skin</h2>
+      <div class="swatches" id="skinSw"></div>
+    </div>
+
+    <div class="budget">
+      <h2>Game budget</h2>
+      <div class="meter" id="meter"><i></i></div>
+      <p id="budgetText"></p>
+    </div>
+
+    <div class="copy">
+      <h2>Keep this look</h2>
+      <button id="copyBtn" type="button">Copy look</button>
+      <textarea id="lookText" readonly aria-label="This look as text"></textarea>
+      <div class="msg" id="copyMsg" role="status"></div>
+      <p>Paste this to Claude to put the cut on the fighters in the game.</p>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/*DATA*/
+'use strict';
+/* ---------- the fighter (units: cm, his own rest pose) ---------- */
+const dec=(s,T)=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new T(u.buffer);};
+const P16=dec(D.pos,Int16Array),N8=dec(D.nor,Int8Array),PART=dec(D.part,Uint8Array),BONE=dec(D.bone,Uint8Array),TRI=dec(D.tri,Uint16Array);
+const NV=PART.length,POS=new Float32Array(NV*3),NOR=new Float32Array(NV*3);
+for(let i=0;i<NV*3;i++){POS[i]=P16[i]/100;NOR[i]=N8[i]/127;}
+const PARTS={skin:0,trunks:1,wraps:2,hair:3,band:4,cuffs:5,shoes:6},HEADBONE=5;
+
+const canvas=document.getElementById('view');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(30,1,1,4000);
+const controls=new THREE.OrbitControls(camera,canvas);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=28;controls.maxDistance=520;
+scene.add(new THREE.HemisphereLight(0xbfc8ff,0x1a1410,0.42));
+const key=new THREE.DirectionalLight(0xffe2c0,0.7);key.position.set(-120,260,220);scene.add(key);
+const rim=new THREE.DirectionalLight(0x7fa6ff,0.55);rim.position.set(160,180,-220);scene.add(rim);
+
+const grad=new THREE.DataTexture(new Uint8Array([80,150,225]),3,1,THREE.LuminanceFormat);grad.minFilter=grad.magFilter=THREE.NearestFilter;grad.needsUpdate=true;
+const toon=()=>new THREE.MeshToonMaterial({vertexColors:true,gradientMap:grad});
+const OUT=new THREE.ShaderMaterial({uniforms:{uW:{value:1.6},uRes:{value:new THREE.Vector2(1,1)}},side:THREE.BackSide,
+  vertexShader:'uniform float uW;uniform vec2 uRes;void main(){vec4 c=projectionMatrix*modelViewMatrix*vec4(position,1.0);vec3 n=normalize(normalMatrix*normal);vec2 d=(projectionMatrix*vec4(n,0.0)).xy;float l=length(d);d=l>1e-5?d/l:vec2(0.0);c.xy+=d*uW*c.w*2.0/uRes;gl_Position=c;}',
+  fragmentShader:'void main(){gl_FragColor=vec4(0.04,0.04,0.06,1.0);}'});
+
+const rig=new THREE.Group();scene.add(rig);
+function partGeo(test){const idx=[];for(let t=0;t<TRI.length;t+=3)if(test(PART[TRI[t]]))idx.push(TRI[t],TRI[t+1],TRI[t+2]);
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(POS,3));g.setAttribute('normal',new THREE.BufferAttribute(NOR,3));
+  g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(NV*3),3));g.setIndex(idx);return g;}
+const bodyGeo=partGeo(p=>p!==PARTS.hair),origGeo=partGeo(p=>p===PARTS.hair);
+const bodyMat=toon(),bodyMesh=new THREE.Mesh(bodyGeo,bodyMat),bodyLine=new THREE.Mesh(bodyGeo,OUT);
+const origMesh=new THREE.Mesh(origGeo,toon()),origLine=new THREE.Mesh(origGeo,OUT);
+rig.add(bodyMesh,bodyLine,origMesh,origLine);
+let capMesh=null,capLine=null;
+// the floor: a soft pool of light under his feet
+{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,4,64,64,64);g.addColorStop(0,'rgba(255,214,160,.22)');g.addColorStop(1,'rgba(255,214,160,0)');x.fillStyle=g;x.fillRect(0,0,128,128);
+  const f=new THREE.Mesh(new THREE.PlaneGeometry(260,260),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));f.rotation.x=-Math.PI/2;f.position.y=0.2;scene.add(f);}
+
+/* ---------- measuring his scalp ----------
+   From a point inside the skull, rays go out on a grid of directions (around the head and from the crown down).
+   Each ray finds the skin (the scalp) and the outside of his original hair; that gives the head shape and the natural hairline. */
+const NT=48,NP=24,PHIMAX=128*Math.PI/180;
+const headIdx=[];for(let t=0;t<TRI.length;t+=3){const a=TRI[t];if(PART[a]===PARTS.skin&&BONE[a]===HEADBONE)headIdx.push(a,TRI[t+1],TRI[t+2]);}
+const headGeo=new THREE.BufferGeometry();headGeo.setAttribute('position',new THREE.BufferAttribute(POS,3));headGeo.setIndex(headIdx);
+const headMesh=new THREE.Mesh(headGeo,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
+const origHit=new THREE.Mesh(origGeo,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
+headMesh.updateMatrixWorld();origHit.updateMatrixWorld();
+const hb=new THREE.Box3();for(let k=0;k<headIdx.length;k++){const i=headIdx[k];hb.expandByPoint(new THREE.Vector3(POS[i*3],POS[i*3+1],POS[i*3+2]));}
+const C=new THREE.Vector3(0,hb.min.y+(hb.max.y-hb.min.y)*0.58,(hb.min.z+hb.max.z)/2-1.5);   // inside the skull, a little behind centre
+const dirOf=(th,ph,out)=>out.set(Math.sin(ph)*Math.sin(th),Math.cos(ph),Math.sin(ph)*Math.cos(th));
+const SC=new Float32Array(NT*NP),M0=new Float32Array(NT*NP),SYN=new Uint8Array(NT*NP),DEPTH=new Float32Array(NT*NP),ray=new THREE.Raycaster();ray.near=1.5;ray.far=60;
+{const d=new THREE.Vector3(),O=new Float32Array(NT*NP);
+  for(let i=0;i<NT;i++)for(let j=0;j<NP;j++){const k=i*NP+j,th=i/NT*Math.PI*2,ph=j/(NP-1)*PHIMAX;dirOf(th,ph,d);ray.set(C,d);
+    const hs=ray.intersectObject(headMesh,false),ho=ray.intersectObject(origHit,false);
+    SC[k]=hs.length?hs[0].distance:-1;O[k]=ho.length?ho[ho.length-1].distance:-1;M0[k]=O[k]>0?1:0;}
+  // the model has no skin under its hair: build a scalp there from the hair's shape, sunk in more toward the middle
+  const step=new Float32Array(NT*NP).fill(99);const q=[];
+  for(let k=0;k<SC.length;k++)if(M0[k]&&SC[k]>0){step[k]=0;q.push(k);}else if(!M0[k]){step[k]=0;q.push(k);}
+  while(q.length){const k=q.shift(),i=(k/NP)|0,j=k%NP;for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const jj=j+dj;if(jj<0||jj>=NP)continue;const n=((i+di+NT)%NT)*NP+jj;if(step[n]>step[k]+1){step[n]=step[k]+1;q.push(n);}}}
+  for(let k=0;k<SC.length;k++)DEPTH[k]=M0[k]?Math.min(step[k]===99?6:step[k],6):0;
+  // depth inside the natural hair counted from the hairline (skin under hair counts as the edge)
+  {const st=new Float32Array(NT*NP).fill(99),qq=[];for(let k=0;k<SC.length;k++)if(!M0[k]){st[k]=0;qq.push(k);}
+   while(qq.length){const k=qq.shift(),i=(k/NP)|0,j=k%NP;for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const jj=j+dj;if(jj<0||jj>=NP)continue;const n=((i+di+NT)%NT)*NP+jj;if(st[n]>st[k]+1){st[n]=st[k]+1;qq.push(n);}}}
+   for(let k=0;k<SC.length;k++)DEPTH[k]=Math.min(st[k],8);}
+  for(let k=0;k<SC.length;k++)if(SC[k]<0&&O[k]>0){SC[k]=O[k]-Math.min(1.6,0.5*step[k]);SYN[k]=1;}
+  for(let i=0;i<NT;i++)for(let j=0;j<NP;j++){const k=i*NP+j;if(SC[k]<0)SC[k]=j?SC[k-1]:10;}
+  for(let pass=0;pass<3;pass++){const tmp=SC.slice();for(let i=0;i<NT;i++)for(let j=1;j<NP-1;j++){const k=i*NP+j;if(!SYN[k])continue;const a=((i+NT-1)%NT)*NP+j,b=((i+1)%NT)*NP+j;SC[k]=(tmp[a]+tmp[b]+tmp[k-1]+tmp[k+1]+tmp[k]*2)/6;}}
+  let pole=0;for(let i=0;i<NT;i++)pole+=SC[i*NP];for(let i=0;i<NT;i++)SC[i*NP]=pole/NT;
+  const m=M0.slice();for(let i=0;i<NT;i++)for(let j=1;j<NP-1;j++){const a=((i+NT-1)%NT)*NP+j,b=((i+1)%NT)*NP+j;M0[i*NP+j]=(m[a]+m[b]+m[i*NP+j]*2)/4;}}
+function sstep(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);}
+const scalpTop=SC[0],DEG=Math.PI/180;
+
+/* ---------- the cuts ----------
+   Each cut says how thick the hair is at every point of the grid (cm), and can add pieces: spikes, a bun, a ponytail, locks.
+   L, V, F are the sliders (length, volume, sides). top/side/front/back describe where on the head a point is. */
+const GUARDS=[[3,'#1'],[6,'#2'],[10,'#3'],[13,'#4'],[16,'#5'],[19,'#6'],[22,'#7'],[25,'#8']];
+const guard=cm=>{const mm=cm*10;let best=null;for(const g of GUARDS)if(Math.abs(g[0]-mm)<=1.6)best=g[1];return best;};
+const fmtLen=cm=>cm<2.6?(Math.round(cm*10)+' mm'+(guard(cm)?' · '+guard(cm)+' guard':'')):(cm.toFixed(1)+' cm');
+const CUTS=[
+ {id:'original',name:'His own',note:'The model as it came',len:null},
+ {id:'bald',name:'Clean shave',note:'Nothing on top',len:null,noLine:true},
+ {id:'buzz',name:'Buzz cut',note:'One guard all over',len:[0.1,1.4,0.6],fade:0.8,
+   t:p=>p.L*(p.top+p.side*(0.35+0.65*p.F))},
+ {id:'crew',name:'Crew cut',note:'Short top, tight sides',len:[1.2,5,2.6],fade:0.5,
+   t:p=>p.top*p.L*(1+0.25*p.front)+p.side*(0.15+0.55*p.F)},
+ {id:'curly',name:'Curly top',note:'Curls up top, skin fade',len:[2,6,3.4],vol:0.6,fade:0.3,vNote:'How bumpy the curls are',
+   t:p=>p.top*(p.L+p.V*1.6*(0.5+0.5*Math.sin(p.th*7+p.ph*11)*Math.sin(p.th*5-p.ph*9)))+p.side*fadeBand(p)},
+ {id:'flat',name:'Flat top',note:'Squared off like a deck',len:[3,9,5.5],fade:0.35,
+   t:p=>Math.max(p.side*(0.12+0.5*p.F),p.topish*boxed(p,1.4))},
+ {id:'hightop',name:'High-top',note:'A tall block, faded sides',len:[6,15,10],fade:0.2,
+   t:p=>Math.max(p.side*fadeBand(p),p.topish*boxed(p,0.4))},
+ {id:'afro',name:'Afro',note:'Round all over',len:[3,10,5.5],vol:0.5,vNote:'Rounder or taller',round:4.5,
+   t:p=>sphere(p)},
+ {id:'mohawk',name:'Mohawk',note:'A crest, shaved sides',len:[3,15,8],vol:0.45,fade:0,vNote:'Width of the crest',
+   t:p=>{const w=1.4+p.V*3.2,c=1-sstep(w*0.55,w,Math.abs(p.lx));return Math.max(c*p.L*(0.55+0.45*(1-sstep(60*DEG,118*DEG,p.ph))),p.side*0.45*p.F+p.top*0.45*p.F*(1-c));}},
+ {id:'faux',name:'Faux hawk',note:'A soft ridge, short sides',len:[2,7,4],vol:0.6,fade:0.5,vNote:'Width of the ridge',
+   t:p=>{const w=2.6+p.V*4,c=1-sstep(w*0.5,w,Math.abs(p.lx));return p.top*(0.9+c*p.L*(0.6+0.4*p.front))+p.side*(0.15+0.5*p.F);}},
+ {id:'spiky',name:'Spikes',note:'Gelled points up top',len:[2,8,4],vol:0.5,fade:0.5,vNote:'How many spikes',
+   t:p=>p.top*1.1+p.side*(0.12+0.5*p.F),extra:spikes},
+ {id:'pomp',name:'Pompadour',note:'Volume at the front',len:[3,10,6],fade:0.35,
+   t:p=>p.side*(0.12+0.55*p.F)+p.top*0.9+p.L*Math.exp(-Math.pow((p.ph-38*DEG)/(26*DEG),2))*(0.35+0.65*p.front)*(1-0.7*p.back)},
+ {id:'bun',name:'Top knot',note:'Slicked back into a bun',len:[2.5,6,4],fade:0.6,
+   t:p=>p.top*0.8+p.side*(0.15+0.5*p.F),extra:bun},
+ {id:'pony',name:'Ponytail',note:'Slicked back, tied low',len:[10,45,26],fade:0.7,
+   t:p=>p.top*0.8+p.side*(0.2+0.5*p.F),extra:pony},
+ {id:'dreads',name:'Locks',note:'Dreadlocks to the shoulders',len:[6,38,20],vol:0.5,fade:0.8,vNote:'How many locks',
+   t:p=>p.top*1.1+p.side*(0.3+0.6*p.F),extra:locks},
+ {id:'rows',name:'Cornrows',note:'Braided rows, front to back',len:[0.4,1.0,0.65],vol:0.5,fade:1,vNote:'How many rows',
+   t:p=>0.1,extra:rows},
+ {id:'part',name:'Side part',note:'Combed over from a part',len:[1.5,6,3.2],fade:0.45,
+   t:p=>{const dip=Math.exp(-Math.pow((p.lx-3)/0.7,2))*p.top;const side=p.lx>3?0.75:1.1;return p.top*p.L*side*(1-0.85*dip)+p.side*(0.14+0.55*p.F);}},
+ {id:'bowl',name:'Bowl cut',note:'One length, straight fringe',len:[1.5,5,2.8],ownMask:true,
+   t:p=>p.L},
+];
+function fadeBand(p){return 0.5*p.F*(1-sstep(82*DEG,112*DEG,p.ph))+0.12*(1-sstep(95*DEG,118*DEG,p.ph));}
+// the head's horizontal radius at this direction, for box-shaped cuts
+function boxed(p,inset){const yTop=C.y+scalpTop+p.L,cy=Math.cos(p.ph),sy=Math.sin(p.ph);
+  const rp=cy>0.02?(yTop-C.y)/cy:1e9;const half=sc(p.th,90*DEG)+inset;const rb=sy>0.02?half/sy:1e9;return Math.max(0,Math.min(rp,rb)-p.s);}
+function sphere(p){const S=new THREE.Vector3(0,3+p.V*4,-1.5),R=scalpTop+p.L*(0.62+0.22*(1-p.V)),d=p.d;
+  const ox=-S.x,oy=-S.y,oz=-S.z,b=d.x*ox+d.y*oy+d.z*oz,c=ox*ox+oy*oy+oz*oz-R*R,disc=b*b-c;return disc>0?Math.max(0.4,-b+Math.sqrt(disc)-p.s):0.4;}
+function maskAt(th,ph){let i=(th/(Math.PI*2))*NT;i=((i%NT)+NT)%NT;let j=Math.min(NP-1.001,Math.max(0,ph/PHIMAX*(NP-1)));
+  const i0=Math.floor(i),i1=(i0+1)%NT,j0=Math.floor(j),j1=j0+1,u=i-i0,v=j-j0;const D2=(k)=>Math.min(1,DEPTH[k]/2);
+  return (D2(i0*NP+j0)*(1-u)+D2(i1*NP+j0)*u)*(1-v)+(D2(i0*NP+j1)*(1-u)+D2(i1*NP+j1)*u)*v;}
+function sc(th,ph){let i=(th/(Math.PI*2))*NT;i=((i%NT)+NT)%NT;let j=Math.min(NP-1.001,Math.max(0,ph/PHIMAX*(NP-1)));
+  const i0=Math.floor(i),i1=(i0+1)%NT,j0=Math.floor(j),j1=j0+1,u=i-i0,v=j-j0;
+  return (SC[i0*NP+j0]*(1-u)+SC[i1*NP+j0]*u)*(1-v)+(SC[i0*NP+j1]*(1-u)+SC[i1*NP+j1]*u)*v;}
+
+/* ---------- building the hair mesh ---------- */
+const state={cut:'curly',L:0.5,V:0.6,F:0.3,line:0,hair:'#1b120d',tips:false,tip:'#e8c55a',skin:'#d59a6c'};
+let hairMesh=null,hairLine=null,triCount=0;
+const cA=new THREE.Color(),cB=new THREE.Color(),cS=new THREE.Color(),cT=new THREE.Color();
+function build(){
+  const cut=CUTS.find(c=>c.id===state.cut);
+  if(hairMesh){rig.remove(hairMesh,hairLine);hairMesh.geometry.dispose();}
+  origMesh.visible=origLine.visible=cut.id==='original';hairMesh=null;triCount=0;
+  buildCap(cut.id!=='original');
+  if(!cut.t){updateBudget(cut);return;}
+  const L=cut.len[0]+(cut.len[1]-cut.len[0])*state.L,V=state.V,F=state.F;
+  cA.set(state.hair);cS.set(state.skin);cT.set(state.tip);
+  const pos=[],col=[];const d=new THREE.Vector3(),T=new Float32Array(NT*NP),Mk=new Float32Array(NT*NP);
+  let tMax=0.01;
+  for(let i=0;i<NT;i++)for(let j=0;j<NP;j++){const th=i/NT*Math.PI*2,ph=j/(NP-1)*PHIMAX;dirOf(th,ph,d);const s=SC[i*NP+j];
+    // hairline: shift where the natural hair starts, mostly at the front
+    let m;if(cut.ownMask){const y=C.y+d.y*s,line=C.y+1.8+state.line*3;m=sstep(line-0.8,line+0.8,y);}
+    else{const shift=state.line*13*DEG*(0.35+0.65*Math.max(0,Math.cos(th)));const jj=Math.min(NP-1,Math.max(0,j+shift/(PHIMAX/(NP-1))));const j0=Math.floor(jj),j1=Math.min(NP-1,j0+1),f=jj-j0;m=M0[i*NP+j0]*(1-f)+M0[i*NP+j1]*f;}
+    const top=1-sstep(42*DEG,82*DEG,ph),topish=1-sstep(55*DEG,88*DEG,ph);
+    const depth=DEPTH[i*NP+j],edge=sstep(0,cut.round||2,depth);const p={th,ph,d,s,L,V,F,edge,depth,top,side:1-top,topish,front:Math.max(0,Math.cos(th)),back:Math.max(0,-Math.cos(th)),lx:s*d.x,dx:d.x,dy:d.y};
+    const t=Math.max(0,cut.t(p))*(cut.ownMask?1:0.4+0.6*edge);T[i*NP+j]=t;Mk[i*NP+j]=m;if(m>0.5)tMax=Math.max(tMax,t);}
+  // the crown is one point: give it one height
+  let a=0;for(let i=0;i<NT;i++)a+=T[i*NP];for(let i=0;i<NT;i++)T[i*NP]=a/NT;
+  const V3=[];for(let i=0;i<NT;i++)for(let j=0;j<NP;j++){const k=i*NP+j,th=i/NT*Math.PI*2,ph=j/(NP-1)*PHIMAX;dirOf(th,ph,d);const t=T[k],m=Mk[k];
+    const lift=m*(t-0.35*(1-sstep(0.02,0.14,t)))+(1-m)*-0.45;   // uncovered or shaved: tucked just under the skin
+    V3[k]=[C.x+d.x*(SC[k]+lift),C.y+d.y*(SC[k]+lift),C.z+d.z*(SC[k]+lift),t,m];}
+  const colOf=(t,h)=>{const dens=sstep(0.03,0.75,t);cB.copy(cS).lerp(cA,0.3+0.7*dens);if(state.tips&&h>0.55)cB.lerp(cT,sstep(0.55,1,h));return cB;};
+  const push=(a,b,c,ca,cb,cc,ctr)=>{const ab=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],ac=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+    const n=[ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],ab[0]*ac[1]-ab[1]*ac[0]];const g=[(a[0]+b[0]+c[0])/3-ctr.x,(a[1]+b[1]+c[1])/3-ctr.y,(a[2]+b[2]+c[2])/3-ctr.z];
+    if(n[0]*g[0]+n[1]*g[1]+n[2]*g[2]<0){const x=b;b=c;c=x;const y=cb;cb=cc;cc=y;}
+    pos.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);col.push(ca.r,ca.g,ca.b,cb.r,cb.g,cb.b,cc.r,cc.g,cc.b);triCount++;};
+  const cc=v=>colOf(v[3],v[3]/tMax).clone();
+  for(let i=0;i<NT;i++)for(let j=0;j<NP-1;j++){const i2=(i+1)%NT,a=V3[i*NP+j],b=V3[i2*NP+j],c=V3[i2*NP+j+1],e=V3[i*NP+j+1];
+    if(Math.max(a[4],b[4],c[4],e[4])<0.04)continue;
+    if(j>0)push(a,b,c,cc(a),cc(b),cc(c),C);push(a,c,e,cc(a),cc(c),cc(e),C);}
+  if(cut.extra){const solid=new THREE.Color().copy(cA);
+    const surf=(th,ph,out)=>{dirOf(th,ph,d);const i=Math.round(th/(Math.PI*2)*NT)%NT,j=Math.round(Math.min(NP-1,ph/PHIMAX*(NP-1)));const k=((i%NT)+NT)%NT*NP+j;const r=sc(th,ph)+T[k]*0.85;return (out||new THREE.Vector3()).copy(C).addScaledVector(d,r);};
+    cut.extra({L,V,F,surf,d,push,mask:maskAt,base:solid,tipC:state.tips?cT:solid});}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
+  hairMesh=new THREE.Mesh(g,toon());hairLine=new THREE.Mesh(g,OUT);rig.add(hairMesh,hairLine);
+  updateBudget(cut);
+}
+/* the scalp under his hair, in skin colour (the model has none there) */
+function buildCap(on){if(capMesh){rig.remove(capMesh,capLine);capMesh.geometry.dispose();capMesh=null;}if(!on)return;
+  const d=new THREE.Vector3(),c=new THREE.Color(state.skin),pos=[],col=[],P=(i,j)=>{const k=(i%NT)*NP+j;dirOf((i%NT)/NT*Math.PI*2,j/(NP-1)*PHIMAX,d);const r=SC[k]-(SYN[k]?0:0.25);return [C.x+d.x*r,C.y+d.y*r,C.z+d.z*r];};
+  for(let i=0;i<NT;i++)for(let j=0;j<NP-1;j++){const ks=[i*NP+j,((i+1)%NT)*NP+j,((i+1)%NT)*NP+j+1,i*NP+j+1];if(!ks.some(k=>SYN[k]))continue;
+    const a=P(i,j),b=P(i+1,j),e=P(i+1,j+1),f=P(i,j+1);const tris=j>0?[[a,b,e],[a,e,f]]:[[a,e,f]];
+    for(const t of tris){const n=new THREE.Vector3().crossVectors(new THREE.Vector3(...t[1]).sub(new THREE.Vector3(...t[0])),new THREE.Vector3(...t[2]).sub(new THREE.Vector3(...t[0])));
+      const g=new THREE.Vector3((t[0][0]+t[1][0]+t[2][0])/3,(t[0][1]+t[1][1]+t[2][1])/3,(t[0][2]+t[1][2]+t[2][2])/3).sub(C);const tt=n.dot(g)<0?[t[0],t[2],t[1]]:t;
+      for(const v of tt){pos.push(...v);col.push(c.r,c.g,c.b);}}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
+  capMesh=new THREE.Mesh(g,toon());capLine=new THREE.Mesh(g,OUT);rig.add(capMesh,capLine);}
+/* pieces made of tubes, cones and blobs; ctr is a point inside each piece so its faces point outward */
+function tube(pts,radii,sides,X,colAt){const rings=[];const up=new THREE.Vector3(0,1,0),t=new THREE.Vector3(),u=new THREE.Vector3(),w=new THREE.Vector3();
+  for(let k=0;k<pts.length;k++){t.subVectors(pts[Math.min(k+1,pts.length-1)],pts[Math.max(0,k-1)]).normalize();u.crossVectors(t,Math.abs(t.y)>0.9?new THREE.Vector3(1,0,0):up).normalize();w.crossVectors(t,u);
+    const r=[];for(let s=0;s<sides;s++){const a=s/sides*Math.PI*2;r.push(pts[k].clone().addScaledVector(u,Math.cos(a)*radii[k]).addScaledVector(w,Math.sin(a)*radii[k]).toArray());}rings.push(r);}
+  for(let k=0;k<pts.length-1;k++){const ctr=pts[k].clone().lerp(pts[k+1],0.5),ca=colAt(k/(pts.length-1)).clone(),cb=colAt((k+1)/(pts.length-1)).clone();
+    for(let s=0;s<sides;s++){const s2=(s+1)%sides;X.push(rings[k][s],rings[k][s2],rings[k+1][s2],ca,ca,cb,ctr);X.push(rings[k][s],rings[k+1][s2],rings[k+1][s],ca,cb,cb,ctr);}}
+  const end=pts[pts.length-1],last=rings[rings.length-1],ce=colAt(1).clone(),ctr=pts[pts.length-2].clone().lerp(end,0.5);
+  for(let s=0;s<sides;s++)X.push(last[s],last[(s+1)%sides],end.toArray(),ce,ce,ce,ctr);}
+function mixC(o,k){return o.base.clone().lerp(o.tipC,sstep(0.45,1,k));}
+function spikes(o){const n=Math.round(20+o.V*34),gold=137.5*DEG;
+  for(let k=0;k<n;k++){const f=(k+0.5)/n,ph=Math.acos(1-f*(1-Math.cos(84*DEG))),th=k*gold;
+    if(o.mask(th,ph)<0.7)continue;const b=o.surf(th,ph),dir=o.d.clone().normalize();dir.y+=0.55;dir.z+=0.25;dir.normalize();
+    const h=o.L*(0.75+0.35*Math.sin(k*12.9898)%1+0.15),tip=b.clone().addScaledVector(dir,h),mid=b.clone().addScaledVector(dir,h*0.45);
+    tube([b.clone().addScaledVector(dir,-0.6),mid,tip],[1.5,0.85,0.05],5,{push:(...a)=>o.push(...a)},q=>mixC(o,q));}}
+function bun(o){const c=o.surf(Math.PI,46*DEG),dir=o.d.clone().normalize(),R=o.L;c.addScaledVector(dir,R*0.55);
+  const g=new THREE.IcosahedronGeometry(R,1).toNonIndexed(),p=g.attributes.position;const ctr=c.clone(),col=o.base.clone();
+  for(let i=0;i<p.count;i+=3){const v=[0,1,2].map(k=>[c.x+p.getX(i+k),c.y+p.getY(i+k)*0.85,c.z+p.getZ(i+k)]);o.push(v[0],v[1],v[2],col,col,col,ctr);}
+  // the band around it
+  const band=[];for(let k=0;k<3;k++)band.push(o.surf(Math.PI,46*DEG).addScaledVector(dir,R*0.15*k));tube(band,[R*0.42,R*0.45,R*0.42],7,{push:o.push},()=>o.base.clone().multiplyScalar(0.55));}
+function pony(o){const p0=o.surf(Math.PI,74*DEG),pts=[p0.clone().add(new THREE.Vector3(0,0,1))];const step=o.L/8;let d=new THREE.Vector3(0,-0.25,-1).normalize();
+  for(let k=1;k<=8;k++){d.lerp(new THREE.Vector3(0,-1,-0.18).normalize(),0.32).normalize();pts.push(pts[k-1].clone().addScaledVector(d,k===1?2.2:step));}
+  const radii=pts.map((_,k)=>k===0?1.9:Math.max(0.5,2.3*(1-k/9)));tube(pts,radii,6,{push:o.push},q=>mixC(o,q));
+  tube([p0.clone().add(new THREE.Vector3(0,0,0.4)),p0.clone().add(new THREE.Vector3(0,-0.3,-1.6))],[2.0,2.0],7,{push:o.push},()=>o.base.clone().multiplyScalar(0.5));}
+function rows(o){const n=Math.round(6+o.V*6),d=new THREE.Vector3();
+  for(let r=0;r<n;r++){const k=(r/(n-1)*2-1)*0.78,rr=Math.sqrt(1-k*k);const pts=[],rad=[];
+    for(let bdeg=80;bdeg>=-130;bdeg-=7){const b=bdeg*DEG;d.set(k,rr*Math.cos(b),rr*Math.sin(b)).normalize();const ph=Math.acos(d.y),th=Math.atan2(d.x,d.z);
+      if(o.mask(th,ph)<0.55){if(pts.length)break;continue;}
+      pts.push(C.clone().addScaledVector(d,sc(th,ph)+o.L*0.55));rad.push(pts.length%2?o.L:o.L*0.72);}
+    if(pts.length>2)tube(pts,rad,4,{push:o.push},q=>mixC(o,q));}}
+function locks(o){const n=Math.round(14+o.V*22),gold=137.5*DEG;
+  for(let k=0;k<n;k++){const f=(k+0.5)/n,ph=(40+f*62)*DEG,th=Math.PI+((k*gold)%(Math.PI*2)-Math.PI)*0.82;   // the back and sides, not over the face
+    const front=Math.max(0,Math.cos(th));const len=o.L*(1-0.75*front)*(0.85+0.15*Math.sin(k*3.7));
+    const b=o.surf(th,ph),out=o.d.clone().normalize();const pts=[b.clone().addScaledVector(out,-0.5)];let dir=out.clone();const seg=len/6;
+    for(let s=1;s<=6;s++){dir.lerp(new THREE.Vector3(out.x*0.35,-1,out.z*0.35).normalize(),0.45).normalize();pts.push(pts[s-1].clone().addScaledVector(dir,s===1?1.2:seg));}
+    tube(pts,pts.map((_,s)=>s===6?0.5:0.95-s*0.05),5,{push:o.push},q=>mixC(o,q));}}
+
+/* ---------- the panel ---------- */
+const $=s=>document.querySelector(s);
+const HAIRS=[['Black','#141013'],['Dark brown','#2a1a12'],['Brown','#5a3820'],['Auburn','#7a3016'],['Blond','#c9a25a'],['Platinum','#e6dcc2'],['Grey','#8d8b88'],['Corner red','#c8281f'],['Corner blue','#2457c9']];
+const SKINS=[['Red corner','#d59a6c'],['Blue corner','#8a5636'],['Fair','#f0c9a4'],['Olive','#c08a5c'],['Deep','#5e3a24'],['Model','#ffe1bc']];
+function swatches(el,list,keyName,pick){el.innerHTML='';for(const [n,h] of list){const b=document.createElement('button');b.type='button';b.className='sw';b.style.background=h;b.title=n;b.setAttribute('aria-label',n);
+  b.setAttribute('aria-pressed',String(state[keyName]===h));b.addEventListener('click',()=>{state[keyName]=h;if(pick)$(pick).value=h;refresh();});el.appendChild(b);}}
+function cutButtons(){const el=$('#cuts');el.innerHTML='';for(const c of CUTS){const b=document.createElement('button');b.type='button';b.className='cutbtn';b.setAttribute('aria-pressed',String(state.cut===c.id));
+  b.innerHTML='<b></b><span></span>';b.querySelector('b').textContent=c.name;b.querySelector('span').textContent=c.note;
+  b.addEventListener('click',()=>{applyCut(c.id);refresh(true);});el.appendChild(b);}}
+function updateBudget(cut){const tris=cut.id==='original'?origGeo.index.count/3:triCount,limit=2000;$('#meter i').style.width=Math.min(100,tris/limit*100)+'%';$('#meter').classList.toggle('over',tris>limit);
+  $('#budgetText').textContent=tris.toLocaleString()+' triangles of hair · '+(tris>limit?'over':'within')+' the 2,000 a phone handles easily beside the 4,232 of the body';}
+function paintBody(){const c=new THREE.Color(),cols={0:state.skin,1:'#d8302a',2:'#e0342a',3:state.hair,4:'#f4efe4',5:'#f4efe4',6:'#16171c'};
+  for(const g of [bodyGeo,origGeo]){const a=g.attributes.color;for(let i=0;i<NV;i++){c.set(cols[PART[i]]);a.setXYZ(i,c.r,c.g,c.b);}a.needsUpdate=true;}}
+function refresh(cutChanged){
+  const cut=CUTS.find(c=>c.id===state.cut);
+  $('#len').value=state.L;$('#vol').value=state.V;$('#fade').value=state.F;$('#line').value=state.line;
+  const L=cut.len?cut.len[0]+(cut.len[1]-cut.len[0])*state.L:null;
+  $('#lenOut').textContent=L==null?'·':fmtLen(L);$('#volOut').textContent=Math.round(state.V*100)+'%';$('#fadeOut').textContent=state.F<0.08?'Skin fade':Math.round(state.F*100)+'%';
+  $('#lineOut').textContent=state.line>0.05?'Higher':state.line<-0.05?'Lower':'Natural';$('#volNote').textContent=cut.vNote||'';
+  $('#slLen').classList.toggle('off',!cut.len);$('#slVol').classList.toggle('off',!cut.vNote);$('#slFade').classList.toggle('off',!cut.t||cut.fade==null);$('#slLine').classList.toggle('off',!cut.t);
+  document.querySelectorAll('.cutbtn').forEach((b,i)=>b.setAttribute('aria-pressed',String(CUTS[i].id===state.cut)));
+  swatches($('#hairSw'),HAIRS,'hair','#hairPick');swatches($('#skinSw'),SKINS,'skin');
+  $('#boardCut').textContent=cut.name;$('#boardSpec').textContent=cut.len?fmtLen(L)+(cut.fade!=null?' · sides '+(state.F<0.08?'faded to skin':Math.round(state.F*100)+'%'):''):cut.note;
+  paintBody();build();
+  const look={cut:state.cut,length:L==null?null:+L.toFixed(2),volume:+state.V.toFixed(2),sides:+state.F.toFixed(2),hairline:+state.line.toFixed(2),hair:state.hair,tips:state.tips?state.tip:null,skin:state.skin};
+  $('#lookText').value='South Paw hair: '+JSON.stringify(look);
+  try{localStorage.setItem('barber.look',JSON.stringify(state));}catch(e){}
+}
+for(const [id,k] of [['#len','L'],['#vol','V'],['#fade','F'],['#line','line']])$(id).addEventListener('input',e=>{state[k]=+e.target.value;refresh();});
+$('#hairPick').addEventListener('input',e=>{state.hair=e.target.value;refresh();});
+$('#tipPick').addEventListener('input',e=>{state.tip=e.target.value;state.tips=true;$('#tips').checked=true;refresh();});
+$('#tips').addEventListener('change',e=>{state.tips=e.target.checked;refresh();});
+$('#copyBtn').addEventListener('click',()=>{const t=$('#lookText').value,ok=()=>{$('#copyMsg').textContent='Copied. Paste it to Claude.';};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>{$('#lookText').select();$('#copyMsg').textContent='Selected. Copy it with your keyboard or long-press.';});
+  else{$('#lookText').select();$('#copyMsg').textContent='Selected. Copy it with your keyboard or long-press.';}});
+
+/* ---------- view ---------- */
+let turn=true,want=null,started=false;
+const HEADV={t:new THREE.Vector3(0,C.y+2,C.z),p:new THREE.Vector3(48,C.y+14,96)},BODYV={t:new THREE.Vector3(0,96,0),p:new THREE.Vector3(170,150,380)};
+function fitView(v){const a=camera.aspect||1,k=a<1?Math.pow(1/a,0.75):1;return {t:v.t,p:v.t.clone().add(v.p.clone().sub(v.t).multiplyScalar(k)),base:v};}
+function setView(v){want=fitView(v);$('#vHead').setAttribute('aria-pressed',String(v===HEADV));$('#vBody').setAttribute('aria-pressed',String(v===BODYV));}
+$('#vHead').addEventListener('click',()=>setView(HEADV));$('#vBody').addEventListener('click',()=>setView(BODYV));
+$('#vTurn').addEventListener('click',()=>{turn=!turn;$('#vTurn').setAttribute('aria-pressed',String(turn));});
+controls.addEventListener('start',()=>{want=null;});
+camera.position.copy(HEADV.p);controls.target.copy(HEADV.t);
+if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){turn=false;$('#vTurn').setAttribute('aria-pressed','false');}
+function size(){const r=canvas.getBoundingClientRect(),w=Math.max(1,r.width),h=Math.max(1,r.height);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+  const b=new THREE.Vector2();renderer.getDrawingBufferSize(b);OUT.uniforms.uRes.value.copy(b);OUT.uniforms.uW.value=1.5*renderer.getPixelRatio();}
+window.addEventListener('resize',size);
+let last=performance.now();
+function tick(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(turn)rig.rotation.y+=dt*0.35;
+  if(want){camera.position.lerp(want.p,1-Math.exp(-dt*5));controls.target.lerp(want.t,1-Math.exp(-dt*5));if(camera.position.distanceTo(want.p)<0.5)want=null;}
+  if(!started&&camera.aspect){started=true;const f=fitView(HEADV);camera.position.copy(f.p);}
+  const r=canvas.getBoundingClientRect();if(Math.abs(r.width-canvas.width/renderer.getPixelRatio())>1||Math.abs(r.height-canvas.height/renderer.getPixelRatio())>1)size();
+  controls.update();renderer.render(scene,camera);requestAnimationFrame(tick);}
+function applyCut(id){const c=CUTS.find(x=>x.id===id);state.cut=id;if(c.len)state.L=(c.len[2]-c.len[0])/(c.len[1]-c.len[0]);if(c.vol!=null)state.V=c.vol;if(c.fade!=null)state.F=c.fade;}
+applyCut(state.cut);
+try{const s=JSON.parse(localStorage.getItem('barber.look')||'null');if(s&&CUTS.some(c=>c.id===s.cut))Object.assign(state,s);}catch(e){}
+$('#hairPick').value=state.hair;$('#tipPick').value=state.tip;$('#tips').checked=state.tips;
+cutButtons();refresh();size();requestAnimationFrame(tick);
+</script>
