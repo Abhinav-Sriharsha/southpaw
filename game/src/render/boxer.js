@@ -69,25 +69,21 @@ function modelBase(M){if(modelCache[M.name])return modelCache[M.name];
   const inv=M.rest.map(r=>new THREE.Matrix4().compose(new V3().fromArray(r.p),new THREE.Quaternion().fromArray(r.q),new V3(1,1,1)).invert());
   return modelCache[M.name]={attr:{position:new THREE.BufferAttribute(P,3),normal:new THREE.BufferAttribute(N,3),
     skinIndex:new THREE.Uint16BufferAttribute(Array.from(si),4),skinWeight:new THREE.BufferAttribute(W,4)},index:new THREE.BufferAttribute(tri,1),part,inv};}
-function modelPaint(b,i,hex){const C=b.geo.attributes.color,col=new THREE.Color(hex),pt=b.base.part;
-  for(let v=0;v<pt.length;v++)if(pt[v]===i)C.setXYZ(v,col.r,col.g,col.b);C.needsUpdate=true;}
 function makeModelBoxer(c,M){
   const base=modelBase(M);
   const root=new THREE.Group(),skel=new THREE.Group();skel.scale.setScalar(0.01);root.add(skel);
   const bones=[];AD.bones.forEach(b=>{const o=new THREE.Object3D();o.position.fromArray(b.pos);bones.push(o);(b.p<0?skel:bones[b.p]).add(o);});
   const bn=n=>bones[BIDX[n]];
-  const geo=new THREE.BufferGeometry();for(const k in base.attr)geo.setAttribute(k,base.attr[k]);geo.setIndex(base.index);
-  geo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(base.part.length*3),3));
+  // this boxer's own copy of the mesh (src/render/look.js reshapes and repaints it); group 0 the body, group 1 the model's hair
+  const geo=LOOK.geometry(base);
   const mat=toon(0xffffff,{vertexColors:true,skinning:true});
   const skeleton=new THREE.Skeleton(bones,base.inv);
-  const body=new THREE.SkinnedMesh(geo,mat);body.bind(skeleton,new THREE.Matrix4());body.castShadow=true;body.frustumCulled=false;
-  const line=new THREE.SkinnedMesh(geo,OUTLINE_SKIN);line.bind(skeleton,new THREE.Matrix4());line.frustumCulled=false;
+  const body=new THREE.SkinnedMesh(geo,[mat,mat]);body.bind(skeleton,new THREE.Matrix4());body.castShadow=true;body.frustumCulled=false;
+  const line=new THREE.SkinnedMesh(geo,[OUTLINE_SKIN,OUTLINE_SKIN]);line.bind(skeleton,new THREE.Matrix4());line.frustumCulled=false;
   skel.add(body,line);
   // the gloves are part of the mesh; these empty markers sit where the punch trails start
   const gloves=['Left','Right'].map(side=>{const g=new THREE.Group();bn(side+'Hand').add(g);return g;});
   scene.add(root);
-  const b={root,skel,bones,gloves,head:null,mats:[mat],flash:0,spine:bn('Spine'),hd:bn('Head'),hips:bn('Hips'),model:M.name,geo,base,look:c};
-  modelColours(b,c);return b;
+  const b={root,skel,bones,gloves,head:null,mats:[mat],flash:0,spine:bn('Spine'),hd:bn('Head'),hips:bn('Hips'),model:M.name,geo,base,body,line,mat,look:null};
+  LOOK.apply(b,LOOK.CORNER[Math.max(0,CORNERS.indexOf(c))]);return b;
 }
-/* Part order comes from tools/anim/model.mjs: skin, trunks, gloves, hair, waistband, cuffs, shoes */
-function modelColours(b,c,gloves){[c.skin,c.trunks,gloves==null?c.gloves:gloves,c.hair==null?0x15110e:c.hair,c.trim,c.trim,0x16171c].forEach((h,i)=>modelPaint(b,i,h));}

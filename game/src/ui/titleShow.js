@@ -72,12 +72,12 @@ const showHemi=scene.children.find(o=>o.isHemisphereLight);
 let showWasOn=false;const showFog={near:scene.fog?scene.fog.near:12,far:scene.fog?scene.fog.far:30};
 
 function showSetup(on){
-  if(on===showWasOn)return;showWasOn=on;
-  crowd.bodies.visible=!on;crowd.heads.visible=!on;showBench.visible=on;showSBag.g.visible=on;
-  if(B[0].model)modelColours(B[0],B[0].look,on?0xf1ede4:null);   // a character model: its gloves turn into white wraps
+  const key=on?(CUST.on?2:1):0;if(key===showWasOn)return;showWasOn=key;const cu=on&&CUST.on;   // 2: the Customise screen is open over the film
+  crowd.bodies.visible=!on;crowd.heads.visible=!on;showBench.visible=on&&!cu;showSBag.g.visible=on&&!cu;
+  if(B[0].model)LOOK.apply(B[0],B[0].look,on&&!cu?FILM_WRAPS:null);   // a character model: in the film his wraps are white
   else{B[0].gloves.forEach(g=>g.visible=!on);showHands.forEach(h=>{h.cover.visible=h.band.visible=on;});}
   if(!on)showRope.visible=false;
-  showKey.intensity=on?2.4:0;showRim.intensity=on?0.95:0;spot.intensity=on?0.32:1.35;if(showHemi)showHemi.intensity=on?0.16:0.4;
+  showKey.intensity=on?(cu?1.45:2.4):0;showRim.intensity=on?0.95:0;spot.intensity=on?0.32:1.35;if(showHemi)showHemi.intensity=on?0.16:0.4;
   rimR.intensity=rimB.intensity=on?0.25:0.45;
   if(scene.fog){scene.fog.near=on?4.5:showFog.near;scene.fog.far=on?15:showFog.far;}
   document.body.classList.toggle('filming',on);}
@@ -95,6 +95,7 @@ function showUpdate(dt){try{showUpdate1(dt);}catch(e){showFail(e);}}
 function showUpdate1(dt){
   if(showBroken&&S&&S.show){showFail();return;}
   const on=!!(S&&S.show);showSetup(on);if(!on)return;
+  if(CUST.on){const el=$('#showFade');if(el)el.style.opacity='0';return;}   // paused while Customise is open
   if(INTRO.on){SHOW.t=0;const el=$('#showFade');if(el)el.style.opacity='1';return;}   // the film waits for the intro
   SHOW.t+=dt/1000;if(SHOW.t>=SHOW_LEN)showReset();
   const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=t-sg.t0;
@@ -108,6 +109,7 @@ function showUpdate1(dt){
 /* ---- inputs for the sim: stand at the heavy bag, then throw the combos ---- */
 function showInput(){
   const f=S.F[0],t=SHOW.t,sg=SEGS[showSegAt(t)];
+  if(CUST.on){f.vx=f.vz=f.kx=f.kz=0;return 5;}
   if(sg.k!=='bag'){const h=STN.heavy;f.x=h.x;f.z=h.z;f.vx=f.vz=f.kx=f.kz=0;f.yaw=h.yaw;return 5;}
   const d=Math.hypot(S.bag.x-f.x,S.bag.z-f.z),fw=d>0.95?1:d<0.72?-1:0;let act=0;
   if(t<SHOW_LEN-1.0){
@@ -143,7 +145,7 @@ function placeSBag(b){const s=STN.sbag,C=CL[CI.sbag];const acc=new V3();let n=0;
   for(let f=0;f<C.n;f+=6){poseClip(b,CI.sbag,f,'sbag');b.bones[BIDX.LeftHand].getWorldPosition(shP);b.bones[BIDX.RightHand].getWorldPosition(shC);acc.add(shP).add(shC);n+=2;}
   acc.multiplyScalar(1/n);showSBag.g.position.set(acc.x+Math.sin(s.yaw)*0.16,acc.y+0.3-1.965,acc.z+Math.cos(s.yaw)*0.16);
   showSBag.g.rotation.y=s.yaw+Math.PI;showSBag.placed=true;}
-function showPose(b){if(!S.show)return;try{showPose1(b);}catch(e){showFail(e);}}
+function showPose(b){if(!S.show)return;if(CUST.on){custPose(b);return;}try{showPose1(b);}catch(e){showFail(e);}}
 function showPose1(b){
   const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=t-sg.t0;
   if(!showSBag.placed)placeSBag(b);
@@ -165,7 +167,7 @@ function showPose1(b){
 
 /* ---- the camera: one shot per segment, a slow push, a little hand-held drift, always on him ---- */
 const shCamT=new V3(),shLookT=new V3(),shHip=new V3();
-function showCamera(dt,v){try{showCamera1(dt,v);}catch(e){showFail(e);}}
+function showCamera(dt,v){if(CUST.on){custCamera(dt);return;}try{showCamera1(dt,v);}catch(e){showFail(e);}}
 function showCamera1(dt,v){
   const t=SHOW.t,i=showSegAt(t),sg=SEGS[i],u=smooth(0,sg.d,t-sg.t0),C=sg.cam;
   let o;if(sg.k==='bag'){const dx=S.bag.x-v.x,dz=S.bag.z-v.z,dl=Math.hypot(dx,dz)||1;o={x:v.x,z:v.z,fx:dx/dl,fz:dz/dl,lx:dz/dl,lz:-dx/dl};}

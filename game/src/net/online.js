@@ -52,7 +52,7 @@ function setupConn(c,role){
    So until the fight starts, netPump repeats the lobby messages every 0.4 s until they are answered:
    hello until we have heard theirs (g says whether we have), our Ready state, and the host's start until the guest says go.
    Every handler below is safe to receive twice. */
-function helloMsg(){return {k:'hello',v:CONFIG.version,g:NET.gotHello?1:0,name:myName(),style:lookIdx};}
+function helloMsg(){return {k:'hello',v:CONFIG.version,g:NET.gotHello?1:0,name:myName(),style:lookIdx,lk:LOOK.mine()};}   // lk: your fighter's look (null if not customised)
 function netPump(){const c=NET.conn;if(!c||!c.open||NET.started)return;
   if(!NET.gotHello)netSend(helloMsg());
   if(LOBBY.on&&LOBBY.opp&&!NET.badVer)netSend({k:'rdy',r:LOBBY.me?1:0});
@@ -67,7 +67,7 @@ function onNetData(m){if(!m||typeof m!=='object')return;NET.lastRecv=performance
     case 'hello':{const first=!NET.gotHello;NET.gotHello=true;
       if(!m.g)netSend(helloMsg());                 // they have not heard us yet
       if(!first||NET.started)break;
-      NET.opp={name:String(m.name||'Rival').slice(0,12),style:clamp(m.style|0,0,2)};
+      NET.opp={name:String(m.name||'Rival').slice(0,12),style:clamp(m.style|0,0,2),look:m.lk&&typeof m.lk==='object'?LOOK.clean(m.lk,LOOK.BASE):null};
       if(m.v&&String(m.v)!==CONFIG.version){NET.badVer=String(m.v);
         if(LOBBY.on){LOBBY.opp=true;lobbyRender();lobbyStatus(verText(m.v));}else{netStatus(verText(m.v));NET.qm=null;setTimeout(closePeer,400);}break;}
       if(LOBBY.on){const was=LOBBY.opp;LOBBY.opp=true;lobbyRender();if(!was){lobbyStatus(NET.role==='host'?NET.opp.name+' joined. Press Ready when you are set.':'You are in. Press Ready when you are set.');buzz([20]);}lobbyCheck();break;}
@@ -177,7 +177,7 @@ function tryJoin(p,id,ms){return new Promise(res=>{let done=false;const fin=v=>{
   const c=p.connect(id,{reliable:false,serialization:'json'});
   const onErr=err=>{if(err&&err.type==='peer-unavailable'&&String(err.message||'').includes(id))fin(null);};p.on('error',onErr);
   c.on('data',m=>{if(m&&m.k==='busy'){try{c.close();}catch(e){}fin(null);}else if(m&&m.k==='hello'){fin({c,m});}});
-  c.on('open',()=>{try{c.send({k:'hello',v:CONFIG.version,name:myName(),style:lookIdx});}catch(e){}});
+  c.on('open',()=>{try{c.send({k:'hello',v:CONFIG.version,name:myName(),style:lookIdx,lk:LOOK.mine()});}catch(e){}});
   setTimeout(()=>{if(!done){try{c.close();}catch(e){}fin(null);}},ms);});}
 function openPeer(id){return new Promise(res=>{const p=id?new Peer(id,peerOpts()):new Peer(peerOpts());let done=false;
   p.on('open',()=>{if(!done){done=true;res(p);}});p.on('error',err=>{if(!done){done=true;try{p.destroy();}catch(e){}res({err});}});});}

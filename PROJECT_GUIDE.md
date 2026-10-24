@@ -66,9 +66,9 @@ southpaw/
 │       ├── sim/              The fight itself
 │       ├── ai/               The CPU opponent
 │       ├── net/              Online play
-│       ├── render/           3D scene, boxers, camera, effects
+│       ├── render/           3D scene, boxers, looks, camera, effects
 │       ├── practice/         The heavy bag
-│       ├── ui/               HUD, menus, buttons, installing as an app
+│       ├── ui/               HUD, menus, Customise, buttons, installing as an app
 │       ├── input/            Keyboard, touch, input sampling
 │       ├── audio/            Sound engine
 │       └── main.js           Starts the game
@@ -207,6 +207,14 @@ Page-level state shared by menus and the renderer: `STEP` (one sim tick, 1000/12
 
 `makeBoxer` picks the body from `FIGHTER_MODEL`: `makeToonBoxer` is the shapes above, `makeModelBoxer` a character from `assets/models/`. A character is one skinned mesh bound to the game's own 22 bones rather than to its own skeleton. That keeps its gloves and head exactly where the fight is judged (the character's own longer chest would have put its gloves about 9 cm higher), and everything that moves bones (foot planting, dodges, the title film) works unchanged; the cost is a few centimetres of squash in the upper chest. The ink outline is a skinned copy of the mesh (`OUTLINE_SKIN`). Each vertex is coloured from its part with the corner's look (`modelColours`); the title film calls it with white to turn the gloves into hand wraps. The empty `gloves` groups on the hands only mark where punch trails start.
 
+### `src/render/look.js` (a fighter's look)
+`LOOK` holds everything about how a fighter looks: haircut, face, build and kit. `LOOK.apply(boxer, look)` puts a look on a character-model boxer and redoes only what changed:
+- **Kit:** every triangle of the body is repainted from the look: skin, shorts (and their leg length), waistband, side stripe, wraps, low shoes or mid or high boots, sole. One colour per triangle, so hems and boot tops stay crisp.
+- **Build:** weight (thin to heavy) and muscle move each point along its normal by an amount set by its bone, blended across neighbours. The head, hands and feet never move. It is only the look: the fight is judged on the shared skeleton, so reach and hit areas are the same for everyone.
+- **Hair:** the model's own hair is the top of his head (there is no skin under it). The first time a look is applied, rays from inside the skull measure the scalp and the natural hairline (`scalp`); a scalp is built where the hair was, and each of the 18 cuts in `CUTS` is grown from it on a grid of directions (`grow`), with add-on pieces for spikes, the top knot, ponytail, locks and cornrows.
+- **Face:** eyes in the eye sockets, eyebrows on the brow ridge (five styles), a bowl and rim on each ear or a cauliflower ear (`buildFace`).
+Hair, scalp and face pieces hang on the head bone, so they follow every animation. `LOOK.CORNER` is the standard red and blue corner look; `LOOK.mine()` is the player's saved look (`localStorage` key `sp.look`) or nothing; `LOOK.clean` checks every field of a look that comes from storage or from the other player. The standalone fitting room in `tools/hairlab` uses the same code with a free camera.
+
 ### `src/render/pose.js` (putting poses on models)
 - `applyVis` runs every frame: it builds the pose with `evalPose` and applies dodges, crouches, the head snap and glove squash.
 - `inertialize` smooths the switch between animations.
@@ -309,6 +317,7 @@ Hit sparks, rings and streaks (`spawnFx`), punch trails, screen shake (`addTraum
 - **Private rooms:** `hostRoom` makes a 4-letter room and opens the lobby. `joinRoom` (typed code, Paste invite, or an invite link such as `/#ABCD`) opens the same lobby and keeps retrying for about a minute, in case the host is still connecting or switched apps to send the link. Only one join attempt is open at a time, and a host that gets a newer connection from the same friend switches to it.
 - **Codes:** they use `ROOM_AB`, which leaves out 0, O, 1, I and L. `cleanCode` pulls the code out of whatever was typed or pasted (a bare code, a link, or the whole invite message); `codeProblem` explains a bad one. `inviteText` is the invite message, which includes the code so a friend playing from the home-screen app can type it.
 - **Reliable lobby:** the connection doesn't resend lost messages, so `netPump` repeats the lobby messages every 0.4 s until they're answered: `hello` (with `g`, whether we've heard theirs), the Ready state (`rdy`), and the host's `start` until the guest answers `go`. Every handler is safe to receive twice. Without this, one lost message on mobile data left the lobby stuck on "connecting".
+- **Looks:** `hello` also carries your fighter's look (`lk`, or nothing if you have not customised); it is checked with `LOOK.clean` before use and only changes how that boxer looks.
 - **Versions:** `hello` carries the version. If the two differ, both lobbies say so (`verText`) and Ready is disabled.
 - **Lobby** (bottom of the file): `LOBBY` holds the lobby state. `lobbyOpen`, `lobbyRender` (the red and blue corner cards), `lobbySetReady` and `lobbyCheck` (when both players are ready, the host starts the match), `lobbyLost` (a player left), `lobbyCopy` (copies the invite link) and `lobbyLeave`. The host is always the red corner and the guest the blue corner, but each player sees themselves on the left of their own screen.
 - **Quick match:** `quickMatch` scans `CONFIG.quickMatchSlots` queue slots and starts straight away, with no lobby.
@@ -349,6 +358,10 @@ The fixed stick (`sizeStick` sets its size from the screen; touching near it ste
 ### `src/ui/buttons.js`
 Wires up every menu button: CPU fight, difficulty, online (create, join, quick match, copy invite), practice, pause, sound, quit, rematch, copy brag, and the practice toolbar.
 
+### `src/ui/customise.js` (the Customise screen)
+The last item on the title menu. The options are on the left in four tabs (Hair, Face, Body, Kit) and your fighter stands on the right in his guard idle; drag to turn him. Hair and Face frame his head, Body and Kit his whole body. Every change goes onto him at once and is saved; Reset goes back to the standard red corner look. While it is open the title film pauses (`CUST.on`): `custPose` and `custCamera` take over from the film's pose and camera, the bench and bags are hidden, and his wraps keep their colour instead of the film's white.
+`assignLooks` runs whenever a mode starts (`enterSim`): your look goes on your boxer (corner 0, or your corner online), the CPU gets the blue corner look, and online the other player's look arrives in their `hello` message (`lk`). Anyone who has not customised gets their corner's standard look, so the two corners still look different by default.
+
 ### `src/ui/titleShow.js` (the title screen and its film)
 The title screen works like a big game's opening: the South Paw name on the left, "Press any button", then the menu. Behind it runs a training montage, about 68 seconds, cut like a film trailer: he sits on a bench with his hands wrapped, stands, stretches, warms up, skips rope, squats, drops into push-ups, works the speed bag and finishes on the heavy bag. Then it fades out and loops.
 - **Running order:** `SEGS`. Each segment has a length (`d`), a place in the ring (`st`, one of `STN`), a Mixamo clip (`c`, see the last row of `CLIPN`) or `'bag'`, and a shot (`cam`). To reorder, cut or retime the film, edit this list.
@@ -357,7 +370,7 @@ The title screen works like a big game's opening: the South Paw name on the left
 - **Opening sit:** the `'sit'` segment holds the first frame of Sit_To_Stand with a little breathing. His hands are already wrapped.
 - **Props:** the bench, the speed bag on its stand (placed in front of his hands from the clip, `placeSBag`), the skipping rope (redrawn each frame between his hands in time with his jumps, `drawRope`), and the wraps on his hands. The gloves are hidden during the film.
 - **Look:** a warm key light and a cool rim light follow him, the arena is dimmed, the crowd hidden and fog added; `#showFx` in `index.html` adds the widescreen bars, colour grade, vignette and film grain. `showSetup` switches all of it on and off.
-- **The menu:** Play online, Fight the CPU, Practice, as plain capital lettering with a short gold bar on hover or focus (`.mitem` in `index.html`). Fight the CPU opens the opponent page (`#cpu`, `openCpu` in `buttons.js`): three cards built from `data/cpu.js` (name, level, difficulty bars), then Fight. The choice is remembered.
+- **The menu:** Play online, Fight the CPU, Practice, Customise, as plain capital lettering with a short gold bar on hover or focus (`.mitem` in `index.html`). Fight the CPU opens the opponent page (`#cpu`, `openCpu` in `buttons.js`): three cards built from `data/cpu.js` (name, level, difficulty bars), then Fight. The choice is remembered.
 - **Two-second buttons:** the corner full-screen button, the Install / Add to Home Screen menu item and the install banner show for two seconds and fade (`flash2` in `screens.js`). The "Tap for full screen" pill does the same; the iPhone "Swipe up for full screen" pill stays until you swipe, since that's the only way back.
 - **The intro:** on the first visit the name sits in the middle of a black screen with "Swipe up to start" (phones) or "Press any button". `titleEnter` sets it up and `introLayout` measures how far to shift the name to centre it. A swipe, tap, click or key runs `introGo`: the name slides left, the film starts and the menu fades in. On phones (`html.swipe`) the page gets extra room below (`#swipeSpace`) so the swipe really scrolls it, which makes the browser shrink its address bar; afterwards `html.swiped` stops further page scrolling. Invite links skip the intro (`introSkip`). Coming back to the title later goes straight to the menu.
 - **If the film can't run** (for example an old cached animation file without its clips), `showFail` switches it off and the title shows over the plain arena instead of a black screen.

@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap">
-<link rel="stylesheet" href="styles/main.css?v=0.59">
+<link rel="stylesheet" href="styles/main.css?v=0.60">
 </head>
 <body>
 <canvas id="c" tabindex="-1" aria-label="Boxing ring"></canvas>
@@ -90,10 +90,11 @@
       <button class="mitem" id="btnOnline" type="button">Play online</button>
       <button class="mitem" id="btnCpu" type="button">Fight the CPU</button>
       <button class="mitem" id="btnPrac" type="button">Practice</button>
+      <button class="mitem" id="btnCustom" type="button">Customise</button>
       <button class="mitem mitem-sm" id="btnInstall" type="button" hidden>Install the app</button>
     </nav>
   </div>
-  <div class="mfoot">Est. 2006 · v0.59</div>
+  <div class="mfoot">Est. 2006 · v0.60</div>
 </section>
 
 <section id="cpu" class="screen" hidden>
@@ -107,6 +108,23 @@
     </div>
     <div class="cacts"><button class="btn primary" id="btnFight" type="button">Fight</button><button class="btn" id="btnCpuBack" type="button">Back</button></div>
   </div>
+</section>
+
+<!-- Customise: the options on the left, your fighter on the right (src/ui/customise.js) -->
+<section id="custom" hidden aria-label="Customise your fighter">
+  <div class="cpanel">
+    <div class="chead"><div class="kicker">Your fighter</div><h2>Customise</h2></div>
+    <div class="ctabs" role="tablist" aria-label="What to change">
+      <button class="ctab" role="tab" type="button" aria-selected="true">Hair</button>
+      <button class="ctab" role="tab" type="button" aria-selected="false">Face</button>
+      <button class="ctab" role="tab" type="button" aria-selected="false">Body</button>
+      <button class="ctab" role="tab" type="button" aria-selected="false">Kit</button>
+    </div>
+    <div class="cbody" id="custBody"></div>
+    <div class="cbudget" id="custBudget" aria-live="polite"></div>
+    <div class="cfoot"><button class="btn primary" id="btnCustDone" type="button">Done</button><button class="btn" id="btnCustReset" type="button">Reset</button></div>
+  </div>
+  <div id="custStage"><p class="chint">Drag to turn him</p></div>
 </section>
 
 <section id="pause" class="screen" hidden>
@@ -171,44 +189,46 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <!-- game: data first, then the code in dependency order (see PROJECT_GUIDE.md). Every file shares one scope, so order matters. -->
-<script src="data/config.js?v=0.59"></script>
-<script src="data/rules.js?v=0.59"></script>
-<script src="data/cpu.js?v=0.59"></script>
-<script src="data/fighters.js?v=0.59"></script>
-<script src="data/sounds.js?v=0.59"></script>
-<script src="assets/anim/clips.js?v=0.59"></script>
-<script src="assets/models/fighter03.js?v=0.59"></script>
+<script src="data/config.js?v=0.60"></script>
+<script src="data/rules.js?v=0.60"></script>
+<script src="data/cpu.js?v=0.60"></script>
+<script src="data/fighters.js?v=0.60"></script>
+<script src="data/sounds.js?v=0.60"></script>
+<script src="assets/anim/clips.js?v=0.60"></script>
+<script src="assets/models/fighter03.js?v=0.60"></script>
 <div id="swipeSpace" aria-hidden="true"></div>
-<script src="src/core/util.js?v=0.59"></script>
-<script src="src/anim/clips.js?v=0.59"></script>
-<script src="src/core/state.js?v=0.59"></script>
-<script src="src/audio/sound.js?v=0.59"></script>
-<script src="src/render/scene.js?v=0.59"></script>
-<script src="src/render/boxer.js?v=0.59"></script>
-<script src="src/render/pose.js?v=0.59"></script>
-<script src="src/render/corners.js?v=0.59"></script>
-<script src="src/anim/reactions.js?v=0.59"></script>
-<script src="src/sim/snapshot.js?v=0.59"></script>
-<script src="src/sim/skeleton.js?v=0.59"></script>
-<script src="src/sim/punches.js?v=0.59"></script>
-<script src="src/practice/bag.js?v=0.59"></script>
-<script src="src/sim/footwork.js?v=0.59"></script>
-<script src="src/sim/fighter.js?v=0.59"></script>
-<script src="src/sim/combat.js?v=0.59"></script>
-<script src="src/ai/cpu.js?v=0.59"></script>
-<script src="src/sim/match.js?v=0.59"></script>
-<script src="src/render/fx.js?v=0.59"></script>
-<script src="src/ui/hud.js?v=0.59"></script>
-<script src="src/ui/screens.js?v=0.59"></script>
-<script src="src/input/local.js?v=0.59"></script>
-<script src="src/net/online.js?v=0.59"></script>
-<script src="src/render/camera.js?v=0.59"></script>
-<script src="src/core/loop.js?v=0.59"></script>
-<script src="src/input/keyboard.js?v=0.59"></script>
-<script src="src/input/touch.js?v=0.59"></script>
-<script src="src/ui/buttons.js?v=0.59"></script>
-<script src="src/ui/install.js?v=0.59"></script>
-<script src="src/ui/titleShow.js?v=0.59"></script>
-<script src="src/main.js?v=0.59"></script>
+<script src="src/core/util.js?v=0.60"></script>
+<script src="src/anim/clips.js?v=0.60"></script>
+<script src="src/core/state.js?v=0.60"></script>
+<script src="src/audio/sound.js?v=0.60"></script>
+<script src="src/render/scene.js?v=0.60"></script>
+<script src="src/render/boxer.js?v=0.60"></script>
+<script src="src/render/look.js?v=0.60"></script>
+<script src="src/render/pose.js?v=0.60"></script>
+<script src="src/render/corners.js?v=0.60"></script>
+<script src="src/anim/reactions.js?v=0.60"></script>
+<script src="src/sim/snapshot.js?v=0.60"></script>
+<script src="src/sim/skeleton.js?v=0.60"></script>
+<script src="src/sim/punches.js?v=0.60"></script>
+<script src="src/practice/bag.js?v=0.60"></script>
+<script src="src/sim/footwork.js?v=0.60"></script>
+<script src="src/sim/fighter.js?v=0.60"></script>
+<script src="src/sim/combat.js?v=0.60"></script>
+<script src="src/ai/cpu.js?v=0.60"></script>
+<script src="src/sim/match.js?v=0.60"></script>
+<script src="src/render/fx.js?v=0.60"></script>
+<script src="src/ui/hud.js?v=0.60"></script>
+<script src="src/ui/screens.js?v=0.60"></script>
+<script src="src/input/local.js?v=0.60"></script>
+<script src="src/net/online.js?v=0.60"></script>
+<script src="src/render/camera.js?v=0.60"></script>
+<script src="src/core/loop.js?v=0.60"></script>
+<script src="src/input/keyboard.js?v=0.60"></script>
+<script src="src/input/touch.js?v=0.60"></script>
+<script src="src/ui/buttons.js?v=0.60"></script>
+<script src="src/ui/install.js?v=0.60"></script>
+<script src="src/ui/titleShow.js?v=0.60"></script>
+<script src="src/ui/customise.js?v=0.60"></script>
+<script src="src/main.js?v=0.60"></script>
 </body>
 </html>
