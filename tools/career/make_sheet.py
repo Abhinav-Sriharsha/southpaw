@@ -10,38 +10,36 @@ HERE=os.path.dirname(os.path.abspath(__file__))
 d=json.load(open(os.path.join(HERE,'roster.json')))
 F='Arial';HEAD=PatternFill('solid',fgColor='1B1D24');HF=Font(name=F,bold=True,color='FFFFFF',size=10);BF=Font(name=F,size=10);IN=Font(name=F,size=10,color='0000FF')
 thin=Side(style='thin',color='D0D0D0');BOX=Border(bottom=thin)
-CUT={'original':'His own (as modelled)','bald':'Clean shave','buzz':'Buzz cut','crew':'Crew cut','curly':'Curly top','flat':'Flat top','hightop':'High-top','afro':'Afro','mohawk':'Mohawk',
- 'faux':'Faux hawk','spiky':'Spikes','pomp':'Pompadour','bun':'Top knot','pony':'Ponytail','dreads':'Locks','rows':'Cornrows','part':'Side part','bowl':'Bowl cut'}
-LEN={'buzz':(0.1,1.4),'crew':(1.2,5),'curly':(2,6),'flat':(3,9),'hightop':(6,15),'afro':(3,10),'mohawk':(3,15),'faux':(2,7),'spiky':(2,8),'pomp':(3,10),'bun':(2.5,6),'pony':(10,45),'dreads':(6,38),'rows':(0.4,1.0),'part':(1.5,6),'bowl':(1.5,5)}
+HAIR2={'':'Bald','Hair_Buzzed':'Buzzed','Hair_SimpleParted':'Simple parted','Hair_Long':'Long','Hair_Buns':'Buns','g_crew':'Crew cut','g_flattop':'Flat top','g_afro':'Afro',
+ 'g_hightop':'High-top fade','g_mohawk':'Mohawk','g_fauxhawk':'Faux hawk','g_manbun':'Man bun','g_cornrows':'Cornrows','g_twists':'Twists','g_slick':'Pompadour'}
+BOTTOM={'':'Classic trunks','u_shorts_long':'Long trunks','u_mma':'Fight shorts','u_briefs':'Briefs','u_track':'Track pants'}
+FEET={'low':'Low boots','mid':'Classic boots','u_boots':'High boots','barefoot':'Barefoot'}
 TOUR={t['id']:t for t in d['tours']};ST=d['styles']
 def build(w,m):
   a='Very lean' if w<-0.6 else 'Lean' if w<-0.2 else 'Middleweight' if w<0.2 else 'Heavy' if w<0.6 else 'Heavyweight'
   b='lean' if m<0.2 else 'toned' if m<0.55 else 'built' if m<0.85 else 'bodybuilder';return a+', '+b
-def hair(l):
-  c=l['cut'];s=CUT[c]
-  if c in LEN:lo,hi=LEN[c];cm=lo+(hi-lo)*l['L'];s+=' · '+(f'{round(cm*10)} mm' if cm<2.6 else f'{cm:.1f} cm')
-  return s
 def textc(h):h=h.lstrip('#');r,g,b=int(h[:2],16),int(h[2:4],16),int(h[4:],16);return '000000' if (r*299+g*587+b*114)/1000>140 else 'FFFFFF'
 def head(ws,cols,widths):
   for i,(c,w) in enumerate(zip(cols,widths),1):
     x=ws.cell(row=1,column=i,value=c);x.font=HF;x.fill=HEAD;x.alignment=Alignment(vertical='center',wrap_text=True);ws.column_dimensions[get_column_letter(i)].width=w
   ws.row_dimensions[1].height=30;ws.freeze_panes='D2'
 wb=Workbook();ws=wb.active;ws.title='Roster'
-cols=['Tournament','Seed','Name','Nickname','Hometown','Style','Technique','Signature punch','Skill (0-1)','Danger (1-10)','Toughness','Power','Takes damage','Hair','Hair colour','Skin','Eyes','Eyebrows','Ears','Build','Shorts','Leg length','Waistband','Side stripe','Wraps','Shoes','Sole']
-head(ws,cols,[13,6,20,16,12,16,46,16,9,9,9,8,10,22,12,11,11,10,12,22,11,10,11,11,11,16,8])
+cols=['Tournament','Seed','Name','Nickname','Hometown','Style','Technique','Signature punch','Skill (0-1)','Danger (1-10)','Toughness','Power','Takes damage','Hair','Hair colour','Facial hair','Face','Eyebrows','Skin','Eyes','Build','Shorts','Shorts colour','Trim','Top','Headgear','Gloves','Boots','Sole']
+head(ws,cols,[13,6,20,16,12,16,46,16,9,9,9,8,10,16,12,12,15,10,11,11,22,14,12,11,12,10,11,16,8])
 order={'amateur':0,'pro':1,'ultimate':2};rows=sorted(d['fighters'],key=lambda f:(order[f['tour']],f['rank']))
 for r,f in enumerate(rows,2):
   l=f['look'];n=f['names'];st=ST[f['style']];T=TOUR[f['tour']]
+  g=f['look2']
   vals=[T['short'],f['rank'],f['name'],f['nick'],f['from'],st['name'],st['desc'],f['sig'].capitalize(),f['s'],
     f'=MAX(1,MIN(10,ROUND(I{r}*8+IF(A{r}="Amateur",0.5,1),0)))',f['tough'],f['power'],f'=1/K{r}',
-    hair(l),n['hair']+(' + dyed tips' if l['tips'] else ''),n['skin'],n['eyes'],l['brow'].capitalize(),'Cauliflower' if l['ear']=='cauli' else 'Normal',build(l['weight'],l['muscle']),
-    n['trunks'],'Short' if l['shortLen']<-0.35 else 'Long' if l['shortLen']>0.35 else 'Standard',n['band'],n['stripe'] if l['stripe'] else 'None',n['wraps'],
-    {'low':'Low shoes','mid':'Mid boots','high':'High boots'}[l['boot']]+' · '+n['shoe'],n['sole']]
+    HAIR2[g['hair']],n['hair'] if g['hair'] else '',('Beard' if g['beard'] else 'Clean shaven'),g['face'] or 'Original','Thin' if g['brow']=='Eyebrows_Female' else 'Regular',
+    n['skin'],n['eyes'],build(g['fat'],(g['mus']-0.4)/0.55),BOTTOM[g['bottom']],n['trunks'],n['band'],'Vest · '+n['trunks'] if g['top'] else 'Bare chest',
+    'Yes' if g['gear'] else 'No',n['wraps'],FEET[g['feet']]+' · '+n['shoe'],n['sole']]
   for c,v in enumerate(vals,1):
     x=ws.cell(row=r,column=c,value=v);x.font=IN if c in (9,11,12) else BF;x.border=BOX;x.alignment=Alignment(vertical='top',wrap_text=c==7)
   ws.cell(row=r,column=9).number_format='0.00';ws.cell(row=r,column=11).number_format='0.00"x"';ws.cell(row=r,column=12).number_format='0.00"x"';ws.cell(row=r,column=13).number_format='0%'
   # colour cells show the colour itself
-  for c,hx in [(15,l['hair']),(16,l['skin']),(17,l['eye']),(21,l['trunks']),(23,l['band']),(24,l['stripeCol'] if l['stripe'] else None),(25,l['wraps']),(27,l['sole'])]:
+  for c,hx in [(15,g['hairC'] if g['hair'] else None),(19,g['skin']),(20,g['eye']),(23,g['trunk']),(24,g['trim']),(25,g['topC'] if g['top'] else None),(27,g['gloveC']),(29,g['sole'])]:
     if hx:x=ws.cell(row=r,column=c);x.fill=PatternFill('solid',fgColor=hx.lstrip('#'));x.font=Font(name=F,size=10,color=textc(hx))
 ws['B1'].comment=Comment('1 = the favourite of that tournament. You start against the lowest seed; each round brings a higher one.','South Paw')
 ws['I1'].comment=Comment('From make_roster.py: 0 is weaker than the Easy CPU, 1 is past Hard. Sets reaction time, defence, accuracy and work rate.','South Paw')

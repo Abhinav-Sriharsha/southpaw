@@ -14,8 +14,8 @@ const CORNERS=FIGHTER_LOOKS;   // data/fighters.js
 /* Which body the boxers use: a Mixamo character from assets/models (FIGHTER_MODEL in data/fighters.js), or 'toon' for the
    original shapes. ?model=toon in the address overrides it, handy for comparing. Falls back to the shapes if the file is missing. */
 const MODEL_NAME=(()=>{let n=FIGHTER_MODEL;try{const m=/[?&]model=([\w-]+)/.exec(location.search);if(m)n=m[1];}catch(e){}
-  return n!=='toon'&&window.SP_MODELS&&SP_MODELS[n]?n:'toon';})();
-function makeBoxer(c){return MODEL_NAME==='toon'?makeToonBoxer(c):makeModelBoxer(c,SP_MODELS[MODEL_NAME]);}
+  return n!=='toon'&&window.SP_MODELS&&SP_MODELS[n]&&SP_MODELS[n].ue?n:'toon';})();
+function makeBoxer(c){return MODEL_NAME==='toon'?makeToonBoxer(c):makeUEBoxer(c,SP_MODELS[MODEL_NAME]);}
 function makeToonBoxer(c){
   const mats=[];const T=col=>{const m=toon(col);mats.push(m);return m;};
   const mSkin=T(c.skin),mTr=T(c.trunks),mTrim=T(c.trim),mGl=T(c.gloves),mShoe=T(0x16171c);
@@ -52,38 +52,28 @@ function makeToonBoxer(c){
   scene.add(root);
   return {root,skel,bones,gloves,head:skull,mats,flash:0,spine:bn('Spine'),hd,hips:bn('Hips')};
 }
-/* ================= MIXAMO CHARACTER: one skinned mesh riding the same 22-bone skeleton =================
-   The mesh is bound to the game's own bones (not the character's), so the gloves and head are exactly where the
-   fight is judged and everything that moves bones (foot planting, dodges, the title film) works unchanged.
-   Each vertex has a part (skin, trunks, gloves...) and is coloured from the corner's look. */
+/* the ink outline of a skinned mesh: the same screen-space push as OUTLINE, after skinning */
 const OUTLINE_SKIN=new THREE.ShaderMaterial({uniforms:OUTLINE.uniforms,skinning:true,side:THREE.BackSide,
   vertexShader:'#include <common>\n#include <skinning_pars_vertex>\nuniform float uW;uniform vec2 uRes;void main(){\n#include <skinbase_vertex>\n#include <beginnormal_vertex>\n#include <skinnormal_vertex>\n#include <begin_vertex>\n#include <skinning_vertex>\n'+
     'vec4 clip=projectionMatrix*modelViewMatrix*vec4(transformed,1.0);vec3 vn=normalize(normalMatrix*objectNormal);vec2 d=(projectionMatrix*vec4(vn,0.0)).xy;float l=length(d);d=l>1e-5?d/l:vec2(0.0);clip.xy+=d*uW*clip.w*2.0/uRes;gl_Position=clip;}',
   fragmentShader:OUTLINE.fragmentShader});
-const modelCache={};
-function modelBase(M){if(modelCache[M.name])return modelCache[M.name];
-  const raw=M.data.map(b=>{const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u.buffer;});
-  const pos=new Int16Array(raw[0]),nor=new Int8Array(raw[1]),part=new Uint8Array(raw[2]),si=new Uint8Array(raw[3]),sw=new Uint8Array(raw[4]),tri=new Uint16Array(raw[5]);
-  const P=new Float32Array(pos.length),N=new Float32Array(nor.length),W=new Float32Array(sw.length);
-  for(let i=0;i<pos.length;i++)P[i]=pos[i]/100;for(let i=0;i<nor.length;i++)N[i]=nor[i]/127;for(let i=0;i<sw.length;i++)W[i]=sw[i]/255;
-  const inv=M.rest.map(r=>new THREE.Matrix4().compose(new V3().fromArray(r.p),new THREE.Quaternion().fromArray(r.q),new V3(1,1,1)).invert());
-  return modelCache[M.name]={attr:{position:new THREE.BufferAttribute(P,3),normal:new THREE.BufferAttribute(N,3),
-    skinIndex:new THREE.Uint16BufferAttribute(Array.from(si),4),skinWeight:new THREE.BufferAttribute(W,4)},index:new THREE.BufferAttribute(tri,1),part,inv};}
-function makeModelBoxer(c,M){
-  const base=modelBase(M);
+/* ================= THE SUPERHERO CHARACTER (assets/models/superhero.js) =================
+   His own skeleton: the joints are where his body has them (the model file's rest pose), the bone rotations are the
+   game's, so every animation plays on him unchanged. The parts (body, eyes, hair, kit) are added by src/render/look.js.
+   ref is an invisible copy of the fight's own skeleton: in fights the gloves are pulled onto its hands (LOOK.armsToSim). */
+function makeUEBoxer(c,M){
   const root=new THREE.Group(),skel=new THREE.Group();skel.scale.setScalar(0.01);root.add(skel);
-  const bones=[];AD.bones.forEach(b=>{const o=new THREE.Object3D();o.position.fromArray(b.pos);bones.push(o);(b.p<0?skel:bones[b.p]).add(o);});
+  const bones=[],inv=[],Q=M.rest.map(r=>new THREE.Quaternion().fromArray(r.q)),P=M.rest.map(r=>new V3().fromArray(r.p));
+  AD.bones.forEach((b,i)=>{const o=new THREE.Object3D();
+    if(b.p<0){o.position.copy(P[i]);o.quaternion.copy(Q[i]);skel.add(o);}
+    else{const pq=Q[b.p].clone().invert();o.quaternion.copy(pq.clone().multiply(Q[i]));o.position.copy(P[i].clone().sub(P[b.p]).applyQuaternion(pq));bones[b.p].add(o);}
+    bones.push(o);inv.push(new THREE.Matrix4().compose(P[i],Q[i],new V3(1,1,1)).invert());});
+  const skeleton=new THREE.Skeleton(bones,inv);
+  const refRoot=new THREE.Group();refRoot.scale.setScalar(0.01);root.add(refRoot);const rb=[];
+  AD.bones.forEach(b=>{const o=new THREE.Object3D();o.position.fromArray(b.pos);o.quaternion.fromArray(b.q);rb.push(o);(b.p<0?refRoot:rb[b.p]).add(o);});
   const bn=n=>bones[BIDX[n]];
-  // this boxer's own copy of the mesh (src/render/look.js reshapes and repaints it); group 0 the body, group 1 the model's hair
-  const geo=LOOK.geometry(base);
-  const mat=toon(0xffffff,{vertexColors:true,skinning:true});
-  const skeleton=new THREE.Skeleton(bones,base.inv);
-  const body=new THREE.SkinnedMesh(geo,[mat,mat]);body.bind(skeleton,new THREE.Matrix4());body.castShadow=true;body.frustumCulled=false;
-  const line=new THREE.SkinnedMesh(geo,[OUTLINE_SKIN,OUTLINE_SKIN]);line.bind(skeleton,new THREE.Matrix4());line.frustumCulled=false;
-  skel.add(body,line);
-  // the gloves are part of the mesh; these empty markers sit where the punch trails start
   const gloves=['Left','Right'].map(side=>{const g=new THREE.Group();bn(side+'Hand').add(g);return g;});
   scene.add(root);
-  const b={root,skel,bones,gloves,head:null,mats:[mat],flash:0,spine:bn('Spine'),hd:bn('Head'),hips:bn('Hips'),model:M.name,geo,base,body,line,mat,look:null};
+  const b={root,skel,bones,gloves,head:null,mats:[],flash:0,spine:bn('Spine'),hd:bn('Head'),hips:bn('Hips'),model:M.name,ue:true,skeleton,parts:{},kParts:'',look:null,ref:{root:refRoot,bones:rb}};
   LOOK.apply(b,LOOK.CORNER[Math.max(0,CORNERS.indexOf(c))]);return b;
 }

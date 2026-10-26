@@ -8,7 +8,7 @@ function freshHealth(f){f.hp=HP0;f.cap=100;f.hpGhost=HP0;f.ghostDelay=0;f.body=1
   f.gw=0;f.gwT=0;f.gassed=false;f.lastPunch=-1e9;f.rdmg=0;}
 function newFighter(i){const f={i,side:1,x:0,z:0,yaw:0,vx:0,vz:0,kx:0,kz:0,action:'idle',actionT:0,move:null,su:0,rc:0,
   landed:false,resolved:true,tired:false,swish:false,stunMs:0,heavy:false,hitSide:1,hitId:0,flash:0,counterWin:0,slipCd:0,slipSide:1,dk:0,combo:0,comboN:0,attackId:0,koClip:CI.ko,riseClip:CI.gL,rise0:0,riseMs:1300,riseP:0,hc:-1,hv:1e9,hvd:0,bhc:-1,bhv:1e9,bhd:0,bhId:0,tauntClip:CI.t1,tauntMs:2000,tauntCd:0,tauntN:0,tauntSafe:false,stamR:1,
-  blockStun:0,lowGuard:false,guardHit:0,gw:0,gwT:0,gassed:false,lastPunch:-1e9,rdmg:0,
+  blockStun:0,lowGuard:false,guardHit:0,gw:0,gwT:0,gassed:false,lastPunch:-1e9,rdmg:0,jheat:0,lastJab:-1e9,repKey:'',repT:-1e9,repN:0,
   it:i*20,evc:0,chF:newChan(),chS:newChan(),hs:{x:0,r:0,vx:0,vr:0},vis:blankVis(),prev:blankVis(),actKey:'',bt:1,bd:0,low0:1,
   stats:newStats(),ai:null,inp:{fwd:0,lat:0,block:false,lowG:false,buf:null,pf:0,pl:0}};freshHealth(f);return f;}
 let S=null;
@@ -159,7 +159,9 @@ function moveFor(f,code){const hand=((code-1)/6)|0,kind=(code-1)%6,H=hand?'R':'L
 function spend(f,n){f.stam=Math.max(0,f.stam-n);if(f.stam<=0&&!f.gassed){f.gassed=true;ev({ty:'pop',f:f.i,text:'Gassed',cls:'gb',k:'g'+f.i+'.'+S.matchId+'.'+Math.round(nowMs())});}}
 function startAttack(f,code){
   const m=moveFor(f,code);if(!m)return;
-  f.tired=false;spend(f,m.cost);f.lastPunch=nowMs();
+  // jabbing gets tiring: each jab thrown soon after the last costs 4 more stamina (up to +20)
+  const jab=m.kind==='straight'&&m.hand==='L';if(jab){f.jheat=nowMs()-f.lastJab<850?f.jheat+1:0;f.lastJab=nowMs();}
+  f.tired=false;spend(f,m.cost+(jab?4*Math.min(f.jheat,5):0));f.lastPunch=nowMs();
   const slow=f.wob>0?1.15:1;
   f.action='atk';f.move=m;f.actionT=0;f.landed=false;f.resolved=false;f.swish=false;f.cut=-1;f.dodge=0;
   f.su=m.startup*slow;f.rc=m.recovery*slow;f.attackId++;f.stats.thrown++;if(prac())S.st.thrown++;
@@ -168,6 +170,8 @@ function startAttack(f,code){
 function startSlip(f,dk){f.action='slip';f.dk=dk;f.actionT=0;f.slipCd=520;spend(f,6+3*f.dheat);f.dheat+=1;
   f.slipSide=f.inp.lat?f.inp.lat*f.side:-(f.slipSide||1);}
 function decide(f){const inp=f.inp,ca=canAct(f);
+  // a jab can lead into any other punch at once, but a second jab waits for the first to finish
+  if(ca==='cancel'&&inp.buf&&(inp.buf.a===1||inp.buf.a===5)&&isAtk(f.action)&&f.move&&f.move.kind==='straight'&&f.move.hand==='L')return;
   if(ca&&inp.buf){const c=inp.buf.a;
     if(c===TAUNT){if(ca===true&&f.action!=='taunt'&&f.tauntCd<=0&&!prac())startTaunt(f,false);inp.buf=null;}
     else if(c>=13){if(ca===true&&f.slipCd<=0&&f.stam>=5){startSlip(f,c-13);inp.buf=null;}}else{if(!f.gassed)startAttack(f,c);inp.buf=null;}}

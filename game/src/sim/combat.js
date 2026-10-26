@@ -71,6 +71,10 @@ function blockReact(o,m,dmg){const heavy=dmg>=8.5,side=m.kind==='hook'?(m.hand==
   o.bhc=CI[side?'b'+side+(heavy?'H':'L'):(heavy?'bhH':'bhN')];o.bhv=0;o.bhId=(o.bhId||0)+1;const sg=BSEG[o.bhc];o.bhd=Math.max(o.blockStun*1.6,(sg[2]-sg[0])/30*1000*0.6);}
 function react(f,clip,stunMs){const sg=HSEG[clip];f.hc=clip;f.hv=0;f.hvd=Math.max(stunMs*1.25,(sg[2]-sg[0])/30*1000*0.8);}
 function land(a,o,m,dmg,label,dx,dz,ex,ey,ez,stunMul,clean){
+  // the same punch again and again gets read: within a second of the last one it lands lighter and stuns less
+  const rk=m.hand+m.kind+m.target;if(a.repKey===rk&&nowMs()-a.repT<1000)a.repN++;else a.repN=0;a.repKey=rk;a.repT=nowMs();
+  const rp=Math.min(a.repN,3);dmg*=[1,0.8,0.62,0.5][rp];stunMul=(stunMul||1)*[1,0.75,0.55,0.45][rp];
+  if(a.repN===2)ev({ty:'pop',f:a.i,text:'Too predictable',cls:'gb',k:mk(a,'rp')});
   const body=m.target==='body',wasStun=o.action==='hit',wasGassed=o.gassed;
   const n=wasStun?o.comboN+1:0;o.comboN=n;
   o.hp=Math.max(0,o.hp-dmg);a.rdmg+=dmg;          // head and body shots both take health

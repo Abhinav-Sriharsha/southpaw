@@ -63,6 +63,7 @@ function applyVis(b,v){
   b.hips.position.set(PO.hp[0],PO.hp[1],PO.hp[2]);
   if(pre||Math.abs(v.sl)>0.002||v.sd>0.002||Math.abs(v.bk||0)>0.002||Math.abs(v.dl||0)>0.002||Math.abs(v.hz||0)>0.05)footLockDodge(b,v,pre);
   eX.set(v.hr,0,-v.hx*2.2);qX.setFromEuler(eX);b.hd.quaternion.multiply(qX);
+  if(b.ue){b.root.updateMatrixWorld(true);LOOK.armsToSim(b);}   // the Superhero's gloves go where the fight's skeleton has them
   const sL=1/Math.sqrt(v.gsL),sR=1/Math.sqrt(v.gsR);b.gloves[0].scale.set(sL,v.gsL,sL);b.gloves[1].scale.set(sR,v.gsR,sR);
   if(Math.abs(v.flash-b.flash)>0.01){b.flash=v.flash;const f=v.flash*0.2;b.mats.forEach(m=>{const e=m.userData.em;if(m.emissive)m.emissive.setRGB((e?e.r:0)+f,(e?e.g:0)+f*0.85,(e?e.b:0)+f*0.72);});}
 }

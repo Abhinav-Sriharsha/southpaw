@@ -294,6 +294,29 @@
     "wraps": "Pink",
     "shoe": "Blue",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Round and soft",
+    "hair": "g_afro",
+    "hairC": "#e0699a",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#d59a6c",
+    "mus": 0.52,
+    "fat": -0.47,
+    "bottom": "",
+    "trunk": "#17181d",
+    "trim": "#e0699a",
+    "top": "u_tank",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#e0699a",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#2457c9",
+    "sole": "#c49a5c",
+    "gear": "u_headgear"
    }
   },
   {
@@ -345,6 +368,29 @@
     "wraps": "Gold",
     "shoe": "Red",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_Buzzed",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#f0c9a4",
+    "mus": 0.63,
+    "fat": -0.01,
+    "bottom": "u_shorts_long",
+    "trunk": "#1f8a8a",
+    "trim": "#ffc83a",
+    "top": "u_tank",
+    "topC": "#1f8a8a",
+    "hands": "u_gloves",
+    "gloveC": "#ffc83a",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#c8281f",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -396,6 +442,29 @@
     "wraps": "Black",
     "shoe": "Black",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_crew",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#e8b48a",
+    "mus": 0.72,
+    "fat": -0.03,
+    "bottom": "u_shorts_long",
+    "trunk": "#0f6b4a",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#16171c",
+    "sole": "#16171c",
+    "gear": "u_headgear"
    }
   },
   {
@@ -447,6 +516,29 @@
     "wraps": "Navy",
     "shoe": "Black",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "",
+    "hair": "Hair_Buns",
+    "hairC": "#7a3016",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#5e3a24",
+    "mus": 0.84,
+    "fat": 0.39,
+    "bottom": "",
+    "trunk": "#17181d",
+    "trim": "#1b2a55",
+    "top": "u_tank",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#1b2a55",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#16171c",
+    "sole": "#16171c",
+    "gear": "u_headgear"
    }
   },
   {
@@ -498,6 +590,29 @@
     "wraps": "Black",
     "shoe": "Blue",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Strong chin",
+    "hair": "g_afro",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#8a5636",
+    "mus": 0.71,
+    "fat": 0.52,
+    "bottom": "",
+    "trunk": "#ffc83a",
+    "trim": "#e0699a",
+    "top": "u_tank",
+    "topC": "#ffc83a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#2457c9",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -549,6 +664,29 @@
     "wraps": "White",
     "shoe": "Silver",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Square jaw",
+    "hair": "g_crew",
+    "hairC": "#8d8b88",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#a06a44",
+    "mus": 0.85,
+    "fat": -0.07,
+    "bottom": "",
+    "trunk": "#1b2a55",
+    "trim": "#1e5bd0",
+    "top": "u_tank",
+    "topC": "#1b2a55",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#b9bcc2",
+    "sole": "#16171c",
+    "gear": "u_headgear"
    }
   },
   {
@@ -600,6 +738,29 @@
     "wraps": "Black",
     "shoe": "White",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Strong chin",
+    "hair": "",
+    "hairC": "#e6dcc2",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#a06a44",
+    "mus": 0.48,
+    "fat": -0.67,
+    "bottom": "",
+    "trunk": "#17181d",
+    "trim": "#0f6b4a",
+    "top": "u_tank",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#eeeae0",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -651,6 +812,29 @@
     "wraps": "Maroon",
     "shoe": "White",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_hightop",
+    "hairC": "#2a1a12",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#f0c9a4",
+    "mus": 0.66,
+    "fat": -0.47,
+    "bottom": "",
+    "trunk": "#9e1b22",
+    "trim": "#5c1a23",
+    "top": "",
+    "topC": "#9e1b22",
+    "hands": "u_gloves",
+    "gloveC": "#5c1a23",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#eeeae0",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -702,6 +886,29 @@
     "wraps": "Orange",
     "shoe": "White",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Strong chin",
+    "hair": "",
+    "hairC": "#141013",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#a06a44",
+    "mus": 0.55,
+    "fat": -0.12,
+    "bottom": "u_shorts_long",
+    "trunk": "#9e1b22",
+    "trim": "#e8762b",
+    "top": "u_tank",
+    "topC": "#9e1b22",
+    "hands": "u_gloves",
+    "gloveC": "#e8762b",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#eeeae0",
+    "sole": "#f4efe4",
+    "gear": "u_headgear"
    }
   },
   {
@@ -753,6 +960,29 @@
     "wraps": "Silver",
     "shoe": "Gold",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_fauxhawk",
+    "hairC": "#e6dcc2",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#d59a6c",
+    "mus": 0.8,
+    "fat": -0.23,
+    "bottom": "",
+    "trunk": "#2f8f4e",
+    "trim": "#b9bcc2",
+    "top": "u_tank",
+    "topC": "#2f8f4e",
+    "hands": "u_gloves",
+    "gloveC": "#b9bcc2",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#d8aa2e",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -804,6 +1034,29 @@
     "wraps": "White",
     "shoe": "Red",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_crew",
+    "hairC": "#e0699a",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#f0c9a4",
+    "mus": 0.95,
+    "fat": 0.38,
+    "bottom": "u_shorts_long",
+    "trunk": "#e0699a",
+    "trim": "#17181d",
+    "top": "",
+    "topC": "#e0699a",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#c8281f",
+    "sole": "#16171c",
+    "gear": "u_headgear"
    }
   },
   {
@@ -855,6 +1108,29 @@
     "wraps": "White",
     "shoe": "Blue",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Sharp",
+    "hair": "",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#f0c9a4",
+    "mus": 0.69,
+    "fat": -0.04,
+    "bottom": "u_shorts_long",
+    "trunk": "#17181d",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#2457c9",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -906,6 +1182,29 @@
     "wraps": "Purple",
     "shoe": "Silver",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Wide nose",
+    "hair": "g_afro",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#a06a44",
+    "mus": 0.68,
+    "fat": 0.4,
+    "bottom": "",
+    "trunk": "#b9bcc2",
+    "trim": "#6a3fb5",
+    "top": "u_tank",
+    "topC": "#b9bcc2",
+    "hands": "u_gloves",
+    "gloveC": "#6a3fb5",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#b9bcc2",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -957,6 +1256,29 @@
     "wraps": "Orange",
     "shoe": "White",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_twists",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7a6a2e",
+    "skin": "#e8b48a",
+    "mus": 0.86,
+    "fat": 0.08,
+    "bottom": "",
+    "trunk": "#ffc83a",
+    "trim": "#e8762b",
+    "top": "u_tank",
+    "topC": "#ffc83a",
+    "hands": "u_gloves",
+    "gloveC": "#e8762b",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#eeeae0",
+    "sole": "#c49a5c",
+    "gear": "u_headgear"
    }
   },
   {
@@ -1008,6 +1330,29 @@
     "wraps": "White",
     "shoe": "Blue",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Square jaw",
+    "hair": "g_mohawk",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Female",
+    "eye": "#7d8a94",
+    "skin": "#a06a44",
+    "mus": 0.53,
+    "fat": -0.66,
+    "bottom": "",
+    "trunk": "#2f8f4e",
+    "trim": "#f1ece1",
+    "top": "u_tank",
+    "topC": "#2f8f4e",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#2457c9",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -1059,6 +1404,29 @@
     "wraps": "Navy",
     "shoe": "Silver",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Round and soft",
+    "hair": "g_slick",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7a6a2e",
+    "skin": "#8a5636",
+    "mus": 0.75,
+    "fat": 0.19,
+    "bottom": "u_shorts_long",
+    "trunk": "#0f6b4a",
+    "trim": "#1b2a55",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#1b2a55",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#b9bcc2",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -1110,6 +1478,29 @@
     "wraps": "Green",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_fauxhawk",
+    "hairC": "#c9a25a",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#8a5636",
+    "mus": 0.9,
+    "fat": 0.21,
+    "bottom": "u_shorts_long",
+    "trunk": "#17181d",
+    "trim": "#2f8f4e",
+    "top": "",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#2f8f4e",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -1161,6 +1552,29 @@
     "wraps": "White",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "",
+    "hair": "Hair_Buzzed",
+    "hairC": "#c9a25a",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#c08a5c",
+    "mus": 0.71,
+    "fat": -0.21,
+    "bottom": "u_shorts_long",
+    "trunk": "#d8302a",
+    "trim": "#2f8f4e",
+    "top": "",
+    "topC": "#d8302a",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -1212,6 +1626,29 @@
     "wraps": "Silver",
     "shoe": "Blue",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#a06a44",
+    "mus": 0.76,
+    "fat": 0.27,
+    "bottom": "",
+    "trunk": "#1b2a55",
+    "trim": "#b9bcc2",
+    "top": "",
+    "topC": "#1b2a55",
+    "hands": "u_gloves",
+    "gloveC": "#b9bcc2",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#2457c9",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1263,6 +1700,29 @@
     "wraps": "Black",
     "shoe": "Gold",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Long and narrow",
+    "hair": "g_afro",
+    "hairC": "#141013",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#a06a44",
+    "mus": 0.58,
+    "fat": -0.79,
+    "bottom": "",
+    "trunk": "#0f6b4a",
+    "trim": "#f1ece1",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1314,6 +1774,29 @@
     "wraps": "Green",
     "shoe": "White",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Wide nose",
+    "hair": "Hair_SimpleParted",
+    "hairC": "#e0699a",
+    "beard": "",
+    "brow": "Eyebrows_Female",
+    "eye": "#7d8a94",
+    "skin": "#a06a44",
+    "mus": 0.95,
+    "fat": 0.12,
+    "bottom": "",
+    "trunk": "#5c1a23",
+    "trim": "#2f8f4e",
+    "top": "",
+    "topC": "#5c1a23",
+    "hands": "u_gloves",
+    "gloveC": "#2f8f4e",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#eeeae0",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1365,6 +1848,29 @@
     "wraps": "Black",
     "shoe": "White",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_hightop",
+    "hairC": "#a4481c",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#d59a6c",
+    "mus": 0.48,
+    "fat": -0.44,
+    "bottom": "",
+    "trunk": "#e8762b",
+    "trim": "#5c1a23",
+    "top": "",
+    "topC": "#e8762b",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#eeeae0",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -1416,6 +1922,29 @@
     "wraps": "White",
     "shoe": "Gold",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_Buzzed",
+    "hairC": "#2a1a12",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#d59a6c",
+    "mus": 0.71,
+    "fat": 0.52,
+    "bottom": "u_shorts_long",
+    "trunk": "#f1ece1",
+    "trim": "#1b2a55",
+    "top": "",
+    "topC": "#f1ece1",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1467,6 +1996,29 @@
     "wraps": "White",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_cornrows",
+    "hairC": "#141013",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#e8b48a",
+    "mus": 0.81,
+    "fat": -0.25,
+    "bottom": "",
+    "trunk": "#5c1a23",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#5c1a23",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -1518,6 +2070,29 @@
     "wraps": "Black",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_SimpleParted",
+    "hairC": "#2a1a12",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Female",
+    "eye": "#7d8a94",
+    "skin": "#d59a6c",
+    "mus": 0.58,
+    "fat": -0.01,
+    "bottom": "u_shorts_long",
+    "trunk": "#e0699a",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#e0699a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -1569,6 +2144,29 @@
     "wraps": "Black",
     "shoe": "Blue",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_twists",
+    "hairC": "#7a3016",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#a06a44",
+    "mus": 0.83,
+    "fat": -0.27,
+    "bottom": "u_shorts_long",
+    "trunk": "#17181d",
+    "trim": "#f1ece1",
+    "top": "",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#2457c9",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1620,6 +2218,29 @@
     "wraps": "Red",
     "shoe": "Gold",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_fauxhawk",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#8a5636",
+    "mus": 0.55,
+    "fat": -0.69,
+    "bottom": "",
+    "trunk": "#e8762b",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#e8762b",
+    "hands": "u_gloves",
+    "gloveC": "#d8302a",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1671,6 +2292,29 @@
     "wraps": "White",
     "shoe": "Gold",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Square jaw",
+    "hair": "g_flattop",
+    "hairC": "#141013",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#a06a44",
+    "mus": 0.95,
+    "fat": 0.18,
+    "bottom": "",
+    "trunk": "#e0699a",
+    "trim": "#4aa3df",
+    "top": "",
+    "topC": "#e0699a",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#d8aa2e",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -1722,6 +2366,29 @@
     "wraps": "Purple",
     "shoe": "Gold",
     "sole": "White"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_hightop",
+    "hairC": "#7a3016",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7a6a2e",
+    "skin": "#e8b48a",
+    "mus": 0.82,
+    "fat": -0.1,
+    "bottom": "u_shorts_long",
+    "trunk": "#6a3fb5",
+    "trim": "#1b2a55",
+    "top": "",
+    "topC": "#6a3fb5",
+    "hands": "u_gloves",
+    "gloveC": "#6a3fb5",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -1773,6 +2440,29 @@
     "wraps": "Sky",
     "shoe": "White",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_slick",
+    "hairC": "#7a3016",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#5e3a24",
+    "mus": 0.71,
+    "fat": 0.46,
+    "bottom": "",
+    "trunk": "#17181d",
+    "trim": "#4aa3df",
+    "top": "",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#4aa3df",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#eeeae0",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -1824,6 +2514,29 @@
     "wraps": "Black",
     "shoe": "Gold",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_fauxhawk",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#c08a5c",
+    "mus": 0.79,
+    "fat": -0.08,
+    "bottom": "",
+    "trunk": "#9e1b22",
+    "trim": "#f1ece1",
+    "top": "",
+    "topC": "#9e1b22",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1875,6 +2588,29 @@
     "wraps": "Black",
     "shoe": "Red",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_afro",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Female",
+    "eye": "#2a1a10",
+    "skin": "#f0c9a4",
+    "mus": 0.84,
+    "fat": -0.16,
+    "bottom": "u_shorts_long",
+    "trunk": "#e0699a",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#e0699a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#c8281f",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -1926,6 +2662,29 @@
     "wraps": "Navy",
     "shoe": "Silver",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_fauxhawk",
+    "hairC": "#c9a25a",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#c08a5c",
+    "mus": 0.95,
+    "fat": 0.28,
+    "bottom": "",
+    "trunk": "#1b2a55",
+    "trim": "#e8762b",
+    "top": "",
+    "topC": "#1b2a55",
+    "hands": "u_gloves",
+    "gloveC": "#1b2a55",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#b9bcc2",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -1977,6 +2736,29 @@
     "wraps": "Crimson",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_Long",
+    "hairC": "#5a3820",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#e8b48a",
+    "mus": 0.65,
+    "fat": 0.42,
+    "bottom": "",
+    "trunk": "#4aa3df",
+    "trim": "#9e1b22",
+    "top": "",
+    "topC": "#4aa3df",
+    "hands": "u_gloves",
+    "gloveC": "#9e1b22",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -2028,6 +2810,29 @@
     "wraps": "White",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Round and soft",
+    "hair": "g_crew",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Female",
+    "eye": "#3a6fb8",
+    "skin": "#c08a5c",
+    "mus": 0.66,
+    "fat": -0.64,
+    "bottom": "u_shorts_long",
+    "trunk": "#f1ece1",
+    "trim": "#9e1b22",
+    "top": "",
+    "topC": "#f1ece1",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -2079,6 +2884,29 @@
     "wraps": "Purple",
     "shoe": "Gold",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_mohawk",
+    "hairC": "#c9a25a",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#8a5636",
+    "mus": 0.68,
+    "fat": -0.57,
+    "bottom": "u_shorts_long",
+    "trunk": "#ffc83a",
+    "trim": "#6a3fb5",
+    "top": "",
+    "topC": "#ffc83a",
+    "hands": "u_gloves",
+    "gloveC": "#6a3fb5",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2130,6 +2958,29 @@
     "wraps": "White",
     "shoe": "Silver",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Sharp",
+    "hair": "g_crew",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#8a5636",
+    "mus": 0.72,
+    "fat": 0.78,
+    "bottom": "",
+    "trunk": "#4aa3df",
+    "trim": "#9e1b22",
+    "top": "",
+    "topC": "#4aa3df",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#b9bcc2",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -2181,6 +3032,29 @@
     "wraps": "Black",
     "shoe": "Blue",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_SimpleParted",
+    "hairC": "#141013",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7a6a2e",
+    "skin": "#a06a44",
+    "mus": 0.84,
+    "fat": 0.02,
+    "bottom": "u_shorts_long",
+    "trunk": "#0f6b4a",
+    "trim": "#ffc83a",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#2457c9",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -2232,6 +3106,29 @@
     "wraps": "Sky",
     "shoe": "Red",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Long and narrow",
+    "hair": "g_crew",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7a6a2e",
+    "skin": "#e8b48a",
+    "mus": 0.58,
+    "fat": -0.6,
+    "bottom": "",
+    "trunk": "#4aa3df",
+    "trim": "#e0699a",
+    "top": "",
+    "topC": "#4aa3df",
+    "hands": "u_gloves",
+    "gloveC": "#4aa3df",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#c8281f",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2283,6 +3180,29 @@
     "wraps": "White",
     "shoe": "Black",
     "sole": "White"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_crew",
+    "hairC": "#2f8f4e",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#f0c9a4",
+    "mus": 0.63,
+    "fat": -0.44,
+    "bottom": "",
+    "trunk": "#4aa3df",
+    "trim": "#d8302a",
+    "top": "",
+    "topC": "#4aa3df",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#16171c",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -2334,6 +3254,29 @@
     "wraps": "Black",
     "shoe": "Black",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_Buzzed",
+    "hairC": "#c8281f",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#d59a6c",
+    "mus": 0.63,
+    "fat": 0.55,
+    "bottom": "",
+    "trunk": "#d8302a",
+    "trim": "#e0699a",
+    "top": "",
+    "topC": "#d8302a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#16171c",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -2385,6 +3328,29 @@
     "wraps": "White",
     "shoe": "White",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Sharp",
+    "hair": "g_twists",
+    "hairC": "#a4481c",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#a06a44",
+    "mus": 0.68,
+    "fat": -0.7,
+    "bottom": "",
+    "trunk": "#b9bcc2",
+    "trim": "#e0699a",
+    "top": "",
+    "topC": "#b9bcc2",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#eeeae0",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2436,6 +3402,29 @@
     "wraps": "Black",
     "shoe": "Silver",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Square jaw",
+    "hair": "g_crew",
+    "hairC": "#141013",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#c08a5c",
+    "mus": 0.64,
+    "fat": 0.0,
+    "bottom": "u_shorts_long",
+    "trunk": "#0f6b4a",
+    "trim": "#1b2a55",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#b9bcc2",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -2487,6 +3476,29 @@
     "wraps": "Sky",
     "shoe": "Gold",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Strong chin",
+    "hair": "Hair_Buzzed",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#8a5636",
+    "mus": 0.72,
+    "fat": 0.14,
+    "bottom": "u_shorts_long",
+    "trunk": "#1e5bd0",
+    "trim": "#4aa3df",
+    "top": "",
+    "topC": "#1e5bd0",
+    "hands": "u_gloves",
+    "gloveC": "#4aa3df",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2538,6 +3550,29 @@
     "wraps": "Blue",
     "shoe": "White",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Strong chin",
+    "hair": "Hair_Buzzed",
+    "hairC": "#2457c9",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#e8b48a",
+    "mus": 0.81,
+    "fat": -0.13,
+    "bottom": "u_shorts_long",
+    "trunk": "#2f8f4e",
+    "trim": "#1e5bd0",
+    "top": "",
+    "topC": "#2f8f4e",
+    "hands": "u_gloves",
+    "gloveC": "#1e5bd0",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#eeeae0",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2589,6 +3624,29 @@
     "wraps": "Black",
     "shoe": "Red",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_mohawk",
+    "hairC": "#2a1a12",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#f0c9a4",
+    "mus": 0.82,
+    "fat": 0.04,
+    "bottom": "",
+    "trunk": "#ffc83a",
+    "trim": "#1f8a8a",
+    "top": "",
+    "topC": "#ffc83a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#c8281f",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2640,6 +3698,29 @@
     "wraps": "Navy",
     "shoe": "Red",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_afro",
+    "hairC": "#2a1a12",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#f0c9a4",
+    "mus": 0.88,
+    "fat": -0.15,
+    "bottom": "u_shorts_long",
+    "trunk": "#9e1b22",
+    "trim": "#1b2a55",
+    "top": "",
+    "topC": "#9e1b22",
+    "hands": "u_gloves",
+    "gloveC": "#1b2a55",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#c8281f",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -2691,6 +3772,29 @@
     "wraps": "White",
     "shoe": "Silver",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_mohawk",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#e8b48a",
+    "mus": 0.86,
+    "fat": 0.07,
+    "bottom": "",
+    "trunk": "#1f8a8a",
+    "trim": "#9e1b22",
+    "top": "",
+    "topC": "#1f8a8a",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#b9bcc2",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2742,6 +3846,29 @@
     "wraps": "Emerald",
     "shoe": "Red",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_Buzzed",
+    "hairC": "#c9a25a",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#e8b48a",
+    "mus": 0.88,
+    "fat": -0.11,
+    "bottom": "",
+    "trunk": "#e0699a",
+    "trim": "#0f6b4a",
+    "top": "",
+    "topC": "#e0699a",
+    "hands": "u_gloves",
+    "gloveC": "#0f6b4a",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#c8281f",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -2793,6 +3920,29 @@
     "wraps": "Emerald",
     "shoe": "Gold",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_crew",
+    "hairC": "#5a3820",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7a6a2e",
+    "skin": "#f0c9a4",
+    "mus": 0.76,
+    "fat": 0.12,
+    "bottom": "u_shorts_long",
+    "trunk": "#0f6b4a",
+    "trim": "#5c1a23",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#0f6b4a",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2844,6 +3994,29 @@
     "wraps": "Black",
     "shoe": "Red",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "",
+    "hair": "g_mohawk",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Female",
+    "eye": "#2a1a10",
+    "skin": "#8a5636",
+    "mus": 0.71,
+    "fat": -0.0,
+    "bottom": "u_shorts_long",
+    "trunk": "#0f6b4a",
+    "trim": "#1f8a8a",
+    "top": "",
+    "topC": "#0f6b4a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#c8281f",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -2895,6 +4068,29 @@
     "wraps": "White",
     "shoe": "Gold",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Wide nose",
+    "hair": "",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#5a3a1e",
+    "skin": "#c08a5c",
+    "mus": 0.72,
+    "fat": -0.03,
+    "bottom": "",
+    "trunk": "#5c1a23",
+    "trim": "#2f8f4e",
+    "top": "",
+    "topC": "#5c1a23",
+    "hands": "u_gloves",
+    "gloveC": "#f1ece1",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#d8aa2e",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -2946,6 +4142,29 @@
     "wraps": "Teal",
     "shoe": "Black",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Long and narrow",
+    "hair": "g_crew",
+    "hairC": "#7a3016",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#c08a5c",
+    "mus": 0.64,
+    "fat": -0.55,
+    "bottom": "",
+    "trunk": "#ffc83a",
+    "trim": "#1f8a8a",
+    "top": "",
+    "topC": "#ffc83a",
+    "hands": "u_gloves",
+    "gloveC": "#1f8a8a",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#16171c",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -2997,6 +4216,29 @@
     "wraps": "Pink",
     "shoe": "White",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Female",
+    "eye": "#7d8a94",
+    "skin": "#a06a44",
+    "mus": 0.6,
+    "fat": -0.54,
+    "bottom": "u_shorts_long",
+    "trunk": "#e0699a",
+    "trim": "#e8762b",
+    "top": "",
+    "topC": "#e0699a",
+    "hands": "u_gloves",
+    "gloveC": "#e0699a",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#eeeae0",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -3048,6 +4290,29 @@
     "wraps": "Black",
     "shoe": "Red",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_twists",
+    "hairC": "#8d8b88",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#a06a44",
+    "mus": 0.53,
+    "fat": -0.53,
+    "bottom": "u_shorts_long",
+    "trunk": "#d8302a",
+    "trim": "#17181d",
+    "top": "",
+    "topC": "#d8302a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#c8281f",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -3099,6 +4364,29 @@
     "wraps": "Crimson",
     "shoe": "Blue",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_hightop",
+    "hairC": "#a4481c",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Female",
+    "eye": "#7d8a94",
+    "skin": "#d59a6c",
+    "mus": 0.95,
+    "fat": 0.41,
+    "bottom": "u_shorts_long",
+    "trunk": "#9e1b22",
+    "trim": "#b9bcc2",
+    "top": "",
+    "topC": "#9e1b22",
+    "hands": "u_gloves",
+    "gloveC": "#9e1b22",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#2457c9",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -3150,6 +4438,29 @@
     "wraps": "Black",
     "shoe": "Silver",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_fauxhawk",
+    "hairC": "#7a3016",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#2a1a10",
+    "skin": "#8a5636",
+    "mus": 0.94,
+    "fat": 0.01,
+    "bottom": "",
+    "trunk": "#f1ece1",
+    "trim": "#5c1a23",
+    "top": "",
+    "topC": "#f1ece1",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "u_boots",
+    "boot": "#b9bcc2",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -3201,6 +4512,29 @@
     "wraps": "Crimson",
     "shoe": "Silver",
     "sole": "Black"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_afro",
+    "hairC": "#c8281f",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3f7a45",
+    "skin": "#8a5636",
+    "mus": 0.95,
+    "fat": -0.15,
+    "bottom": "u_shorts_long",
+    "trunk": "#9e1b22",
+    "trim": "#6a3fb5",
+    "top": "",
+    "topC": "#9e1b22",
+    "hands": "u_gloves",
+    "gloveC": "#9e1b22",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#b9bcc2",
+    "sole": "#16171c",
+    "gear": ""
    }
   },
   {
@@ -3252,6 +4586,29 @@
     "wraps": "Black",
     "shoe": "Blue",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_SimpleParted",
+    "hairC": "#2a1a12",
+    "beard": "",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#f0c9a4",
+    "mus": 0.6,
+    "fat": 0.81,
+    "bottom": "",
+    "trunk": "#17181d",
+    "trim": "#1e5bd0",
+    "top": "",
+    "topC": "#17181d",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#2457c9",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   },
   {
@@ -3303,6 +4660,29 @@
     "wraps": "Black",
     "shoe": "Red",
     "sole": "Gum"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "Hair_Buzzed",
+    "hairC": "#c8281f",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#3a6fb8",
+    "skin": "#d59a6c",
+    "mus": 0.72,
+    "fat": -0.17,
+    "bottom": "",
+    "trunk": "#1f8a8a",
+    "trim": "#b9bcc2",
+    "top": "",
+    "topC": "#1f8a8a",
+    "hands": "u_gloves",
+    "gloveC": "#17181d",
+    "wrapC": "#efece4",
+    "feet": "mid",
+    "boot": "#c8281f",
+    "sole": "#c49a5c",
+    "gear": ""
    }
   },
   {
@@ -3354,6 +4734,29 @@
     "wraps": "Red",
     "shoe": "Red",
     "sole": "White"
+   },
+   "look2": {
+    "face": "Brawler",
+    "hair": "g_fauxhawk",
+    "hairC": "#c9a25a",
+    "beard": "Hair_Beard",
+    "brow": "Eyebrows_Regular",
+    "eye": "#7d8a94",
+    "skin": "#e8b48a",
+    "mus": 0.72,
+    "fat": -0.24,
+    "bottom": "",
+    "trunk": "#d8302a",
+    "trim": "#1f8a8a",
+    "top": "",
+    "topC": "#d8302a",
+    "hands": "u_gloves",
+    "gloveC": "#d8302a",
+    "wrapC": "#efece4",
+    "feet": "low",
+    "boot": "#c8281f",
+    "sole": "#f4efe4",
+    "gear": ""
    }
   }
  ]

@@ -24,6 +24,7 @@ function predictNext(pm){const row=pm.mk[pm.last];if(!row)return null;let tot=0,
 function aiObserve(ai,me,op,d,now){
   const pm=ai.pm,keep=1-0.03*ai.learn;
   if(isAtk(op.action)&&op.attackId!==pm.seenAtk){pm.seenAtk=op.attackId;const m=op.move;
+    pm.jabRun=m.kind==='straight'&&m.hand==='L'&&now-pm.lastT<900&&pm.last&&pm.last[0]==='L'&&pm.last[1]==='0'?(pm.jabRun||0)+1:0;   // a run of jabs
     decayTable(pm.kind,keep);decayTable(pm.tgt,keep);pm.kind[m.kind]=(pm.kind[m.kind]||0)+1;pm.tgt[m.target]++;
     if(pm.last&&now-pm.lastT<900){const row=pm.mk[pm.last]||(pm.mk[pm.last]={});decayTable(row,keep);row[m.key]=(row[m.key]||0)+1;}
     pm.last=m.key;pm.lastT=now;pm.times.push(now);while(pm.times.length&&now-pm.times[0]>5000)pm.times.shift();}
@@ -82,10 +83,11 @@ function aiThink(ai,me,op){
   // 1) see the punch coming and defend it
   if(isAtk(op.action)&&op.attackId!==ai.seen&&op.actionT>=ai.react&&op.actionT<op.su&&d<op.move.reach+0.15){
     ai.seen=op.attackId;const m=op.move,left=op.su-op.actionT;
-    if(Math.random()<ai.defend*(me.hp<30?1.15:1)){
+    const spam=(pm.jabRun||0)>=2&&m.kind==='straight'&&m.hand==='L';   // he keeps jabbing: see it coming, slip it and make him pay
+    if(Math.random()<Math.min(0.95,ai.defend*(me.hp<30?1.15:1)*(spam?1.6:1))){
       const right=Math.random()<ai.acc;
       if(left>MOVES.L0.startup+30&&d<MOVES.L0.ideal-HEAD_FWD+0.08&&me.stam>10&&Math.random()<0.15+rate(pm,'counter')*0.5*ai.learn){press(PCODE(0,0));ai.ctrAtk=me.attackId+1;}
-      else if(left>=45&&me.slipCd<=0&&me.stam>12&&Math.random()<ai.slip*(m.target==='body'?0.25:1)){
+      else if(left>=45&&me.slipCd<=0&&me.stam>12&&Math.random()<Math.min(0.9,ai.slip*(m.target==='body'?0.25:1)*(spam?1.8:1))){
         let dk=m.kind==='upper'?2:m.kind==='hook'?1:(Math.random()<.6?0:1);if(!right)dk=(Math.random()*3)|0;inp.lat=Math.random()<.5?1:-1;press(13+dk);}
       else{ai.blockUntil=now+left+m.active+90;ai.low=right?m.target==='body':m.target!=='body';}}}
   // 2) read the player's habits: guard against the follow-up they usually throw

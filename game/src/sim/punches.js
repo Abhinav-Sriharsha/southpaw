@@ -8,7 +8,7 @@
    The right hand has its own clips: cross, a normal hook up close and a long looping hook from range, a normal and a heavy uppercut. */
 const KIND_NAMES=['straight','hook','upper','power','bstraight','bhook'];
 const TPL={
-  jab:{startup:118,active:71,recovery:189,dmg:5,cost:4,stop:45,shake:.13,sev:.45,stun:230,kb:.8,whiff:90,ext:.25,trail:.5,clip:'jab3',f0:1,fw:4,fi:12.5,fr:1,ease:'sine',low:1,blend:0.04},
+  jab:{startup:118,active:71,recovery:189,dmg:5,cost:4,stop:45,shake:.13,sev:.45,stun:160,kb:.8,whiff:90,ext:.25,trail:.5,clip:'jab3',f0:1,fw:4,fi:12.5,fr:1,ease:'sine',low:1,blend:0.04},
   crossSolo:{startup:135,active:71,recovery:260,dmg:8,cost:7,stop:55,shake:.18,sev:.55,stun:280,kb:1.1,whiff:120,ext:.3,trail:.8,clip:'rj',f0:2,fw:15,fi:22,fr:36,ease:'sine',low:1,blend:0.06},
   crossChain:{startup:130,active:71,recovery:354,dmg:8,cost:7,stop:55,shake:.18,sev:.55,stun:280,kb:1.1,whiff:120,ext:.3,trail:.8,clip:'jc1',f0:13,fw:15,fi:20,fr:54,fade:0.5,ease:'sine',low:1,blend:0.06},
   hook:{startup:172,active:70,recovery:410,dmg:11,cost:11,stop:80,shake:.3,sev:.8,stun:350,kb:1.6,whiff:180,ext:.67,trail:1,clip:'hook',f0:3,fw:11,fi:14.9,fr:48,fade:0.55,even:2.3,low:1,blend:0.035},
