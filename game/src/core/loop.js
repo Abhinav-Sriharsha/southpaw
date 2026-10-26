@@ -26,7 +26,7 @@ function frame(now){
   if(online){netFrame(dt);tickTimers(dt);}
   else if(!G.paused){tickTimers(dt);acc+=dt;let n=0;while(acc>=STEP&&n<12){step([S.show?showInput():(S.mode==='attract'||S.F[0].ai?null:sampleLocal()),null]);acc-=STEP;n++;}if(n>=12)acc=0;}
   if(!S)return;
-  drainEvents();syncUI();
+  drainEvents();syncUI();if(TR.on)trainUpdate(dt);
   renderDt=G.paused?0:dt*(S.state==='replay'?1:(S.hitstop>0?0.15:S.scale*S.userScale));
   const pr=prac();const Lc=LOC(),Rc=1-Lc;let va,vb,vg;
   if(S.state==='replay'&&S.rp){const rp=S.rp,i=Math.floor(rp.pos),t=rp.pos-i,f0=rec[i%REC],f1=rec[Math.min(i+1,rp.end)%REC];

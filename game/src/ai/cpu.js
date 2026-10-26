@@ -12,7 +12,10 @@
 const DIFF=CPU_LEVELS;   // data/cpu.js
 function newPM(){return {kind:{straight:2,hook:1,upper:1},tgt:{head:3,body:1},mk:{},last:'',lastT:-1e9,times:[],
   def:{block:1,low:0.6,slip:0.5,duck:0.5,pull:0.5,none:1.2},res:{},seenAtk:-1,seenRes:-1,myAtk:-1,myDone:true,myCat:'',myCtr:false,opWhiffT:-1e9};}
-function makeAI(d){return Object.assign({next:0,fwd:0,lat:0,blockUntil:0,low:false,seen:-1,q:[],plan:'pressure',replanAt:0,readUntil:0,ctrAtk:-1,pm:newPM(),d},DIFF[d]);}
+/* d: a difficulty name from data/cpu.js, or a full profile (a career fighter, src/ui/career.js) that can also carry a style:
+   mix (weight per punch kind: straight, hook, upper, body, power), sig (extra weight per punch code), planBias (multiplies
+   each game plan's score) and range (metres added to the distance he likes to fight at). */
+function makeAI(d){const P=typeof d==='string'?DIFF[d]:d;return Object.assign({next:0,fwd:0,lat:0,blockUntil:0,low:false,seen:-1,q:[],plan:'pressure',replanAt:0,readUntil:0,ctrAtk:-1,pm:newPM(),d:typeof d==='string'?d:'career',mix:null,sig:null,planBias:null,range:0},P);}
 const catOf=m=>m.target==='body'?'body':m.kind;
 function resOf(pm,c){return pm.res[c]||(pm.res[c]={t:2,l:0.8});}
 const rate=(pm,c)=>{const r=resOf(pm,c);return r.l/r.t;};
@@ -40,6 +43,7 @@ function aiPlan(ai,me,op,announce){
     body:0.55+share(pm,'block')*2.4*ai.learn+(op.stam<40?0.4:0)+noise(),
     box:0.85+(me.hp<op.hp-15?0.7:0)+rate(pm,'straight')*0.9+noise(),
     counter:0.7+Math.min(opRate,2)*0.45*ai.learn+rate(pm,'counter')*0.9+noise()};
+  if(ai.planBias)for(const k in ai.planBias)if(k in sc)sc[k]*=ai.planBias[k];   // a style's favourite game plan
   let best='pressure';for(const k in sc)if(sc[k]>sc[best])best=k;
   const changed=best!==ai.plan;ai.plan=best;
   const why=best==='pressure'&&share(pm,'duck')>0.25?'pressureDuck':best==='pressure'&&share(pm,'slip')>0.25?'pressureSlip':best;
@@ -62,6 +66,7 @@ function aiChoose(ai,me,op,d,finish){
     if(finish&&(cat==='hook'||cat==='upper'))w*=1.9;
     if(me.stam<m.cost*2.2&&cat!=='straight')w*=0.3;
     if(code===PCODE(0,5)&&op.gassed)w*=1+6*L;    // he's punched himself out: the left hook to the liver drops him
+    if(ai.mix){const k=code===PCODE(0,3)||code===PCODE(1,3)?'power':cat;w*=ai.mix[k]||1;}if(ai.sig&&ai.sig[code])w*=ai.sig[code];   // style and signature punch
     w=Math.pow(w,0.6+0.8*L);cand.push([code,w]);tot+=w;}
   if(!cand.length)return null;let r=Math.random()*tot;for(const [c,w] of cand){if((r-=w)<=0)return c;}return cand[0][0];}
 const COMBOS={1:[[7],[1],[7,2]],7:[[2],[2,9]],2:[[9],[7]],5:[[2],[8]],6:[[2],[1]],8:[[3],[1]],11:[[2]],12:[[2]]};
@@ -97,6 +102,7 @@ function aiThink(ai,me,op){
   const finish=op.hp<30||op.wob>0||op.gassed,hurt=me.hp<25||me.wob>0,tired=me.gassed||me.stam<25;
   if(d>1.45&&me.tauntCd<=0&&!hurt&&me.hp>op.hp+12&&(op.wob>0||op.hp<40||op.stam<25)&&!isAtk(op.action)&&Math.random()<ai.taunt){press(TAUNT);return;}
   let want=ai.plan==='pressure'||ai.plan==='body'?0.98:ai.plan==='box'?1.26:1.12;if(finish)want=1.0;
+  want+=ai.range||0;   // an out-boxer likes it long, a swarmer close
   if(share(pm,'duck')*ai.learn>0.25)want=Math.min(want,0.92);   // uppercuts need to be close
   if(hurt||tired)want=1.45;
   const cornered=Math.max(Math.abs(me.x),Math.abs(me.z))>3.0,escLat=(r.lx*-me.x+r.lz*-me.z)>0?1:-1;

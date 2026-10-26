@@ -10,14 +10,14 @@ let speedI=0,camMode=0;
 const KH_FIGHT='<span><kbd>D</kbd><kbd>A</kbd> in / out</span><span><kbd>W</kbd><kbd>S</kbd> circle</span><span><kbd>J</kbd> left hand</span><span><kbd>K</kbd> right hand</span><span>tap jab/cross, hold hook</span><span><kbd>W</kbd>+punch uppercut</span><span><kbd>S</kbd>+punch body</span><span><kbd>Space</kbd> block</span><span><kbd>Shift</kbd> dodge</span><span><kbd>T</kbd> taunt</span>';
 const KEYHELP={cpu:KH_FIGHT+'<span><kbd>Esc</kbd> menu</span>',online:KH_FIGHT+'<span><kbd>Esc</kbd> menu</span>',
   practice:KH_FIGHT.replace('<span><kbd>T</kbd> taunt</span>','')+'<span><kbd>T</kbd> slow-mo</span><span><kbd>C</kbd> camera</span><span><kbd>R</kbd> replay</span><span><kbd>Esc</kbd> pause</span>'};
-function hideScreens(){$('#title').hidden=true;$('#end').hidden=true;$('#pause').hidden=true;$('#online').hidden=true;const l=$('#lobby');if(l)l.hidden=true;const c=$('#cpu');if(c)c.hidden=true;
+function hideScreens(){$('#title').hidden=true;$('#end').hidden=true;$('#pause').hidden=true;$('#online').hidden=true;const l=$('#lobby');if(l)l.hidden=true;const c=$('#cpu');if(c)c.hidden=true;const k=$('#career');if(k)k.hidden=true;
   if(CUST.on){CUST.on=false;$('#custom').hidden=true;document.body.classList.remove('cust');}}
 let usingTouch=TOUCH;
 function setPlaying(on){document.body.classList.toggle('playing',on);touchEl.hidden=!(on&&usingTouch);tbarEl.hidden=!on;resetStick();TB.block=false;
   document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}
 const UI={state:'',mode:'',round:-1,match:-1,endShown:false};
 function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;SEEN.clear();SEENQ.length=0;cam.init=false;resetLocalInput();
-  const pr=s.mode==='practice'||!!s.show;showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;assignLooks();}
+  const pr=s.mode==='practice'||!!s.show;showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;assignLooks();if(s.mode!=='practice')trainStop();}
 function startAttract(){timers.length=0;
   if(S&&S.mode==='online')netLeave(true);
   const s=newSim('attract');s.show=true;enterSim(s);   // the title film (src/ui/titleShow.js)
@@ -66,7 +66,8 @@ function showEnd(){
     row('Damage',f=>Math.round(f.stats.dmg))+row('Biggest shot',f=>Math.round(f.stats.best))+row('Knockdowns',f=>f.stats.kd)+row('Counters',f=>f.stats.counters)+row('Dodged',f=>f.stats.slips)+'</tbody>';
   const how=S.lastKO?'knocked out':'beat',tail=S.lastKO?' in round '+S.round:' on the cards',oppName=online?S.names[1-Lc]:S.names[1];
   const brag=w===Lc?'I '+how+' '+oppName+tail+(online?' online':'')+' on South Paw. '+me.stats.landed+' of '+me.stats.thrown+' punches landed. Your turn.':oppName+' '+how+' me'+tail+' on South Paw. Rematch incoming.';
-  $('#bragText').value=brag;$('#btnCopy').textContent='Copy';$('#btnRematch').textContent='Rematch';$('#rematchNote').textContent='';
+  $('#bragText').value=brag;$('#btnCopy').textContent='Copy';$('#btnRematch').textContent=S.career?'Continue':'Rematch';$('#rematchNote').textContent='';
+  if(S.career)carResult();   // the result counts as soon as the match ends (src/ui/career.js)
   hudEl.hidden=true;helpEl.hidden=true;setPlaying(false);$('#end').hidden=false;}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function syncUI(){

@@ -10,7 +10,7 @@ const CUST={on:false,yaw:0,tab:0,look:null,cam:new V3(),tgt:new V3(),init:false}
 const FILM_WRAPS='#f1ede4';
 function assignLooks(){if(!S||!B[0]||!B[0].model)return;const my=LOOK.mine();
   if(S.mode==='online'){const L=NET.local|0;LOOK.apply(B[L],my||LOOK.CORNER[L]);LOOK.apply(B[1-L],(NET.opp&&NET.opp.look)||LOOK.CORNER[1-L]);}
-  else{LOOK.apply(B[0],my||LOOK.CORNER[0],S.show&&!CUST.on?FILM_WRAPS:null);LOOK.apply(B[1],LOOK.CORNER[1]);}}
+  else{LOOK.apply(B[0],my||LOOK.CORNER[0],S.show&&!CUST.on?FILM_WRAPS:null);const cf=S.career&&CAR_FIGHTER[S.career.opp];LOOK.apply(B[1],cf?cf.look:LOOK.CORNER[1]);}}
 
 /* ---------- the options ---------- */
 const CU_HAIR=[['Black','#141013'],['Dark brown','#2a1a12'],['Brown','#5a3820'],['Auburn','#7a3016'],['Blond','#c9a25a'],['Platinum','#e6dcc2'],['Grey','#8d8b88'],['Red','#c8281f'],['Blue','#2457c9']];

@@ -4,15 +4,15 @@
 'use strict';
 /* ================= BUTTONS ================= */
 function toggleSound(){const on=Sfx.toggle();$('#btnSound').textContent='Sound: '+(on?'on':'off');}
-function rematch(){if(S.mode==='online'){LI.ready=1;$('#btnRematch').textContent='Waiting…';$('#rematchNote').textContent='Waiting for '+S.names[1-LOC()]+' to accept.';}else startMatch();}
+function rematch(){if(S.career){carShow('tour',S.career.t);return;}if(S.mode==='online'){LI.ready=1;$('#btnRematch').textContent='Waiting…';$('#rematchNote').textContent='Waiting for '+S.names[1-LOC()]+' to accept.';}else startMatch();}
 G.diff='normal';try{const d=localStorage.getItem('gj_diff');if(DIFF[d])G.diff=d;}catch(e){}
 // Fight the CPU opens the opponent page; pick one, then Fight
 function markOpp(){document.querySelectorAll('.opp').forEach(x=>{const on=x.dataset.d===G.diff;x.setAttribute('aria-checked',String(on));x.classList.toggle('on',on);});}
 document.querySelectorAll('.opp').forEach(b=>{const L=DIFF[b.dataset.d];if(L&&L.name)b.querySelector('.oname').textContent=L.name;
   b.addEventListener('click',()=>{G.diff=b.dataset.d;try{localStorage.setItem('gj_diff',G.diff);}catch(e){}markOpp();});});markOpp();
 function openCpu(){hideScreens();markOpp();$('#cpu').hidden=false;}
-$('#btnCpu').addEventListener('click',openCpu);$('#btnFight').addEventListener('click',startMatch);
-$('#btnCpuBack').addEventListener('click',()=>{$('#cpu').hidden=true;$('#title').hidden=false;});$('#btnPrac').addEventListener('click',startPractice);$('#btnOnline').addEventListener('click',openOnline);
+$('#btnCpu').addEventListener('click',openCpu);$('#btnFight').addEventListener('click',()=>trainGate(startMatch));   // training first, before the first fight (src/ui/training.js)
+$('#btnCpuBack').addEventListener('click',()=>{$('#cpu').hidden=true;$('#title').hidden=false;});$('#btnPrac').addEventListener('click',startPractice);$('#btnOnline').addEventListener('click',()=>trainGate(openOnline));
 $('#btnQuick').addEventListener('click',quickMatch);$('#btnCreate').addEventListener('click',hostRoom);
 $('#btnJoin').addEventListener('click',()=>joinRoom($('#codeIn').value));$('#codeIn').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom($('#codeIn').value);});
 // typing or pasting a code (or a whole invite message) keeps just the 4 characters, in capitals

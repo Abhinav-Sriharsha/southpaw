@@ -49,7 +49,7 @@ function resolveFighter(a,o,ct,punished){
   if(label!=='Counter'){if(a.counterWin>0){mult*=CTR;a.counterWin=0;label='Counter';}
     else if(isAtk(o.action)&&!o.resolved){mult*=CTR;label='Counter';}
     else if(o.action==='taunt'&&!o.tauntSafe){mult*=CTR;label='Caught taunting';}}
-  let dmg=m.dmg*mult;
+  let dmg=m.dmg*mult*(a.power||1)/(o.tough||1);   // power and tough: career fighters only (src/ui/career.js); 1 everywhere else
   const ex=ct.x,ey=ct.y,ez=ct.z;
   if(ct.blk){
     { // blocked: no damage, and the puncher is never hurt by it. The guard quietly wears: 3 normal shots in a row or 1 power shot breaks it

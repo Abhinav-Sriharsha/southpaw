@@ -499,3 +499,61 @@ body.cust .fx-bar,body.cust #fsBtn,body.cust .mfoot{display:none}
   #custom .cpanel{grid-row:2;border-right:0;border-top:1px solid var(--line);padding-left:max(16px,var(--sl));padding-right:max(16px,var(--sr))}
   #custStage{grid-row:1}
 }
+
+/* ---------- Career (src/ui/career.js) ---------- */
+.carcard{width:min(860px,100%);gap:12px}
+.carcard h2{margin:0}
+.ctours{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ctour{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px 12px 10px;border:1px solid rgba(244,239,228,.14);background:rgba(244,239,228,.04);color:var(--ink);cursor:pointer;touch-action:manipulation;min-width:0}
+.ctour .olvl,.copp .olvl{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.ctour .oname{font-family:var(--display);font-weight:900;font-size:clamp(18px,2.2vw,24px);text-transform:uppercase;line-height:1}
+.ctour em{font-style:normal;font-size:12px;color:rgba(244,239,228,.6)}
+.ctour .cstat{font-size:12px;font-weight:600;color:var(--ink);margin-top:2px}
+.ctour.locked{opacity:.45;cursor:default}.ctour.champ{border-color:var(--gold)}
+.ctour:not(.locked):hover{border-color:rgba(255,200,58,.5)}
+.cbanner{margin:0;padding:8px 10px;background:rgba(255,200,58,.12);border-left:3px solid var(--gold);font-weight:600}
+.cgrid{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;align-items:start}
+.cpath{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.cpath li{display:grid;grid-template-columns:8.4em 1fr auto;gap:8px;align-items:center;padding:6px 8px;background:rgba(244,239,228,.04);font-size:13px}
+.cpath li span:first-child{white-space:nowrap;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-size:12px}
+.cpath li .pn{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cpath li.cur{outline:1px solid rgba(255,200,58,.6)}
+.cpath b{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.cpath b.w{color:#7fd38a}.cpath b.l{color:var(--red)}.cpath b.n{color:var(--gold)}.cpath b.q{color:var(--muted)}
+.copp{display:grid;gap:3px;padding:10px 12px;border:1px solid rgba(255,200,58,.35);background:rgba(255,200,58,.05)}
+.copp .oname{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.6vw,30px);text-transform:uppercase;line-height:1}
+.copp .onick{font-size:13px;color:rgba(244,239,228,.75)}
+.copp .ostyle{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.copp .odesc{font-style:normal;font-size:12.5px;line-height:1.35;color:rgba(244,239,228,.7)}
+.copp .osig,.copp .otough{font-size:12px;color:var(--ink)}
+.copp .odanger{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;margin-top:2px}
+.cpips{display:flex;gap:3px}.cpips i,.cpips s{width:10px;height:5px;background:var(--red);display:block}.cpips s{background:rgba(244,239,228,.16)}
+.carcard .cacts{display:flex;gap:8px;flex-wrap:wrap}
+.carcard .cacts .btn{flex:1 1 0;min-width:120px}
+@media (orientation:landscape) and (max-height:520px){
+  .carcard{gap:7px;padding:10px 16px}
+  .carcard h2{font-size:clamp(22px,7.5vh,32px)}
+  .ctour{padding:7px 10px 6px;gap:2px}
+  .cpath li{padding:3px 8px}
+  .copp{padding:7px 10px;gap:1px}.copp .odesc{font-size:11.5px;line-height:1.25}
+  .cbanner{padding:5px 8px;font-size:13px}
+  .carcard .cacts .btn{min-height:38px;padding-block:6px;font-size:17px}
+}
+@media (orientation:portrait){.ctours,.cgrid{grid-template-columns:1fr}}
+
+/* ---------- Training (src/ui/training.js) ---------- */
+#train{position:fixed;left:max(14px,var(--sl));top:calc(max(10px,var(--st)) + 104px);z-index:4;width:min(330px,40vw);pointer-events:none}
+#trCard,#trEnd{background:rgba(8,9,13,.86);border:1px solid var(--line);border-left:3px solid var(--gold);padding:11px 13px 12px;display:grid;gap:5px}
+#trEnd{pointer-events:auto}
+.trstep{font:800 11px/1 var(--display);letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+#train h3{margin:0;font:900 clamp(24px,3vw,32px)/1 var(--display);text-transform:uppercase}
+#trWhy{margin:0;font-size:13px;line-height:1.35;color:rgba(244,239,228,.8)}
+.trhow{margin:2px 0 0;font-weight:700;font-size:14px}
+.trhow kbd,#trTips kbd{font:800 12px/1 var(--display);padding:3px 6px 2px;border:1px solid rgba(244,239,228,.4);border-bottom-width:2px;border-radius:3px;margin:0 1px}
+.trpips{display:flex;gap:5px;margin-top:3px}.trpips i{width:22px;height:7px;background:rgba(244,239,228,.18);display:block}.trpips i.on{background:var(--gold)}
+.trbar{display:block;height:7px;background:rgba(244,239,228,.18);margin-top:3px}.trbar i{display:block;height:100%;background:var(--gold);transition:width .1s linear}
+.trok{font:900 18px/1 var(--display);text-transform:uppercase;color:#7fd38a;min-height:0}
+#train.ok #trCard{border-left-color:#7fd38a}
+#trTips{margin:0;padding-left:18px;font-size:13px;line-height:1.4;display:grid;gap:3px}
+#trEnd .btn{margin-top:4px}
+@media (max-height:520px){#train{top:calc(max(8px,var(--st)) + 80px);width:min(300px,36vw)}#trCard,#trEnd{padding:8px 10px 9px;gap:3px}#trWhy{font-size:12px}.trhow{font-size:13px}#train h3{font-size:24px}}
