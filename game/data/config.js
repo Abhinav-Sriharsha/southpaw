@@ -3,8 +3,8 @@
    players only meet online when their room prefix matches, so different versions never end up in the same fight. */
 'use strict';
 const CONFIG={
-  version:'0.62',
-  roomPrefix:'southpaw062-',      // every quick-match slot id starts with this, so only the same version is matched
+  version:'0.63',
+  roomPrefix:'southpaw063-',      // every quick-match slot id starts with this, so only the same version is matched
   roomIdPrefix:'southpaw-room-',  // private rooms: the same on every version, so a friend on another version is told to update instead of 'room not found'
   quickMatchSlots:6,              // how many quick-match queue slots the game scans
   // Matchmaking server for online play. Empty = the free public PeerJS server.
@@ -14,6 +14,10 @@ const CONFIG={
   // turnUrl: optional address that returns {iceServers:[...]}, for example the Worker in tools/turn-worker (Cloudflare's TURN).
   // Leave empty to use the free public relays listed below.
   turnUrl:'',
+  // Feedback: where the star rating and comment players send after a match or training go (POST, JSON as text).
+  // The Worker in tools/feedback-worker keeps them in a Cloudflare D1 (SQLite) database. Empty = nothing is sent;
+  // ratings wait on the player's device and go out once this is set.
+  feedbackUrl:'https://southpaw-feedback.abhinav932002.workers.dev',
   iceServers:[
     {urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']},
     {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'}

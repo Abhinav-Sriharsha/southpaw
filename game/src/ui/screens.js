@@ -17,7 +17,7 @@ function setPlaying(on){document.body.classList.toggle('playing',on);touchEl.hid
   document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}
 const UI={state:'',mode:'',round:-1,match:-1,endShown:false};
 function enterSim(s){S=s;resGrace=Math.max(resGrace,2500);document.body.classList.toggle('prac',s.mode==='practice');G.mode=s.mode;G.paused=false;UI.state='';UI.round=-1;UI.match=-1;UI.endShown=false;EVQ.length=0;SEEN.clear();SEENQ.length=0;cam.init=false;resetLocalInput();
-  const pr=s.mode==='practice'||!!s.show;showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;assignLooks();if(s.mode!=='practice')trainStop();}
+  const pr=s.mode==='practice'||!!s.show;showBag(pr);B[1].root.visible=!pr;for(const t of trails[1])t.mesh.visible=!pr;acc=0;assignLooks();if(s.mode!=='practice')trainStop();if(window.fbOpen&&fbOpen())fbClose();}
 function startAttract(){timers.length=0;
   if(S&&S.mode==='online')netLeave(true);
   const s=newSim('attract');s.show=true;enterSim(s);   // the title film (src/ui/titleShow.js)
@@ -68,7 +68,8 @@ function showEnd(){
   const brag=w===Lc?'I '+how+' '+oppName+tail+(online?' online':'')+' on South Paw. '+me.stats.landed+' of '+me.stats.thrown+' punches landed. Your turn.':oppName+' '+how+' me'+tail+' on South Paw. Rematch incoming.';
   $('#bragText').value=brag;$('#btnCopy').textContent='Copy';$('#btnRematch').textContent=S.career?'Continue':'Rematch';$('#rematchNote').textContent='';
   if(S.career)carResult();   // the result counts as soon as the match ends (src/ui/career.js)
-  hudEl.hidden=true;helpEl.hidden=true;setPlaying(false);$('#end').hidden=false;}
+  hudEl.hidden=true;helpEl.hidden=true;setPlaying(false);$('#end').hidden=false;
+  setTimeout(()=>{if(!$('#end').hidden&&S&&S.matchWinner===w)fbAsk('match');},1500);}   // ask for a rating (src/ui/feedback.js)
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function syncUI(){
   if(!S||S.mode==='attract')return;

@@ -2,11 +2,13 @@
    Training: a short lesson on the heavy bag that teaches the controls one move at a time. Each step says what the move
    is for and which keys or buttons do it, then waits until you have done it; only then does the next one start.
    It runs once before your first fight (trainGate wraps Fight the CPU, Play online and career fights) and any time
-   from the Training button next to Pause in Practice. Done once, it is remembered on this device (localStorage sp.trained).
+   from the Training button next to Pause in Practice. Finished, skipped or left, it is remembered on this device
+   (localStorage sp.trained), so it never stands between you and a fight twice.
    See PROJECT_GUIDE.md for how this file fits with the rest. */
 'use strict';
 const TR={on:false,i:0,prog:0,done:false,doneT:0,cont:null,lastAtk:-1,lastAct:'',flags:{},last:null};
 const trained=()=>{try{return localStorage.getItem('sp.trained')==='1';}catch(e){return true;}};
+const setTrained=()=>{try{localStorage.setItem('sp.trained','1');}catch(e){}};
 function trainGate(fn){if(trained())fn();else startTraining(fn);}
 const trK=k=>'<kbd>'+k+'</kbd>';
 const isM=(m,hand,kind,target)=>m&&(!hand||m.hand===hand)&&(!kind||m.kind===kind)&&(!target||m.target===target);
@@ -34,13 +36,15 @@ function trRender(){const el=trEl(),L=LESSONS[TR.i];if(!L)return;
   else{let s='';for(let k=0;k<n;k++)s+='<i class="'+(k<TR.prog?'on':'')+'"></i>';pr.innerHTML='<span class="trpips">'+s+'</span>';}
   el.classList.toggle('ok',TR.done);$('#trOk').textContent=TR.done?['Nice.','Good.','That is it.','Sharp.'][TR.i%4]:'';}
 function startTraining(cont){TR.cont=cont||null;startPractice();TR.on=true;TR.i=-1;
-  $('#trEnd').hidden=true;$('#trCard').hidden=false;trEl().hidden=false;helpEl.hidden=true;$('#tTrain').textContent='End training';trNext();}
+  $('#trEnd').hidden=true;$('#trCard').hidden=false;trEl().hidden=false;helpEl.hidden=true;$('#tTrain').textContent='End training';
+  $('#trSkip').textContent=TR.cont?'Skip to the fight':'Skip training';trNext();}
 function trNext(){TR.i++;if(TR.i>=LESSONS.length){trFinish();return;}TR.prog=0;TR.done=false;TR.flags={};TR.lastR=0;TR.last=null;TR.lastAtk=S.F[0].attackId;TR.lastAct=S.F[0].action;trRender();}
-function trFinish(){try{localStorage.setItem('sp.trained','1');}catch(e){}TR.done=false;
+function trFinish(){setTrained();TR.done=false;
   $('#trCard').hidden=true;$('#trEnd').hidden=false;$('#trGo').textContent=TR.cont?'Start the fight':'Keep practising';
   $('#trTips').innerHTML=(usingTouch?'<li>Every punch costs stamina. Step out of range to get it back, or tap TAUNT when he is far away.</li><li>Knocked down? Tap any button fast to beat the count.</li>':
-    '<li>Every punch costs stamina. Step out of range to get it back, or press '+trK('T')+' to taunt when he is far away.</li><li>Knocked down? Press any key fast to beat the count.</li>')+'<li>Practice has slow motion and replays to work on your timing.</li>';}
-function trainStop(){if(!TR.on)return;TR.on=false;trEl().hidden=true;const b=$('#tTrain');if(b)b.textContent='Training';}
+    '<li>Every punch costs stamina. Step out of range to get it back, or press '+trK('T')+' to taunt when he is far away.</li><li>Knocked down? Press any key fast to beat the count.</li>')+'<li>Practice has slow motion and replays to work on your timing.</li>';
+  setTimeout(()=>{if(TR.on&&!$('#trEnd').hidden)fbAsk('training');},1200);}
+function trainStop(){if(!TR.on)return;TR.on=false;setTrained();trEl().hidden=true;const b=$('#tTrain');if(b)b.textContent='Training';}
 /* runs every frame while training (src/core/loop.js) */
 function trainUpdate(dt){if(!TR.on||!S||S.mode!=='practice'||G.paused||S.state!=='fight')return;const L=LESSONS[TR.i];if(!L)return;const f=S.F[0];
   if(TR.done){TR.doneT-=dt;if(TR.doneT<=0)trNext();return;}
@@ -57,3 +61,4 @@ function trainUpdate(dt){if(!TR.on||!S||S.mode!=='practice'||G.paused||S.state!=
   if(changed)trRender();}
 $('#tTrain').addEventListener('click',()=>{if(TR.on)trainStop();else startTraining(null);});
 $('#trGo').addEventListener('click',()=>{const c=TR.cont;TR.cont=null;trainStop();if(c)c();});
+$('#trSkip').addEventListener('click',()=>{const c=TR.cont;TR.cont=null;trainStop();if(c)c();});

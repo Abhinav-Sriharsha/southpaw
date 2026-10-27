@@ -1,0 +1,16 @@
+# South Paw · tools/feedback-worker/wrangler.toml
+name = "southpaw-feedback"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+# comma-separated list of sites allowed to send feedback
+ALLOW_ORIGIN = "https://southpaw.abhinav932002.workers.dev,https://playsouthpaw.com"
+
+# The SQLite database the ratings are kept in. Create it once with
+#   npx wrangler d1 create southpaw-feedback
+# and paste the database_id it prints below.
+[[d1_databases]]
+binding = "DB"
+database_name = "southpaw-feedback"
+database_id = "PASTE-THE-DATABASE-ID-HERE"

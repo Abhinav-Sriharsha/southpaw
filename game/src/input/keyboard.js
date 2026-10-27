@@ -6,7 +6,8 @@
 const NOSCROLL=['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];
 const onButton=()=>{const a=document.activeElement;return a&&(a.tagName==='BUTTON'||a.tagName==='INPUT');};
 window.addEventListener('keydown',e=>{
-  const c=e.code;if(document.activeElement&&document.activeElement.tagName==='INPUT')return;
+  const c=e.code,ae=document.activeElement;if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'))return;
+  if(window.fbOpen&&fbOpen())return;   // the feedback card handles its own keys (src/ui/feedback.js)
   if(S.mode!=='attract'&&NOSCROLL.includes(c)&&!onButton())e.preventDefault();
   if(c==='KeyM'&&!e.repeat&&!onButton())toggleSound();
   if(S.mode==='attract'){if(c==='Enter'&&!$('#title').hidden&&!onButton()){e.preventDefault();startMatch();}return;}

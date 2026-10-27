@@ -69,7 +69,7 @@ southpaw/
 │       ├── net/              Online play
 │       ├── render/           3D scene, boxers, looks, camera, effects
 │       ├── practice/         The heavy bag
-│       ├── ui/               HUD, menus, Customise, buttons, installing as an app
+│       ├── ui/               HUD, menus, Customise, Career, Training, the rating card, buttons, installing as an app
 │       ├── input/            Keyboard, touch, input sampling
 │       ├── audio/            Sound engine
 │       └── main.js           Starts the game
@@ -77,6 +77,7 @@ southpaw/
     ├── anim/                 Mixamo FBX files and the converter to clips.js
     ├── sounds/               Original recordings and the script that prepares them
     ├── peer-server/          Your own matchmaking server, for when you outgrow the free one
+    ├── feedback-worker/      Cloudflare Worker + D1 (SQLite) that keeps players' ratings, with a private page to read them
     └── turn-worker/          Optional Cloudflare Worker that hands out relay (TURN) credentials
 ```
 
@@ -117,6 +118,7 @@ Tells Netlify and Cloudflare Pages how long browsers may cache each folder. Anim
 - `iceServers`: how two browsers find each other. STUN servers find a direct route; TURN servers relay the fight when a network blocks direct connections (common on mobile data and office Wi-Fi).
 - `openRelay`: a free public relay (Open Relay by metered.ca) added on top. Set it to `null` to turn it off.
 - `turnUrl`: optional. Point it at your own credentials service, for example `tools/turn-worker`, which uses Cloudflare's TURN. This is the most reliable option once you have regular players.
+- `feedbackUrl`: where players' star ratings and comments go (`tools/feedback-worker`). Empty sends nothing; ratings wait on the player's device and go out once it is set and reachable.
 
 ### `data/rules.js`
 The fight rules, matching `docs/south-paw-mechanics.xlsx`:
@@ -380,9 +382,17 @@ The Career item on the title menu. Choose a tournament (Pro opens after winning 
 - **The opponent** (`carProfile`): his skill sets the CPU numbers between `CAR_SK`'s two ends, his style multiplies them and adds a punch mix, a favourite game plan and a distance, and his signature punch gets extra weight. `carGrit`: in the Ultimate he takes 7% less damage and hits 3.5% harder for every round you have won.
 - Progress is saved on this device (`localStorage` key `sp.career`).
 
+### `src/ui/feedback.js` (asking players for a rating)
+After a CPU, career or online match (1.5 s after the end screen appears) and after finishing training, a small card asks for 1 to 5 stars and an optional comment, saying it helps improve the game. "Not now" (or Escape, or a tap outside) skips the next three chances; once a rating is sent it does not ask again until the next version (`localStorage` keys `sp.fbSkip`, `sp.fbSent`). Keys 1 to 5 and the arrows pick stars; Ctrl+Enter sends from the comment box. While the card is open the fight keys are ignored.
+- Sent: the stars, the comment (up to 600 characters), where (training, cpu, online, career), win or loss, the CPU difficulty or career opponent id, the version, and touch or keys. Nothing that identifies the player.
+- Each rating is kept in `localStorage` (`sp.fbq`, up to 20) until `CONFIG.feedbackUrl` accepts it, and the queue is retried 4 s after the game opens, so ratings made offline are not lost.
+- It is posted as JSON in a `text/plain` body, which needs no CORS preflight.
+
 ### `src/ui/training.js` (Training)
 A lesson on the heavy bag that teaches the controls one move at a time: step in, step back, circle both ways, jab, cross, the one-two, both hooks, the uppercut, a body shot, blocking and dodging. Each step says what the move is for and shows the keys or the touch buttons, then waits until you have done it (a hold timed in real time, or a number of punches) before the next. The last card gives tips (stamina, taunting, getting up).
-- `trainGate(fn)` runs training first if it has never been finished on this device (`localStorage` key `sp.trained`), then `fn`: Fight the CPU, Play online and career fights go through it. Invite links do not, so a friend can join straight away.
+- `trainGate(fn)` runs training first if it has never been seen on this device (`localStorage` key `sp.trained`), then `fn`: Fight the CPU, Play online and career fights go through it. Invite links do not, so a friend can join straight away.
+- Finishing, skipping (`Skip to the fight` / `Skip training` on the card) or leaving it any other way (Quit to menu) all count as seen, so training never stands between a player and a fight twice. It is always there again from the Training button in Practice.
+- When training is finished, the rating card asks how it was (`src/ui/feedback.js`).
 - In Practice the Training button next to Pause starts it any time (and ends it).
 
 ### `src/ui/titleShow.js` (the title screen and its film)
@@ -489,6 +499,9 @@ The older converter for plain Mixamo characters (`model.mjs`, which made `fighte
 
 ### `tools/peer-server/`
 A small matchmaking server (Node, Express, PeerJS server) for when you want your own instead of the free public one. It only introduces two players; the fight itself still goes directly between them. Setup steps are in the comment at the top of `server.js`.
+
+### `tools/feedback-worker/`
+A small Cloudflare Worker that receives the ratings (`src/ui/feedback.js`) and keeps them in a Cloudflare D1 database, which is SQLite (`schema.sql` is the table; the Worker also creates it on its first request). Read them at `/admin?key=YOUR_ADMIN_KEY`: the average, how many of each star, by mode and by version, and the latest 300 with comments. `/admin.csv?key=...` downloads everything as a spreadsheet. Setup, once: `npx wrangler login`, `npx wrangler d1 create southpaw-feedback` (paste the id into `wrangler.toml`), `npx wrangler deploy`, `npx wrangler secret put ADMIN_KEY`. The steps are also at the top of `worker.js`. `ALLOW_ORIGIN` in `wrangler.toml` lists the sites allowed to send ratings. To query by hand: `npx wrangler d1 execute southpaw-feedback --remote --command "SELECT stars, text FROM feedback ORDER BY id DESC LIMIT 20"`.
 
 ### `tools/turn-worker/`
 A tiny Cloudflare Worker that hands out short-lived relay credentials from Cloudflare's TURN service, so players on strict networks can always connect. Deploy it with `npx wrangler deploy` and add the two secrets, as described at the top of `worker.js`. Then set `turnUrl` in `game/data/config.js`. `ALLOW_ORIGIN` in `wrangler.toml` lists the sites allowed to use it.
